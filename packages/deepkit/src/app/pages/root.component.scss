@@ -1,0 +1,232 @@
+
+.icon-tabs {
+    text-align: center;
+    border-bottom: 1px solid var(--text-gray);
+
+    dui-icon {
+        margin: 6px;
+        color: #5e6267;
+
+        &.selected {
+            color: #097aff;
+        }
+    }
+}
+
+:host-context(.dark) .icon-tabs dui-icon {
+    color: white;
+
+    &.selected {
+        color: #097aff;
+    }
+}
+
+.top-info {
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    display: flex;
+    -webkit-app-region: no-drag;
+
+    .user {
+        border-radius: 2px;
+        padding: 0px 5px;
+        line-height: 15px;
+        font-size: 10px;
+        font-weight: 700;
+        margin-left: 4px;
+        color: #333;
+
+        &:hover {
+            background-color: #bfbfbf;
+        }
+
+        &:active {
+            background-color: #b1b1b1;
+        }
+    }
+
+    .errors {
+        position: relative;
+        z-index: 10000;
+        background-color: #e02424;
+
+        border-radius: 2px;
+        padding: 0px 5px;
+        color: white;
+        line-height: 15px;
+        font-size: 10px;
+        font-weight: 700;
+
+        &:hover {
+            background-color: #b72121;
+        }
+
+        &:active {
+            background-color: #871717;
+        }
+    }
+}
+
+:host-context(.dark) .top-info {
+    .user:not(:hover) {
+        color: #ddd;
+    }
+}
+
+.node-mini-utils {
+    width: 30px;
+    margin-right: 5px;
+    flex: 0 0 30px;
+
+    > div {
+        padding-top: 1px;
+        padding-left: 1px;
+        padding-right: 1px;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--line-color);
+    }
+
+    dk-progress-bar {
+        margin-bottom: 1px;
+    }
+
+    &.connected > div {
+        border: 1px solid var(--color-green);
+    }
+}
+
+dui-list-item.cluster {
+    padding-left: 10px;
+
+    dui-icon {
+        position: relative;
+        top: -1px;
+        color: var(--text-grey);
+    }
+}
+
+dui-list-item.node {
+    display: flex;
+    align-items: center;
+}
+
+:host-context(.platform-linux) {
+    .top-info {
+        right: unset;
+        left: 3px;
+        flex-direction: row-reverse;
+    }
+}
+
+.error-item {
+    color: var(--color-red);
+    text-align: left;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--line-color)
+}
+
+.filter {
+    display: flex;
+    margin: 0px 21px;
+    margin-bottom: 10px;
+}
+
+.filter input {
+    height: 22px;
+    line-height: 22px;
+    /*border-radius: 0;*/
+    opacity: 0.7;
+}
+
+.filter .icon {
+    width: 23px;
+    position: relative;
+    padding-top: 2px;
+    text-align: right;
+}
+
+.counts {
+    float: right;
+    display: inline-block;
+    color: silver;
+}
+
+.main {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 70px;
+    overflow: auto;
+}
+
+dui-list {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 26px;
+    height: auto;
+}
+
+.sidebar-actions {
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    left: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    padding-bottom: 5px;
+}
+
+.not-connected {
+    display: flex;
+    height: 100%;
+    width: 150px;
+    margin: auto;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    .logo {
+        margin-bottom: 15px;
+    }
+}
+
+.welcome {
+    display: flex;
+    height: 100%;
+    text-align: center;
+    flex-direction: column;
+    justify-content: center;
+
+    h1 {
+        margin-top: 15px;
+        font-size: 20px;
+        line-height: 28px;
+    }
+
+    dui-button {
+        height: 30px;
+        line-height: 30px;
+        font-weight: bold;
+    }
+
+    .points {
+        margin: 50px auto;
+        display: flex;
+        max-width: 750px;
+
+        > div {
+            margin: 0 15px;
+            width: calc(100%/3);
+        }
+
+        h3 {
+            margin-bottom: 10px;
+        }
+    }
+}

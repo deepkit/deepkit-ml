@@ -1,0 +1,94 @@
+image: python:3.7.0-alpine3.8
+
+docker:
+    binds:
+        - "/Users/marc/bude/deepkit-python-sdk/:/deepkit-sdk"
+    env:
+        - PYTHONPATH=/deepkit-sdk
+
+
+
+parameters:
+    lr: 50
+    optimizer: sgd
+    training:
+        epochs: 50
+        samples: 20
+
+tasks:
+    prepare_data:
+        replicas: 2
+        resources:
+            cpu: 2
+            memory: 2
+        command: echo {{_name}} && sleep 5
+
+    workers:
+        replicas: 5
+        resources:
+            cpu: 2
+
+        build:
+            - pwd && ls -al
+            - pip install -r requirements.txt
+        build_files: [requirements.txt]
+        command: echo {{_name}} && python model.py {{training.epochs}} {{training.samples}}
+        depends_on: [prepare_data]
+
+    parameters:
+        replicas: 2
+        resources:
+            cpu: 1
+
+        command: echo {{_name}} && sleep 10
+        depends_on: [prepare_data]
+
+    tests:
+        resources:
+            cpu: 1
+        command: sleep 5
+        depends_on: [workers, parameters]
+
+    deploy:
+        command: sleep 10
+        depends_on: [tests]
+
+
+
+#stages:
+#    prepare_data:
+#        image: python:3.7.0-alpine3.8
+#        install_files: [requirements.txt]
+#        env:
+#        - PATH=mowla
+#
+#        resources:
+#            cpu: all
+#            memory: 6
+#        command: python prepare_data.py
+#        output:
+#        - ./output-data
+#
+#    train:
+#        tasks:
+#            parameters:
+#                count: 2
+#                resources:
+#                    cpu: 1
+#
+#                command: python params.py
+#
+#            workers:
+#                count: 2
+#                resources:
+#                    cpu: 2
+#
+#                command: python worker.py
+#
+#    tests:
+#        resources:
+#            cpu: all
+#        command: python run-tests.py
+#
+#    deploy:
+#        command: python deploy.py

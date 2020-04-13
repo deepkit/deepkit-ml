@@ -1,0 +1,45 @@
+:host {
+    display: flex;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+dk-text-editor {
+    display: block;
+    height: 100%;
+}
+
+dui-list {
+    position: relative;
+    overflow: auto;
+    overflow-x: hidden;
+    border-right: 1px solid var(--line-sidebar);
+    background-color: var(--background-semi-transparent);
+    min-width: 200px;
+    max-width: 50%;
+}
+
+.editor {
+    flex: 1;
+    background-color: var(--dui-window-content-bg);
+
+    &.read-only {
+        padding: 20px 15px;
+    }
+}
+
+::ng-deep .ql-container {
+    //necessary for cursor bubble
+    overflow: visible;;
+}
+
+::ng-deep .ql-editor {
+    overflow: auto;
+}
+
+//::ng-deep .ql-cursor-caret-container {
+//    transition: all 0.05s ease-out;
+//}

@@ -1,0 +1,32 @@
+:host {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    --entry-size: 100px;
+}
+
+.header {
+    flex: 0;
+    margin: 10px 0;
+    margin-right: 12px;
+    flex-basis: 80px;
+
+    .text {
+        margin-top: 5px;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+    }
+}
+
+.content {
+    flex: 1;
+    height: 100%;
+    margin-right: 12px;
+    margin-bottom: 12px;
+    overflow: auto !important;
+    background-color: var(--background-semi-transparent);
+    border-radius: 5px;
+    border: 1px solid var(--line-color-light);
+}

@@ -1,0 +1,64 @@
+.location-item {
+    display: inline-block;
+    background-color: #d2d1d1;
+    margin: 0 2px;
+    padding: 1px 4px;
+    border-radius: 5px;
+    height: 20px;
+
+    &.last {
+        background: transparent;
+    }
+
+    &:not(.last):hover {
+        background-color: rgb(166, 166, 166);
+    }
+}
+
+:host-context(.dark) .location-item {
+    background-color: rgb(91, 91, 91);
+
+    &.last {
+        background: transparent;
+    }
+
+    &:not(.last):hover {
+        background-color: rgb(70, 70, 70);
+    }
+}
+
+.left {
+    position: absolute;
+    left: -25px;
+    right: 50%;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+dui-table {
+    flex: 1;
+    background-color: transparent;
+}
+
+.right {
+    position: absolute;
+    left: 50%;
+    right: 0;
+    top: 40px;
+    bottom: 0;
+    overflow: hidden;
+    border-left: 1px solid var(--line-sidebar);
+}
+
+.dirs {
+    padding-left: 13px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+
+    dui-select {
+        margin-right: 5px;
+    }
+}

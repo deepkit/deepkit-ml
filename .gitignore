@@ -1,0 +1,16 @@
+.DS_Store
+node_modules/
+.idea
+lib/
+coverage
+docker-deepkit-files
+build/cli
+build
+packages/server/dist
+packages/server/libs/redis-5.0.4
+packages/cli/dist
+packages/electron/dist
+packages/electron/Deepkit-*
+packages/website/dist
+releases/
+.links.json

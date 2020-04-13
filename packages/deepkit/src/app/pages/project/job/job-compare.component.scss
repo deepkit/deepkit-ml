@@ -1,0 +1,52 @@
+table {
+    margin: auto;
+
+    td:first-child {
+        //background-color: rgba(238, 238, 238, 0.56);
+        background-color: var(--background-semi-transparent);
+        text-align: right;
+        width: 180px;
+    }
+
+    td {
+        padding: 6px;
+        font-size: 12px;
+        border-right: 1px solid var(--line-color-light);
+    }
+
+    dui-button.small {
+        font-size: 11px;
+    }
+
+    td:not(:first-child) {
+        min-width: 300px;
+        text-align: center;
+    }
+
+    td:nth-child(2) {
+        min-width: 300px;
+        text-align: right;
+    }
+
+    td:last-child {
+        text-align: left;
+        border-right: 0;
+    }
+
+    td.title {
+        border-right: 0;
+        text-align: left;
+        padding: 8px 6px;
+        font-size: 13px;
+        border-top: 1px solid var(--line-color-light);
+    }
+
+    td.changed {
+        color: var(--color-orange);
+    }
+
+    tr.data-row:hover td {
+        background-color: var(--background-semi-transparent);
+        user-select: text;
+    }
+}

@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+# this is for the built package only.
+
+DIR=`dirname $0`
+
+$DIR/node $DIR/../main.js $@

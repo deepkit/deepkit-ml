@@ -1,0 +1,20 @@
+:host {
+    display: block;
+    position: relative;
+    height: 100%;
+}
+
+.graphs {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 30px;
+    bottom: 0;
+    padding: 0 20px;
+}
+
+.graph-grid {
+    display: grid;
+    grid-gap: 20px 60px;
+    grid-template-columns: repeat(auto-fit, minmax(400px , 1fr));
+}

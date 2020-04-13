@@ -1,0 +1,37 @@
+@import "~@marcj/angular-desktop-ui/src/scss/mixins";
+
+:host {
+    display: flex;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+}
+
+.sidebar {
+    position: relative;
+    width: 250px;
+    min-width: 100px;
+    border-right: 1px solid var(--line-sidebar);
+    background-color: var(--background-semi-transparent);
+
+    > .container {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+    }
+}
+
+.editor {
+    flex: 1;
+    overflow: hidden;
+    background-color: var(--dui-window-content-bg);
+}
+
+.table {
+    display: table;
+    min-width: 100%;
+}

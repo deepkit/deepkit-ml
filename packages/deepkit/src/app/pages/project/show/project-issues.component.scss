@@ -1,0 +1,148 @@
+:host {
+    display: flex;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.left {
+    position: relative;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    border-right: 1px solid var(--line-sidebar);
+    background-color: var(--background-semi-transparent);
+    min-width: 285px;
+}
+
+.left:not(.board) {
+    max-width: 60%;
+}
+
+.left.board {
+    max-width: calc(100% - 150px);
+    display: flex;
+    flex: 1;
+}
+
+.left.full-width {
+    max-width: 100%;
+    width: 100% !important;
+}
+
+.columns {
+    display: flex;
+    flex: 1;
+    padding: 15px;
+}
+
+.status-column {
+    flex: 0 0 300px;
+    height: 100%;
+    margin: 0 5px;
+    background: var(--panel-background);
+    border-radius: 4px;
+
+    display: flex;
+    flex-direction: column;
+
+    h4 {
+        text-align: center;
+        margin: 5px 0;
+    }
+
+    > dui-list {
+        flex: 1;
+    }
+}
+
+.detail {
+    flex: 1;
+    position: relative;
+    background-color: var(--dui-window-content-bg);
+}
+
+.detail.board {
+    flex: unset;
+    min-width: 250px;
+}
+
+dui-list-title {
+    border-bottom: 1px solid var(--line-color-light);
+}
+
+dui-list-item {
+    border-bottom: 1px solid var(--line-color-light);
+    padding: 6px 20px;
+    padding-left: 25px;
+
+    &.cdk-drag-preview {
+        background-color: var(--dui-selection-unfocused);
+    }
+}
+
+:host-context(.dark) .detail {
+    background-color: var(--dui-window-content-bg);
+}
+
+.header {
+    margin-top: 2px;
+    padding: 12px 20px 10px;
+
+    .title {
+    }
+}
+
+.file-drop {
+    background: var(--panel-background);
+    border-radius: 4px;
+    padding: 1px 4px;
+    display: inline-block;
+    margin-left: 4px;
+
+    &.hover {
+        opacity: 0.6;
+    }
+}
+
+.issue-title {
+    font-weight: 600;
+    &.closed {
+        text-decoration: line-through;
+    }
+}
+
+.content {
+    padding: 0 20px;
+    display: flex;
+    margin-bottom: 15px;
+
+    .description {
+        flex: 1;
+    }
+
+    .infos {
+        margin-left: 40px;
+        width: 200px;
+    }
+
+    .label-columns {
+        --min-width: 150px;
+    }
+}
+
+.board .content {
+    display: block;
+    .infos {
+        margin-top: 15px;
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+.comments {
+    padding: 20px;
+}

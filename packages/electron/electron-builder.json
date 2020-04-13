@@ -1,0 +1,39 @@
+{
+  "productName": "Deepkit",
+  "appId": "ai.deepkit.app",
+  "icon": "assets/icons/docker-icon.icns",
+  "buildVersion": "12",
+  "afterSign": "scripts/notarize.js",
+  "publish": {
+    "provider": "generic",
+    "url": "https://f000.backblazeb2.com/file/deepkit-releases/releases/"
+  },
+  "directories": {
+    "output": "release-builds",
+    "buildResources": "app"
+  },
+  "mac": {
+    "type": "distribution",
+    "category": "public.app-category.developer-tools",
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false,
+    "extendInfo": {
+      "ElectronTeamID": "MQF837S5D6",
+      "LSUIElement": 1
+    },
+    "darkModeSupport": true,
+    "entitlements": "entitlements/mac.plist",
+    "entitlementsInherit": "entitlements/mac.inherit.plist",
+    "provisioningProfile": "distribution.provisionprofile"
+  },
+  "linux": {
+    "icon": "assets/icons/docker-icon.png"
+  },
+  "snap": {
+    "plugs": [
+      "default",
+      "docker"
+    ]
+  },
+  "asar": false
+}

@@ -1,0 +1,47 @@
+:host {
+    display: block;
+    background-color: white;
+    height: 100%;
+}
+
+:host-context(.dark) {
+    background-color: var(--dui-window-content-bg);
+}
+
+.editor-container {
+    width: 100%;
+    height: 98%;
+}
+
+::ng-deep .monaco-editor {
+    & .monaco-scrollable-element>.scrollbar>.slider {
+        background: rgba(169, 173, 175, 0.77)  !important;
+        border-radius: 3px;
+        width: 7px !important;
+        left: 4px !important;
+        border: 2px solid rgba(0, 0, 0, 0.01)  !important;
+        margin: 2px 0;
+    }
+
+    .view-overlays .current-line {
+        border: 0 !important;
+        background-color: #ecf5ff !important;
+    }
+
+    .margin-view-overlays .current-line-margin {
+        border: 0 !important;
+        background-color: #ecf5ff !important;
+    }
+}
+
+:host-context(.dark) ::ng-deep .monaco-editor {
+    .view-overlays .current-line {
+        border: 0 !important;
+        background-color: #2f3239 !important;
+    }
+
+    .margin-view-overlays .current-line-margin {
+        border: 0 !important;
+        background-color: #2f3239 !important;
+    }
+}

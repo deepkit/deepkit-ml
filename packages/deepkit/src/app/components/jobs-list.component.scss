@@ -1,0 +1,142 @@
+:host {
+    position: relative;
+    background-color: var(--dui-window-content-bg);
+    display: flex;
+    flex-direction: column;
+
+    dui-table {
+        border: 0;
+        border-top: 1px solid var(--line-color-light);
+        flex: 1;
+        margin: 0;
+    }
+}
+
+.loading {
+    position: absolute;
+    top: 39px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #3231302e;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in;
+
+    &.visible {
+        opacity: 1;
+    }
+}
+
+.tabs-container {
+    display: flex;
+    align-items: center;
+    background-color: white;
+}
+
+:host-context(.dark) .tabs-container {
+    background-color: #1e1e1e;
+}
+
+.tabs {
+    flex: 1;
+
+    dui-tab-button {
+        margin: 5px;
+    }
+}
+
+.tabs-jobs-count {
+    margin-left: auto;
+    margin-right: 8px;
+    font-size: 11px;
+    color: var(--text-grey);
+}
+
+dui-table {
+    margin: 8px;
+
+    ::ng-deep {
+        .table-row > div {
+            padding-top: 9px !important;
+            vertical-align: top;
+            height: 45px;
+        }
+
+        job-status {
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+    }
+}
+
+.labels {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.progress {
+    position: relative;
+    display: inline-block;
+
+    > div {
+        position: absolute;
+        top: 0;
+        left: 0;
+        border-bottom: 1px dotted var(--line-color-light);
+    }
+}
+
+dui-button-groups.width-left-actions dui-button-group.float-right {
+    margin-left: 10px;
+}
+
+dui-button-groups dui-button-group.float-right {
+    display: flex;
+    align-items: center;
+    flex: 1;
+
+    dui-select {
+        height: 21px;
+    }
+
+    dui-input.search {
+        flex: 1;
+    }
+}
+
+
+
+dui-table ::ng-deep .table-row.selected {
+    background-color: var(--line-color-light) !important;
+    color: var(--color-black1) !important;
+}
+
+.channel {
+    overflow: visible;
+    display: flex;
+    flex-direction: row;
+    min-height: 24px;
+}
+
+
+.manage-columns {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+
+    .panel {
+        flex: 1;
+        padding: 5px;
+    }
+
+    .columns {
+        margin: 5px 15px;
+        display: grid;
+        grid-gap: 5px 10px;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+}

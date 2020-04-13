@@ -1,0 +1,84 @@
+:host {
+    font-family: 'Brix Sans', Verdana, sans-serif;
+    letter-spacing: 1px;
+    padding-top: 7px;
+    height: 36px;
+    line-height: 24px;
+    display: block;
+    font-size: 11px;
+    -webkit-app-region: drag;
+    margin-left: 20px;
+}
+
+button {
+    float: left;
+    height: 24px;
+    width: 24px;
+    line-height: 22px;
+    margin-right: 15px;
+    padding: 0;
+    background-color: var(--color-black3);
+    color: white;
+}
+
+:host ::ng-deep .breadcrumb-item {
+    text-decoration: none;
+    color: var(--text-color);
+    display: inline-block;
+    float: left;
+    height: 24px;
+    padding-right: 4px;
+    padding-left: 17px;
+    position: relative;
+    border-radius: 5px;
+
+    &:after {
+        position: absolute;
+        left: 0;
+        top: 0;
+
+        font-family: 'Material Icons';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 16px;
+        display: inline-block;
+        vertical-align: inherit;
+        text-transform: none;
+        letter-spacing: normal;
+        word-wrap: normal;
+        white-space: nowrap;
+        direction: ltr;
+        color: #aaa;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-feature-settings: 'liga';
+        font-feature-settings: 'liga';
+        line-height: 24px;
+        content: 'keyboard_arrow_right';
+    }
+}
+
+:host ::ng-deep a {
+    cursor: default;
+}
+
+:host ::ng-deep .breadcrumb-item.link:hover {
+    background-color: rgba(140, 143, 146, 0.16);
+}
+
+:host ::ng-deep .breadcrumb-item.link:focus {
+    outline: 0;
+}
+
+:host ::ng-deep .breadcrumb-item img {
+    margin-left: 7px;
+}
+
+:host ::ng-deep *:first-of-type .breadcrumb-item:first-child {
+    padding-left: 5px;
+    margin-left: -5px;
+    &:after {
+        display: none;
+    }
+}

@@ -1,0 +1,59 @@
+:host {
+    display: block;
+
+    background: #FFFFFF;
+    border: 1px solid #DBDBDB;
+    padding: 15px 21px;
+
+    h2 {
+        font-size: 14px;
+        margin: 0;
+        margin-bottom: 5px;
+    }
+}
+
+.knobs {
+    padding-bottom: 8px;
+    border-bottom: 1px solid #dfdfdf;
+}
+
+.instance-knob {
+    width: 13px;
+    height: 13px;
+    background: #FFFFFF;
+    border: 1px solid #417505;
+
+    &.selected {
+        background: #417505;
+    }
+}
+
+table {
+    border-collapse: collapse;
+
+    td {
+        padding: 0;
+        padding-right: 22px;
+    }
+}
+
+.instance {
+    margin-top: 10px;
+
+    display: flex;
+
+    .left {
+        flex: 0 0 270px;
+    }
+
+    .right {
+        flex: 1;
+    }
+}
+
+
+
+.subline {
+    font-size: 10px;
+    margin-bottom: 8px;
+}

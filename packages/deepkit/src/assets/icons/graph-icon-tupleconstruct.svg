@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="15px" height="15px" viewBox="0 0 15 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59.1 (86144) - https://sketch.com -->
+    <title>graph-icon-tupleconstruct</title>
+    <desc>Created with Sketch.</desc>
+    <g id="graph-icon-tupleconstruct" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M4.81881818,11.611 L5.95513664,11.026 C4.88413664,9.982 4.42513664,8.92 4.42513664,7.498 C4.42513664,6.076 4.88413664,5.014 5.95513664,3.97 L4.81881818,3.385 C3.64881818,4.42 2.91981818,5.806 2.91981818,7.498 C2.91981818,9.19 3.64881818,10.576 4.81881818,11.611 Z" id="Path" fill="#979797" fill-rule="nonzero"></path>
+        <path d="M10.8188182,11.611 L11.9551366,11.026 C10.8841366,9.982 10.4251366,8.92 10.4251366,7.498 C10.4251366,6.076 10.8841366,5.014 11.9551366,3.97 L10.8188182,3.385 C9.64881818,4.42 8.91981818,5.806 8.91981818,7.498 C8.91981818,9.19 9.64881818,10.576 10.8188182,11.611 Z" id="Path" fill="#979797" fill-rule="nonzero" transform="translate(10.437477, 7.498000) scale(-1, 1) translate(-10.437477, -7.498000) "></path>
+    </g>
+</svg>

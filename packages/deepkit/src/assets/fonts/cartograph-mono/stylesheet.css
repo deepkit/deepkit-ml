@@ -1,0 +1,128 @@
+@font-face {
+    font-family: 'Cartograph Mono CF Extra';
+    src: url('CartographMonoCF-ExtraBold.woff2') format('woff2'),
+        url('CartographMonoCF-ExtraBold.woff') format('woff');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cartograph Mono CF Demi';
+    src: url('CartographMonoCF-DemiBoldItalic.woff2') format('woff2'),
+        url('CartographMonoCF-DemiBoldItalic.woff') format('woff');
+    font-weight: 600;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Cartograph Mono CF';
+    src: url('CartographMonoCF-Thin.woff2') format('woff2'),
+        url('CartographMonoCF-Thin.woff') format('woff');
+    font-weight: 100;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cartograph Mono CF';
+    src: url('CartographMonoCF-HeavyItalic.woff2') format('woff2'),
+        url('CartographMonoCF-HeavyItalic.woff') format('woff');
+    font-weight: 900;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Cartograph Mono CF';
+    src: url('CartographMonoCF-LightItalic.woff2') format('woff2'),
+        url('CartographMonoCF-LightItalic.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Cartograph Mono CF';
+    src: url('CartographMonoCF-Light.woff2') format('woff2'),
+        url('CartographMonoCF-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cartograph Mono CF';
+    src: url('CartographMonoCF-Bold.woff2') format('woff2'),
+        url('CartographMonoCF-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cartograph Mono CF';
+    src: url('CartographMonoCF-Regular.woff2') format('woff2'),
+        url('CartographMonoCF-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cartograph Mono CF Extra';
+    src: url('CartographMonoCF-ExtraBoldItalic.woff2') format('woff2'),
+        url('CartographMonoCF-ExtraBoldItalic.woff') format('woff');
+    font-weight: 800;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Cartograph Mono CF Demi';
+    src: url('CartographMonoCF-DemiBold.woff2') format('woff2'),
+        url('CartographMonoCF-DemiBold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cartograph Mono CF';
+    src: url('CartographMonoCF-Heavy.woff2') format('woff2'),
+        url('CartographMonoCF-Heavy.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cartograph Mono CF';
+    src: url('CartographMonoCF-Medium.woff2') format('woff2'),
+        url('CartographMonoCF-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cartograph Mono CF';
+    src: url('CartographMonoCF-BoldItalic.woff2') format('woff2'),
+        url('CartographMonoCF-BoldItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Cartograph Mono CF';
+    src: url('CartographMonoCF-ThinItalic.woff2') format('woff2'),
+        url('CartographMonoCF-ThinItalic.woff') format('woff');
+    font-weight: 100;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Cartograph Mono CF';
+    src: url('CartographMonoCF-MediumItalic.woff2') format('woff2'),
+        url('CartographMonoCF-MediumItalic.woff') format('woff');
+    font-weight: 500;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Cartograph Mono CF';
+    src: url('CartographMonoCF-RegularItalic.woff2') format('woff2'),
+        url('CartographMonoCF-RegularItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+}
+

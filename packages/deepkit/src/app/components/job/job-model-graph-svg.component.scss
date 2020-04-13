@@ -1,0 +1,101 @@
+:host {
+    dominant-baseline: hanging;
+    margin: auto;
+
+    --text: #ffffff;
+    --text-shape: #ffffff;
+    --text-small: #b2b2b2;
+    --bg: #232323cc;
+    //--bg-hover: rgba(31, 31, 31, 0.8);
+    --bg-selected: rgba(21, 21, 21, 0.8);
+
+    --activation: #944a2d;
+    --activation-hover: #b46725;
+    --activation-selected: #d26123;
+
+    --top-line: rgba(14, 14, 14, 0.27);
+
+    --rect-stroke: #151515;
+
+    ::ng-deep {
+        path {
+            fill: none;
+            stroke: #484848;
+            stroke-width: 1px;
+        }
+
+        text.label {
+            fill: var(--text);
+            font-size: 11px;
+            pointer-events: none;
+        }
+
+        rect.top-line {
+            pointer-events: none;
+            fill: var(--top-line);
+        }
+
+        rect.bg {
+            fill: var(--bg);
+            pointer-events: all;
+            stroke: #40404087;
+            stroke-width: 1px;
+
+            //&:hover {
+            //    fill: var(--bg-hover);
+            //}
+        }
+
+        .ui-icon {
+            fill: #979797;
+            pointer-events: none;
+            dominant-baseline: central;
+        }
+
+        .record {
+            pointer-events: all;
+        }
+
+        .selected rect.bg {
+            //fill: var(--bg-selected);
+            stroke: var(--dui-selection);
+        }
+
+        .decent {
+            opacity: 0.1;
+        }
+
+        //.selected text {
+        //    fill: white !important;
+        //}
+
+        rect.stroke {
+            fill: none;
+            stroke: #505050;
+            stroke-width: 1px;
+            pointer-events: none;
+        }
+
+        image {
+            pointer-events: none;
+        }
+    }
+}
+
+:host-context(.light) {
+    --text: #222;
+    --text-shape: #222;
+    --text-small: #222;
+    --bg: rgba(206, 206, 206, 0.4);
+    --rect-stroke: #9e9e9e;
+
+    --bg-small: #3444524f;
+    --bg-hover: rgba(181, 198, 214, 0.5);
+    --bg-selected: #b5c6d6;
+
+    --top-line: rgba(107, 107, 107, 0.16);
+
+    --activation: #b84c1e;
+    --activation-hover: #db5b28;
+    --activation-selected: #ff692d;
+}

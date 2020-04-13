@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+    server:
+        image: registry.gitlab.com/deepkit/deepkit-project/server
+        volumes:
+          - ./docker-deepkit-files/:/root/.deepkit/server-files
+        ports:
+          - 8961:8960
+
+    mongo:
+        image: mongo
+#        ports:
+#          - 27017:27017
+
+    redis:
+        image: redis

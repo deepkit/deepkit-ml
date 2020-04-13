@@ -1,0 +1,37 @@
+:host {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+
+.channels {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    padding-right: 22px;
+    display: grid;
+    grid-gap: 20px 20px;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-auto-rows: 300px;
+    padding-bottom: 30px;
+
+    > div {
+        padding: 15px;
+        position: relative;
+        border: 1px solid var(--line-color-light);
+        background: #00000014;
+        border-radius: 2px;
+    }
+}
+
+:host-context(.light) {
+    .channels > div {
+        background: #00000003;
+    }
+}

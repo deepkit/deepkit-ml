@@ -1,0 +1,246 @@
+@import "scss/vars";
+@import "assets/source-code-pro/stylesheet.css";
+@import "assets/source-sans-pro/stylesheet.css";
+
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    box-sizing: border-box;
+}
+
+.video-js .vjs-tech:focus {
+    outline: 0;
+}
+
+html {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    font-family: 'Source Sans Pro', "Helvetica Neue", sans-serif;
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+    line-height: 150%;
+    text-align: center;
+    background-color: #f1f3f8;
+
+    overflow: auto;
+    overflow: overlay;
+    scrollbar-width: thin;
+
+    &::-webkit-scrollbar {
+        height: 11px;
+        width: 11px;
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(169, 173, 175, 0.77);
+        border-radius: 8px;
+        border: 2px solid rgba(0, 0, 0, 0.01);
+        background-clip: padding-box;
+
+        &:hover {
+            background: #727475;
+            border: 2px solid rgba(0, 0, 0, 0.01);
+            background-clip: padding-box;
+        }
+    }
+
+    --text-grey: #A1A1A1;
+}
+
+.text-grey {
+    color: var(--text-grey);
+}
+
+
+::selection {
+    background: $linkHover;
+    color: white;
+}
+
+h1 {
+    font-weight: 500;
+    font-size: 26px;
+    line-height: 36px;
+    letter-spacing: 1px;
+    padding: 0;
+    margin: 23px 0;
+}
+
+h2 {
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 24px;
+    letter-spacing: 1px;
+    margin: 15px 0;
+}
+
+h3 {
+    font-weight: 500;
+    margin: 10px 0;
+    font-size: 18px;
+    line-height: 24px;
+}
+
+h4 {
+    font-weight: 500;
+    margin: 10px 0;
+    font-size: 16px;
+    line-height: 22px;
+}
+
+hr {
+    height: 1px;
+    border: 0;
+    background: rgba(221, 221, 221, 0.42);
+    margin: 25px 0;
+}
+
+a, a:link {
+    color: $link;
+
+    &:hover {
+        color: $linkHover;
+        text-decoration: underline;
+    }
+}
+
+.wrapper {
+    max-width: 1040px;
+    margin: auto;
+    text-align: left;
+
+    &.small {
+        padding-right: 130px;
+        //max-width: 850px;
+    }
+
+    &.main {
+        padding: 20px 0;
+    }
+
+    &.text {
+        max-width: 750px;
+
+        p {
+            text-align: justify;
+        }
+
+        @media (max-width: 780px) {
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+    }
+
+    &:not(.text) {
+        @media (max-width: 1070px) {
+            margin-left: 15px;
+            margin-right: 15px;
+        }
+    }
+
+    //@include breakpoint($for-tablet) {
+    //    padding: 0 20px;
+    //}
+}
+
+.cc-message {
+    color: black;
+}
+
+.cc-revoke {
+    color: grey;
+}
+
+.content-area {
+    padding: 50px 0;
+}
+
+a, a:link {
+    color: $link;
+
+    &:hover {
+        color: $linkHover;
+    }
+}
+
+a.button {
+    background-image: linear-gradient(180deg, #D6D6D6 0%, #CACACA 100%);
+    border-radius: 2px;
+
+    display: inline-block;
+    line-height: 16px;
+    padding: 8px 25px;
+    font-size: 13px;
+    color: #161616;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    text-align: center;
+    margin: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+
+    &:first-child {
+        margin-left: 0;
+    }
+
+    &:hover {
+        background: #c1c1c1;
+        text-decoration: none;
+    }
+    &:active {
+        background: #adadad;
+    }
+}
+
+.doc-content {
+    letter-spacing: 0;
+    line-height: 24px;
+    text-align: left;
+
+    code:not([class*="language-"]) {
+        font-family: 'Source Code Pro', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+        padding: .1em .4em;
+        margin: 0;
+        font-size: 85%;
+        background-color: rgba(27, 31, 35, 0.06);
+        border-radius: 3px;
+    }
+
+    code[class*="language-"], pre[class*="language-"] {
+        font-size: 13px;
+        font-family: 'Source Code Pro', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    }
+
+    p, ol {
+        max-width: 700px;
+        text-align: justify;
+    }
+
+    img {
+        margin: auto;
+        max-width: 100%;
+        max-height: 800px;
+        border: 5px solid #323232;
+        border-radius: 5px;
+    }
+
+    h2 {
+        font-weight: 600;
+        font-size: 18px;
+        margin-top: 25px;
+        letter-spacing: 0;
+    }
+
+    h3 {
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: 0;
+        margin-top: 20px;
+    }
+}

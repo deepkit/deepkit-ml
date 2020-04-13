@@ -1,0 +1,40 @@
+:host {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    flex: 0;
+    margin: 10px 0;
+    margin-right: 12px;
+    flex-basis: 80px;
+
+    .text {
+        margin-top: 5px;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+    }
+}
+
+job-model-graph {
+    flex: 1;
+    margin-bottom: 12px;
+    height: 100%;
+}
+
+
+:host {
+    .header.live-recording:not(.live-selected) dk-history-bar ::ng-deep {
+        .line:not(.selected):last-child div {
+            opacity: 0.3;
+        }
+    }
+
+    .header.live-recording dk-history-bar ::ng-deep {
+        .line:last-child div {
+            background: var(--color-red);
+        }
+    }
+}

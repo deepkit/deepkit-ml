@@ -1,0 +1,68 @@
+:host {
+    display: flex;
+    height: 100%;
+
+    .left {
+        flex: 1;
+        display: flex;
+        margin-right: 15px;
+        plotly {
+            flex: 1;
+        }
+    }
+
+    .right {
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+
+        dui-button {
+
+        }
+
+        .parallel-selected-columns {
+            flex: 1;
+        }
+    }
+}
+
+.parallel-selected-columns {
+    .cdk-drag-placeholder {
+        opacity: 0;
+    }
+
+    .cdk-drag-animating {
+        transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    &.cdk-drop-list-dragging > div:not(.cdk-drag-placeholder) {
+        transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+}
+
+dui-list-item.parallel-column.cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 4px;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+dui-list-item.parallel-column {
+    margin-top: 5px;
+    display: flex;
+    padding-left: 2px;
+
+    dui-icon {
+        flex: 0;
+        margin-right: 5px;
+    }
+
+    dui-icon[name=garbage]:hover {
+        opacity: 0.7;
+    }
+
+    > div {
+        flex: 1;
+    }
+}

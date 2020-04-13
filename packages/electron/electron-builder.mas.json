@@ -1,0 +1,41 @@
+{
+  "productName": "Deepkit",
+  "appId": "ai.deepkit.app",
+  "icon": "assets/icons/docker-icon.icns",
+  "buildVersion": "5",
+  "mac": {
+    "type": "distribution",
+    "category": "public.app-category.developer-tools",
+    "hardenedRuntime": true,
+    "extendInfo": {
+      "ElectronTeamID": "MQF837S5D6",
+      "LSUIElement": 1
+    },
+    "darkModeSupport": true,
+    "entitlements": "entitlements/mac.plist",
+    "entitlementsInherit": "entitlements/mac.inherit.plist",
+    "provisioningProfile": "distribution.provisionprofile",
+    "target": [
+      "mas"
+    ]
+  },
+  "mas": {
+    "hardenedRuntime": false,
+    "entitlements": "entitlements/mas.plist",
+    "identity": "DeepKit UG haftungsbeschrnkt (MQF837S5D6)",
+    "entitlementsInherit": "entitlements/mas.inherit.plist",
+    "binaries": [
+      "app/deepkit-server/libs/mongod-darwin-x64"
+    ]
+  },
+  "asar": false,
+  "files": [
+    "embedded.provisionprofile",
+    "bin/**/*",
+    "index.js",
+    "deepkit/**/*",
+    "deepkit-cli/**/*",
+    "deepkit-server/**/*",
+    "build/linux/deepkit-cli-linux.tar.gz"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": false,
+    "importHelpers": true,
+    "outDir": "dist",
+    "moduleResolution": "node",
+    "rootDir": "./",
+    "strict": true,
+    "target": "es2018",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "typings",
+      "node_modules/@deepkit/core/typings"
+    ],
+    "types": [
+      "ndarray",
+      "@petamoriken/float16"
+    ]
+  },
+  "include": [
+    "src",
+    "typings/*",
+    "node_modules/@deepkit/core/index.ts",
+    "node_modules/@deepkit/core/src/**/*.ts",
+    "node_modules/@deepkit/core-node/index.ts",
+    "node_modules/@deepkit/core-node/src/**/*.ts",
+    "node_modules/@marcj/glut-client/src/**/*.ts",
+    "node_modules/@marcj/glut-core/src/**/*.ts"
+  ]
+}

@@ -1,0 +1,2 @@
+image: alpine
+command: echo hi!

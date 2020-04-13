@@ -1,0 +1,314 @@
+.container {
+    display: grid;
+    grid-gap: 20px 60px;
+    grid-template-columns: repeat(auto-fit, minmax(400px , 1fr));
+}
+
+.inspector {
+}
+
+.inspector-box {
+    text-align: left;
+
+    .header {
+        padding: 10px 0;
+    }
+
+    .separator {
+        padding: 10px;
+        border-top: 1px solid #aaa;
+        margin-top: 10px;
+    }
+
+    table.labels {
+        margin: 0 10px;
+    }
+
+    .commands {
+        color: var(--color-black3);
+        user-select: text;
+    }
+}
+
+.box-title {
+    background-color: rgba(249, 249, 249, 0.57);
+    color: #333;
+    margin-bottom: 15px;
+}
+
+//:host-context(.dark) {
+//    .inspector {
+//
+//        .separator {
+//            border-top: 1px solid #2b3031;
+//        }
+//
+//        .task-name {
+//            color: unset;
+//            background-color: #2b3031;
+//        }
+//    }
+//
+//    .inspector-box {
+//        background: #353b3c;
+//        box-shadow: 1px 1px 10px #292929;
+//    }
+//}
+
+.logs {
+    text-align: left;
+    resize: none;
+    overflow: auto;
+    white-space: pre;
+    font-family: Monospace;
+    font-size: 11px;
+    max-height: 80%;
+    //max-height: 350px;
+    user-select: text;
+    border: 1px solid var(--line-color-light);
+    border-radius: 2px;
+    padding: 12px;
+    background-color: var(--text-color-inverse);
+    margin-bottom: 30px;
+}
+
+.nodes-container {
+    text-align: center;
+    position: relative;
+    margin-top: 50px;
+}
+
+.instance-inspector {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.nodes {
+    position: relative;
+    display: inline-block;
+    transform-style: preserve-3d;
+    //transform: rotateZ(-30deg) rotateY(30deg) rotateX(42deg);
+    //transform: rotateZ(-30deg) rotateY(33deg) rotateX(33deg);
+    transform: rotateZ(-30deg) rotateY(28deg) rotateX(39deg);
+
+    //margin: -100px auto;
+
+    //background-color: white;
+    /* border: 1px solid silver; */
+    //box-shadow: 0 0 35px #e2e2e2;
+
+    svg {
+        position: absolute;
+        left: 0;
+        top: 0;
+        //border: 1px solid silver;
+        path {
+            fill: none;
+            stroke: var(--line-color-prominent);
+            stroke-width: 1px;
+        }
+    }
+}
+
+
+.node {
+    position: absolute;
+    width: 100px;
+    height: 50px;
+    //background-color: #eee;
+    //border: 1px solid rgba(15, 69, 92, 0.21);
+    font-size: 12px;
+    line-height: 16px;
+
+    > .label {
+        position: absolute;
+        bottom: -18px;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        text-align: center;
+
+        &.help {
+            color: var(--text-gray);
+            cursor: help;
+        }
+    }
+
+    > .left {
+        position: absolute;
+        right: calc(50% + 25px);
+        padding-right: 5px;
+        top: 8px;
+        text-align: right;
+        //color: #444;
+        font-size: 12px;
+    }
+}
+
+.edge {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    border: 1px solid red;
+}
+
+.cube {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    transform-style: preserve-3d;
+    transform: translateZ(25px) rotateX(-90deg);
+
+    //&:hover {
+    //    .cube__face {
+    //        background-color: rgba(14, 68, 92, 0.86);
+    //    }
+    //}
+}
+
+$width: 50px;
+
+.cube__face {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    color: white;
+    font-size: 12px;
+    background-color: rgba(14, 68, 92, 0.2);
+    line-height: 50px;
+    pointer-events: none;
+}
+
+$borderColor: #8f8f8f;
+//$borderColor: #648796;
+
+.cube__face--front {
+    transform: rotateY(0deg) translateZ($width/2);
+    border: 1px solid $borderColor;
+}
+
+.cube__face--right {
+    transform: rotateY(90deg) translateZ($width/2);
+}
+
+.cube__face--back {
+    transform: rotateY(180deg) translateZ($width/2);
+    border: 1px solid $borderColor;
+}
+
+.cube__face--left {
+    transform: rotateY(-90deg) translateZ($width/2);
+}
+
+.cube__face--top {
+    transform: rotateX(90deg) translateZ($width/2);
+    border-left: 1px solid $borderColor;
+    border-right: 1px solid $borderColor;
+}
+
+.cube__face--bottom {
+    transform: rotateX(-90deg) translateZ($width/2);
+    border-left: 1px solid $borderColor;
+    border-right: 1px solid $borderColor;
+}
+
+.he {
+    position: absolute;
+    transform-style: preserve-3d;
+    //left: 75px;
+    right: calc(50% - 25px);
+
+    --face-color: #9db0bc;
+
+    --width: 50px;
+    --height: 50px;
+    --z: 15px;
+
+    width: var(--width);
+    height: var(--height);
+
+    --z-instance: 0;
+    --z-offset: calc((var(--z) + 2px) * var(--z-instance));
+    transform: translateZ(var(--z-offset));
+
+    &:hover {
+        > div {
+            background-color: rgba(104, 123, 139, 1);
+        }
+    }
+
+    > div {
+        position: absolute;
+        background-color: var(--face-color);
+
+        //dark
+        //background-color: #464646;
+    }
+
+    &.help {
+        cursor: help;
+        > div {
+            opacity: 0.7;
+            //background-color: #d2d8dc;
+        }
+    }
+
+    &.selected,
+    &.selected:hover {
+        > div {
+            background-color: rgba(104, 123, 139, 1);
+        }
+    }
+
+    $borderColor: rgba(255, 255, 255, 0.80);
+    //dark
+    //$borderColor: rgb(180, 184, 187);
+
+    > .front {
+        width: var(--width);
+        height: var(--z);
+        transform-origin: bottom;
+        transform: rotateX(-90deg) translateZ(calc(var(--width) - var(--z)));
+        border-left: 1px solid $borderColor;
+    }
+
+    > .back {
+        width: var(--width);
+        height: var(--z);
+        transform-origin: top;
+        transform: rotateX(90deg) translateZ(0);
+
+    }
+
+    > .right {
+        height: var(--width);
+        width: var(--z);
+        transform-origin: right;
+        transform: rotateY(90deg) translateZ(calc(var(--width) - var(--z)));
+    }
+
+    > .left {
+        height: var(--width);
+        width: var(--z);
+        transform-origin: left;
+        transform: rotateY(-90deg);
+    }
+
+    > .top {
+        width: var(--width);
+        height: var(--height);
+        border-left: 1px solid $borderColor;
+        border-bottom: 1px solid $borderColor;
+        transform: rotateX(0deg) translateZ(var(--z));
+    }
+
+    .bottom {
+        width: var(--width);
+        height: var(--height);
+        transform: rotateX(180deg) translateZ(0);
+    }
+}
+
+:host-context(.dark) .he {
+    --face-color: #5c676e;
+}

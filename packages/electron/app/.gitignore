@@ -1,0 +1,4 @@
+*
+!package.dist.json
+!update-deps.js
+!.gitignore

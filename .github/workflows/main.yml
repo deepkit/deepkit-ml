@@ -1,0 +1,200 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - run: git fetch --prune --unshallow
+      - run: git fetch --tags
+      - run: echo "::set-env name=VERSION::`sh ./release-version.sh`"
+      - run: echo "::set-env name=VERSION_FILE_PATH::`sh ./release-version-file-path.sh`"
+      - run: |
+          if [ "${{runner.os}}" = "macOS" ]; then
+           echo ::set-env name=PLATFORM::darwin
+          fi
+          if [ "${{runner.os}}" = "Linux" ]; then
+           echo ::set-env name=PLATFORM::linux
+          fi
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: Cache ~/.npm
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Cache node_modules core
+        uses: actions/cache@v1
+        with:
+          path: packages/core/node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('packages/core/package-lock.json') }}
+      - name: Cache node_modules core-node
+        uses: actions/cache@v1
+        with:
+          path: packages/core-node/node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('packages/core-node/package-lock.json') }}
+
+      - name: Cache node_modules cli
+        uses: actions/cache@v1
+        with:
+          path: packages/cli/node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('packages/cli/package-lock.json') }}
+      - name: Cache node_modules server
+        uses: actions/cache@v1
+        with:
+          path: packages/server/node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('packages/server/package-lock.json') }}
+      - name: Cache node_modules deepkit
+        uses: actions/cache@v1
+        with:
+          path: packages/deepkit/node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('packages/deepkit/package-lock.json') }}
+      - name: Cache build
+        uses: actions/cache@v1
+        with:
+          path: build
+          key: build-${{env.VERSION}}
+
+      - name: Setup
+        run: npm install -g lerna@3.20.2 npm-local-development
+        shell: bash
+      - name: Lerna bootstrap
+        run: |
+          if [ ! -d packages/core/node_modules ] || [ ! -d packages/core-node/node_modules ] || [ ! -d packages/cli/node_modules ] || [ ! -d packages/deepkit/node_modules ] || [ ! -d packages/server/node_modules ] || [ ! -d packages/electron/node_modules ]; then
+            lerna bootstrap --nohoist \* --ignore @deepkit/website
+          fi
+          npm-local-development --no-watcher
+
+      - name: Build
+        run: |
+          mkdir -p build/cli
+          mkdir -p build/server
+          mkdir -p build/frontend
+
+          if [ ! -f build/cli/main.js ]; then
+              echo "build now build/cli"
+              cd packages/cli && npm run build && cd - && mv packages/cli/dist/main.js build/cli/
+          fi
+          if [ ! -f build/server/main.js ]; then
+              echo "build now build/server"
+              cd packages/server && npm run build && cd - && mv packages/server/dist/main.js build/server/
+          fi
+          if [ ! -f build/frontend/index.html ]; then
+              echo "build now build/frontend"
+              rm -rf build/frontend
+              cd packages/deepkit && npm run build && cd - && mv packages/deepkit/dist/deepkit build/frontend
+              rm build/frontend/emoji_apple_32.*.png
+              rm build/frontend/statistics.html
+          fi
+
+      - name: Package cli Linux
+        run: |
+          mkdir -p build/linux/cli/
+          cp packages/cli/package.json build/linux/cli/
+          cp build/cli/main.js build/linux/cli/
+          cd build/linux/cli/ && npm version ${{env.VERSION}} && cd -
+          if [ ! -d build/linux/cli/node_modules ]; then
+              cp packages/cli/package-lock.json build/linux/cli/
+              cd build/linux/cli/ && npm install --only=prod --unsafe --scripts-prepend-node-path && cd -
+              rm build/linux/cli/package-lock.json
+          fi
+          make build/linux/cli/bin
+
+          tar -C build/linux/cli -czf build/linux/deepkit-cli-linux.tar.gz .
+          rm -rf build/linux/cli
+
+      - name: Package server Linux
+        run: |
+          mkdir -p build/${{env.PLATFORM}}/server/
+          cp build/server/main.js build/${{env.PLATFORM}}/server/
+          cp packages/server/package.json build/${{env.PLATFORM}}/server/
+          cd build/${{env.PLATFORM}}/server/ && npm version ${{env.VERSION}} && cd -
+          if [ ! -d build/${{env.PLATFORM}}/server/node_modules ]; then
+              cp packages/server/package-lock.json build/${{env.PLATFORM}}/server/
+              cd build/${{env.PLATFORM}}/server/ && npm install --only=prod --unsafe --scripts-prepend-node-path && cd -
+              rm build/${{env.PLATFORM}}/server/package-lock.json
+          fi
+          make build/${{env.PLATFORM}}/server/libs
+          make build/${{env.PLATFORM}}/server/bin
+
+          cp -r build/frontend build/linux/server/frontend
+          mkdir -p build/linux/server/build/linux/
+          cp build/linux/deepkit-cli-linux.tar.gz build/linux/server/build/linux/deepkit-cli-linux.tar.gz
+
+      - name: Build app.deepkit.ai
+        if: runner.os == 'Linux' && success()
+        run: |
+          cp -r build/linux/server prebuild-server
+          docker build -t docker.pkg.github.com/deepit/deepkit/app:${{env.VERSION_FILE_PATH}} -f docker-build/app.Dockerfile .;
+
+          echo "${{secrets.GITHUB_TOKEN}}" | docker login docker.pkg.github.com --username \$GITHUB_ACTOR  --password-stdin
+          docker push docker.pkg.github.com/deepit/deepkit/app:${{env.VERSION_FILE_PATH}}
+          docker tag docker.pkg.github.com/deepit/deepkit/app:${{env.VERSION_FILE_PATH}} docker.pkg.github.com/deepit/deepkit/app:latest
+          docker push docker.pkg.github.com/deepit/deepkit/app:latest
+
+      - name: Deploy app.deepkit.ai
+        uses: appleboy/ssh-action@master
+        with:
+          host: marcjschmidt.de
+          username: deploy
+          password: ${{secrets.SSH_PW}}
+          script_stop: true
+          script: |
+            echo "${{secrets.GITHUB_TOKEN}}" | docker login docker.pkg.github.com --username \$GITHUB_ACTOR  --password-stdin
+            docker pull docker.pkg.github.com/deepit/deepkit/app:${{env.VERSION_FILE_PATH}}
+            docker stop deepkit-app || true;
+            docker rm -f deepkit-app || true;
+            docker run -d --name deepkit-app -v /root/deepkit/app.deepkit.ai-fs:/app/data/fs -v /root/deepkit/app.deepkit.ai-project-git:/app/data/project-git -v /root/deepkit/app.deepkit.ai-mongo:/app/data/mongo -e DEEPKIT_VERSION=${{env.VERSION}} --restart=unless-stopped --network nginx-proxy -e VIRTUAL_HOST=app.deepkit.ai -e VIRTUAL_PORT=80 -e LETSENCRYPT_HOST=app.deepkit.ai docker.pkg.github.com/deepit/deepkit/app:${{env.VERSION_FILE_PATH}};
+
+  website:
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - run: git fetch --prune --unshallow
+      - run: git fetch --tags
+      - run: echo "::set-env name=VERSION::`sh ./release-version.sh`"
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: Cache ~/.npm
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Setup
+        run: npm install -g lerna@3.20.2 npm-local-development @angular/cli@9
+        shell: bash
+      - name: Lerna bootstrap
+        run: lerna bootstrap --nohoist \* --ci --scope @deepkit/website
+      - name: Image build
+        run: |
+          echo "${{secrets.GITHUB_TOKEN}}" | docker login docker.pkg.github.com --username \$GITHUB_ACTOR  --password-stdin
+          COMMIT=$(git log -n 1 --pretty=format:%h packages/website)
+          VERSION=$(git describe --tag $COMMIT)
+
+          docker build -t docker.pkg.github.com/deepit/deepkit/website:latest -f docker-build/website.Dockerfile .;
+
+          docker push docker.pkg.github.com/deepit/deepkit/website:latest
+
+      - name: Deploy website
+        uses: appleboy/ssh-action@master
+        with:
+          host: marcjschmidt.de
+          username: deploy
+          password: ${{secrets.SSH_PW}}
+          script_stop: true
+          script: |
+            echo "${{secrets.GITHUB_TOKEN}}" | docker login docker.pkg.github.com --username \$GITHUB_ACTOR  --password-stdin
+            docker pull docker.pkg.github.com/deepit/deepkit/website:latest
+            docker rm -f deepkit-website || true;
+            docker rm -f next-deepkit-website || true;
+            docker run -d --name deepkit-website --restart=unless-stopped --network nginx-proxy -e CONTENTFUL_ACCESS_TOKEN="${{secrets.CONTENTFUL_ACCESS_TOKEN}}" -e VIRTUAL_HOST=deepkit.ai -e VIRTUAL_PORT=80 -e LETSENCRYPT_HOST=deepkit.ai docker.pkg.github.com/deepit/deepkit/website:latest;
+#            docker run -d --name next-deepkit-website --restart=unless-stopped --network nginx-proxy -e VIRTUAL_HOST=next.deepkit.ai -e VIRTUAL_PORT=80 -e LETSENCRYPT_HOST=next.deepkit.ai docker.pkg.github.com/deepit/deepkit/website:latest;

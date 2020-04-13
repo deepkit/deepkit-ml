@@ -1,0 +1,62 @@
+:host {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+:host ::ng-deep div.js-plotly-plot {
+    min-width: 200px;
+    min-height: 200px;
+}
+
+:host ::ng-deep svg text {
+    font-family: -apple-system, "SF Pro Text", "SF Pro", SFProText-Medium, "Roboto", "Helvetica Neue" !important;
+    text-shadow: none !important;
+}
+
+//:host ::ng-deep .infolayer text {
+//    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
+//}
+
+:host ::ng-deep svg text {
+    font-size: 10px !important;
+}
+
+:host ::ng-deep svg.main-svg {
+    background-color: transparent !important;
+}
+
+:host ::ng-deep svg .bg {
+    fill: transparent !important;
+}
+
+:host ::ng-deep svg .yaxislayer-above {
+    transform: translate(-4px, 0px);
+}
+
+:host ::ng-deep svg .xaxislayer-above text,
+:host ::ng-deep svg .yaxislayer-above text {
+    font-size: 10px !important;
+}
+
+:host-context(.dark) ::ng-deep svg text {
+    fill: white !important;
+}
+
+:host-context(.dark) ::ng-deep svg .xgrid,
+:host-context(.dark) ::ng-deep svg .ygrid {
+    stroke: rgba(146, 146, 146, 0.5) !important;
+}
+
+:host-context(.dark) ::ng-deep svg .js-line,
+:host-context(.dark) ::ng-deep svg .gridlayer > g {
+    transition: all 0.2s ease-in;
+}
+
+:host-context(.dark) ::ng-deep svg .hovertext > rect {
+    fill: black !important;
+}
+
+:host-context(.dark) ::ng-deep svg .hovertext > path {
+    stroke: black !important;
+}

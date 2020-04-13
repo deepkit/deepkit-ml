@@ -1,0 +1,227 @@
+<div class="wrapper main banner">
+    <h1>Pricing</h1>
+
+    <h3>
+        We make sure you can work efficiently with professional tools.
+    </h3>
+
+    <div>
+        <a class="button" href="mailto:sales@deepkit.ai">Contact us</a>
+    </div>
+
+    <p class="text-grey">
+        Paid licences will be available from March, 31th.
+    </p>
+</div>
+
+<div class="wrapper">
+    <div class="price-table">
+        <ng-template #labels>
+            Price<br/>
+            <br/>
+            <br/>
+            <br/>
+            Projects<br/>
+            Deepkit Team Server<br/>
+            <div class="text-grey">(on-premises)</div>
+            <br/>
+            Experiments<br/>
+            Concurrent experiments<br/>
+            <br/>
+            Connected cluster nodes<br/>
+            <br/>
+            <div class="text-grey">Deepkit Community Server</div>
+            Private projects<br/>
+            Storage<br/>
+            <br/>
+            Support<br/>
+        </ng-template>
+
+        <div class="labels">
+            <ng-container *ngTemplateOutlet="labels"></ng-container>
+        </div>
+
+        <div class="right">
+            <div class="boxes">
+                <div class="box">
+                    <div class="inline-labels">
+                        <ng-container *ngTemplateOutlet="labels"></ng-container>
+                    </div>
+                    <div class="box-inside">
+                        <h4>Free</h4>
+                        <div>
+                            $ 0<br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            10<br/>
+                            No<br/>
+                            <br/>
+                            <br/>
+                            500<br/>
+                            1<br/>
+                            <br/>
+                            1<br/>
+                            <br/>
+                            Yes<br/>
+                            0<br/>
+                            2 GB<br/>
+                            <br/>
+                            Public Slack<br/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box">
+                    <div class="inline-labels">
+                        <ng-container *ngTemplateOutlet="labels"></ng-container>
+                    </div>
+                    <div class="box-inside">
+                        <h4>Pro</h4>
+                        <div>
+                            $ 199<br/>
+                            <div class="text-grey">one time payment</div>
+                            <div class="text-grey">incl. updates 1 year</div>
+                            <br/>
+                            200<br/>
+                            No<br/>
+                            <br/>
+                            <br/>
+                            5.000<br/>
+                            5<br/>
+                            <br/>
+                            5<br/>
+                            <br/>
+                            Yes<br/>
+                            50<br/>
+                            20 GB<br/>
+                            <br/>
+                            Email/Public Slack<br/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box">
+                    <div class="inline-labels">
+                        <ng-container *ngTemplateOutlet="labels"></ng-container>
+                    </div>
+                    <div class="box-inside">
+                        <h4>Team</h4>
+                        <div>
+                            $ 199/user/month<br/>
+                            <div class="text-grey">from 2 users up to 10</div>
+                            <div class="text-grey">yearly payment</div>
+                            <br/>
+                            1.000<br/>
+                            Yes<br/>
+                            <br/>
+                            <br/>
+                            1.000.000<br/>
+                            60<br/>
+                            <br/>
+                            20<br/>
+                            <br/>
+                            Yes<br/>
+                            1.000<br/>
+                            500 GB<br/>
+                            <br/>
+                            Email/Phone/Slack<br/>
+                            3 days response time<br/>
+                            <br/>
+                            Free first time setup
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box">
+                    <div class="inline-labels">
+                        <ng-container *ngTemplateOutlet="labels"></ng-container>
+                    </div>
+                    <div class="box-inside">
+                        <h4>Enterprise</h4>
+                        <div>
+                            $ 499/user/month<br/>
+                            <div class="text-grey">starting at 5 users</div>
+                            <div class="text-grey">yearly payment</div>
+                            <br/>
+                            unlimited<br/>
+                            Yes<br/>
+                            <br/>
+                            <br/>
+                            unlimited<br/>
+                            unlimited<br/>
+                            <br/>
+                            unlimited<br/>
+                            <br/>
+                            No<br/>
+                            0<br/>
+                            0<br/>
+                            <br/>
+                            Email/Phone/Slack<br/>
+                            24h response time<br/>
+                            <br/>
+                            Free first time setup<br/>
+                            With custom SLA
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-inside" style="grid-column: span 2;">
+                    <h4>Open-source and academic</h4>
+                    <div>
+                        Open-source projects and academic users get the “Pro” license + Deepkit Team Server for
+                        free. Write us an email with your setup and we reply quickly.
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="legal">
+                There are no additional fees. If you connect your own computation server to Deepkit Desktop App or
+                to Deepkit Team Server you are obligated to pay all fees regarding that server or cloud provider.
+                Deepkit is
+                not responsible for any costs, damages or losses incurred.
+            </div>
+
+            <div class="legal text-grey">
+                <p>
+                    All licenses include the full feature set of Deepkit although limited in its quota. For all paid
+                    licenses
+                    you will receive a license key from Deepkit which you need to enter into either the Deepkit
+                    Desktop app or
+                    the Deepkit Team Server administration interface. To activate the license it is required that an
+                    active
+                    internet connection is available.
+                </p>
+
+                <p>
+                    For support requests regarding administration issues for the on-premises Deepkit Team Server
+                    it’s required
+                    to provide access to Deepkit employees via SSH. On-premises Deepkit Team Server is provided as
+                    Docker image
+                    and requires you to provide a functioning modern (not older than 1 year) Docker server engine on
+                    a Linux
+                    operating system.
+                </p>
+
+                <p>
+                    Cloud storage and its API is provided under fair-use princinples. Deepkit has the right to limit
+                    access at
+                    any time if you exceed certain quotas regarding traffic or load. Deepkit informs you before
+                    taking actions.
+                </p>
+
+                <p>
+                    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+                    BUT NOT
+                    LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+                    NONINFRINGEMENT. IN NO
+                    EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                    LIABILITY, WHETHER IN
+                    AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

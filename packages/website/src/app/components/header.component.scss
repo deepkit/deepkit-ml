@@ -1,0 +1,93 @@
+@import "../../scss/vars";
+
+:host {
+    display: block;
+    background-color: #020607;
+    transition: all 0.2s ease-in;
+
+    img {
+        transition: all 0.2s ease-in;
+    }
+}
+
+:host.startpage {
+    padding: 23px 0;
+
+    img {
+        width: 30px;
+    }
+}
+
+:host:not(.startpage) {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    img {
+        width: 23px;
+    }
+}
+
+.wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    a, a:link {
+        font-size: 14px;
+        color: white;
+        letter-spacing: 1.5px;
+        text-decoration: none;
+        text-align: right;
+        margin-left: 35px;
+
+        &:hover {
+            color: $linkHover;
+        }
+
+        &:active {
+            color: $linkActive;
+        }
+
+        svg {
+            position: relative;
+            top: 4px;
+        }
+
+        &.active {
+            color: $linkActive;
+        }
+    }
+}
+
+:host.white {
+    #twitter-logo {
+        fill: $deepdark;
+    }
+}
+
+@media(max-width: 450px) {
+    .wrapper {
+        display: block;
+        text-align: center;
+    }
+
+    #twitter-logo {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+    }
+
+    nav {
+        margin-top: 15px;
+        justify-content: space-between;
+
+        a, a:link {
+            margin: auto;
+        }
+    }
+}

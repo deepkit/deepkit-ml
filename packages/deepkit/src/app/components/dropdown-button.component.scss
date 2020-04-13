@@ -1,0 +1,47 @@
+.dropdown {
+    display: none;
+}
+
+:host {
+    position: relative;
+    display: inline-block;
+
+    button {
+        margin: 0;
+        padding-right: (15px + 18px);
+    }
+}
+
+:host.small {
+    vertical-align: middle;
+    height: 18px;
+
+    button, .arrow {
+        vertical-align: top;
+        height: 18px;
+        line-height: 16px;
+        font-size: 11px;
+    }
+
+    button {
+        padding-left: 9px;
+    }
+}
+
+.arrow {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border: 1px solid silver;
+    background: #F8F6F6;
+    width: 18px;
+    text-align: center;
+    line-height: 26px;
+
+    &:hover {
+        background: #f0eeee;
+    }
+}

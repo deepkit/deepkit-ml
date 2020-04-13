@@ -1,0 +1,97 @@
+
+image: python:3.7.0-alpine3.8
+build:
+- pwd && ls -al
+- pip install -r requirements.txt
+
+env:
+- PATH
+
+build_files:
+- requirements.txt
+
+parameters:
+    lr: 50
+    optimizer: sgd
+    training:
+        epochs: 100
+        samples: 10
+
+command: python model.py {{training.epochs}} {{training.samples}} {{notexisting}}
+
+tasks:
+    prepare_data:
+        image: python:3.7.0-alpine3.8
+        install_files: [requirements.txt]
+        env:
+        - PATH=mowla
+
+        resources:
+            memory: 6
+
+        command: python prepare_data.py
+        output:
+        - ./output-data
+
+    params:
+        replicate: 2
+        resources:
+            cpu: 1
+        command: python params.py
+        depends_on: [prepare_data]
+
+    workers:
+        replicate: 2
+        resources:
+            cpu: 2
+
+        command: python worker.py
+        depends_on: [prepare_data]
+
+    tests:
+        command: python run-tests.py
+        depends_on: [workers, params]
+
+    deploy:
+        command: python deploy.py
+        depends_on: [tests]
+
+
+
+#stages:
+#    prepare_data:
+#        image: python:3.7.0-alpine3.8
+#        install_files: [requirements.txt]
+#        env:
+#        - PATH=mowla
+#
+#        resources:
+#            cpu: all
+#            memory: 6
+#        command: python prepare_data.py
+#        output:
+#        - ./output-data
+#
+#    train:
+#        tasks:
+#            parameters:
+#                count: 2
+#                resources:
+#                    cpu: 1
+#
+#                command: python params.py
+#
+#            workers:
+#                count: 2
+#                resources:
+#                    cpu: 2
+#
+#                command: python worker.py
+#
+#    tests:
+#        resources:
+#            cpu: all
+#        command: python run-tests.py
+#
+#    deploy:
+#        command: python deploy.py

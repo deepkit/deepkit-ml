@@ -1,0 +1,10 @@
+declare module 'highlight.js/lib/languages/typescript';
+declare module 'highlight.js/lib/languages/javascript';
+declare module 'highlight.js/lib/languages/python';
+declare module 'highlight.js/lib/languages/xml';
+declare module 'highlight.js/lib/languages/sql';
+declare module 'highlight.js/lib/languages/r';
+declare module 'highlight.js/lib/languages/yaml';
+declare module 'highlight.js/lib/languages/json';
+declare module 'highlight.js/lib/languages/bash';
+declare module 'highlight.js/lib/languages/shell';

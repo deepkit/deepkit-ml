@@ -1,0 +1,11 @@
+:host {
+    display: block;
+    min-height: 100%;
+
+    transition: all 0.2s ease-in;
+
+    &.dark {
+        color: white;
+        background-color: #020607;
+    }
+}

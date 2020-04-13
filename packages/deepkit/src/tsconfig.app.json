@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.run.json",
+  "compilerOptions": {
+    "outDir": "../out-tsc/app",
+    "baseUrl": "./",
+    "module": "commonjs",
+    "importHelpers": true,
+    "downlevelIteration": true
+  },
+  "exclude": [
+    "test.ts",
+    "**/*.spec.ts"
+  ]
+}

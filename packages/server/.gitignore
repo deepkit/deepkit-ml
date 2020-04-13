@@ -1,0 +1,5 @@
+./dist
+
+data/files
+data/mongo/*
+!data/mongo/.gitkeep

@@ -1,0 +1,28 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "outDir": "./dist",
+    "sourceMap": true,
+    "strict": true,
+    "declaration": true,
+    "module": "commonjs",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "preserveSymlinks": true,
+    "esModuleInterop": true,
+    "target": "es2018",
+    "typeRoots": [
+      "node_modules/@types",
+      "typings"
+    ],
+    "mapRoot": "src/",
+    "types": [
+      "reflect-metadata",
+      "rxjs"
+    ],
+    "lib": [
+      "es2017",
+      "dom"
+    ]
+  }
+}

@@ -1,0 +1,90 @@
+:host {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+
+$sidebarWidth: 320px;
+
+.left {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: $sidebarWidth;
+    bottom: 0;
+
+    padding: 20px;
+
+    --text-gray: #565656;
+    background-color: var(--background-semi-transparent);
+
+    job-status {
+        font-size: 13px;
+        font-weight: 500;
+        text-transform: uppercase;
+        padding-top: 3px;
+    }
+}
+
+:host-context(.dark) .left {
+    --text-gray: #b5b5b5;
+}
+
+table.hardware-utilisation {
+    width: 100%;
+}
+
+.right {
+    position: absolute;
+    //padding-top: 14px;
+    //padding-left: 25px;
+    top: 0;
+    left: $sidebarWidth;
+    right: 0;
+    bottom: 0;
+    background-color: var(--dui-window-content-bg);
+    border-left: 1px solid var(--line-sidebar);
+    overflow: hidden;
+}
+
+.right-tabs {
+}
+
+.right-content {
+    position: absolute;
+    top: 50px;
+    overflow: hidden;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    &.scroll {
+        overflow: auto;
+    }
+}
+
+.docker-layout {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+
+    > * {
+        margin: 15px;
+    }
+}
+
+.logs {
+    text-align: left;
+    resize: none;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: Monospace;
+    font-size: 11px;
+    //max-height: 350px;
+    user-select: text;
+    padding: 12px;
+}

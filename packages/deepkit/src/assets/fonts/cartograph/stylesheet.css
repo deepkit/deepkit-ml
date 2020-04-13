@@ -1,0 +1,112 @@
+@font-face {
+    font-family: 'Cartograph Sans CF';
+    src: url('CartographSansCF-Regular.woff2') format('woff2'),
+        url('CartographSansCF-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cartograph Sans CF';
+    src: url('CartographSansCF-Bold.woff2') format('woff2'),
+        url('CartographSansCF-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cartograph Sans CF';
+    src: url('CartographSansCF-Medium.woff2') format('woff2'),
+        url('CartographSansCF-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cartograph Sans CF';
+    src: url('CartographSansCF-ThinItalic.woff2') format('woff2'),
+        url('CartographSansCF-ThinItalic.woff') format('woff');
+    font-weight: 100;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Cartograph Sans CF';
+    src: url('CartographSansCF-Thin.woff2') format('woff2'),
+        url('CartographSansCF-Thin.woff') format('woff');
+    font-weight: 100;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cartograph Sans CF';
+    src: url('CartographSansCF-BoldItalic.woff2') format('woff2'),
+        url('CartographSansCF-BoldItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Cartograph Sans CF';
+    src: url('CartographSansCF-Heavy.woff2') format('woff2'),
+        url('CartographSansCF-Heavy.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cartograph Sans CF';
+    src: url('CartographSansCF-LightItalic.woff2') format('woff2'),
+        url('CartographSansCF-LightItalic.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Cartograph Sans CF Extra';
+    src: url('CartographSansCF-ExtraBold.woff2') format('woff2'),
+        url('CartographSansCF-ExtraBold.woff') format('woff');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cartograph Sans CF';
+    src: url('CartographSansCF-HeavyItalic.woff2') format('woff2'),
+        url('CartographSansCF-HeavyItalic.woff') format('woff');
+    font-weight: 900;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Cartograph Sans CF';
+    src: url('CartographSansCF-Light.woff2') format('woff2'),
+        url('CartographSansCF-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cartograph Sans CF Extra';
+    src: url('CartographSansCF-ExtraBoldItalic.woff2') format('woff2'),
+        url('CartographSansCF-ExtraBoldItalic.woff') format('woff');
+    font-weight: 800;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Cartograph Sans CF';
+    src: url('CartographSansCF-RegularItalic.woff2') format('woff2'),
+        url('CartographSansCF-RegularItalic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Cartograph Sans CF';
+    src: url('CartographSansCF-MediumItalic.woff2') format('woff2'),
+        url('CartographSansCF-MediumItalic.woff') format('woff');
+    font-weight: 500;
+    font-style: italic;
+}
+

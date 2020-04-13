@@ -1,0 +1,2 @@
+image: python:3.7.0-alpine3.8
+command: python model.py

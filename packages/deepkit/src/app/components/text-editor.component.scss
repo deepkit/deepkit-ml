@@ -1,0 +1,25 @@
+:host {
+    display: block;
+}
+
+.ql-snow .ql-editor pre.ql-syntax {
+    background-color: #292828;
+}
+
+:host-context(.light):not(.transparent) ::ng-deep .ql-editor {
+    background: white;
+    border: 1px solid #bdbdbd;
+}
+
+:host-context(.dark):not(.transparent) ::ng-deep .ql-editor {
+    background-image: linear-gradient(-180deg, #3D3D3D 0%, #414141 10%, #414141 100%);
+    border-top: 1px solid #565656;
+    border-bottom: 1px solid #565656;
+    border-left: 1px solid #484848 ;
+    border-right: 1px solid #484848;
+}
+
+:host.view-only ::ng-deep .ql-editor {
+    user-select: text;
+    padding: 0;
+}

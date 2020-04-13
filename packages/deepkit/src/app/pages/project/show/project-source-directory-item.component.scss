@@ -1,0 +1,73 @@
+:host {
+    display: block;
+}
+
+.file {
+    padding: 2px 12px;
+    padding-left: 3px;
+    padding-right: 0;
+    display: flex;
+
+    &:hover {
+        background-color: rgba(203, 203, 203, 0.3);
+    }
+
+    dui-icon {
+        flex: 0 0 17px;
+    }
+
+    .title {
+        flex: 1;
+        white-space: nowrap;
+        padding: 0 3px;
+    }
+
+    .icons {
+        width: 15px;
+        color: var(--text-gray);
+        font-size: 11px;
+    }
+
+    &.selected {
+        background-color: var(--color-selection);
+        color: white;
+        .icons {
+            color: white;
+        }
+    }
+}
+
+:host-context(.dark) {
+    .file {
+        &:not(.selected):hover {
+            background-color: rgba(221, 221, 221, 0.15);
+        }
+    }
+}
+
+.cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 4px;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.example-box:last-child {
+    border: none;
+}
+
+.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.example-custom-placeholder {
+    background: #ccc;
+    border: dotted 3px #999;
+    min-height: 60px;
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}

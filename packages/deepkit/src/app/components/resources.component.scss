@@ -1,0 +1,23 @@
+dui-input {
+    width: 50px;
+}
+
+:host > div {
+    display: flex;
+    height: 26px;
+    align-items: center;
+
+    .label {
+        width: 70px;
+    }
+
+    dui-select {
+        min-width: 79px;
+    }
+
+    .text-block, dui-select, dui-input {
+        display: inline-block;
+        margin: 0 2px;
+        white-space: nowrap;
+    }
+}

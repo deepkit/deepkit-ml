@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "strict": true,
+    "declaration": true,
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "preserveSymlinks": true,
+    "target": "es2018",
+    "lib": [
+      "es2017",
+      "dom"
+    ]
+  },
+  "include": [
+    "node_modules/@deepkit/core/**/*.ts"
+  ]
+}

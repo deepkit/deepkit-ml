@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+DIR=`dirname $0`
+
+# TS_NODE_FILES=true NODE_PRESERVE_SYMLINKS=1 TS_NODE_PROJECT=$DIR/../tsconfig.json TS_NODE_IGNORE=false $DIR/../node_modules/.bin/ts-node $DIR/../src/index.ts $@;
+NODE_PRESERVE_SYMLINKS=1 node --no-deprecation $DIR/run.js $@;

@@ -1,0 +1,148 @@
+:host {
+    display: block;
+}
+
+.banner {
+    text-align: center;
+
+    h1 {
+        margin-bottom: 40px;
+    }
+
+    h3 {
+        margin-bottom: 35px;
+    }
+
+    p {
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        margin-bottom: 30px;
+    }
+}
+
+.price-table {
+    display: flex;
+    justify-content: space-between;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.labels,
+.inline-labels {
+    flex: 0 0 210px;
+    font-size: 13px;
+    color: #C6C3C3;
+    letter-spacing: 0.7px;
+    line-height: 19px;
+    padding-top: 42px;
+}
+
+.inline-labels {
+    display: none;
+    flex: 0 0 180px;
+    font-size: 13px;
+    white-space: nowrap;
+    margin-right: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.legal {
+    max-width: 700px;
+    font-size: 15px;
+    margin-bottom: 30px;
+}
+
+.right {
+    flex: 1;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.boxes {
+    display: grid;
+    grid-gap: 22px;
+    grid-template-columns: minmax(150px, 1fr) minmax(150px, 1fr) minmax(150px, 1fr) minmax(150px, 1fr);
+    margin-bottom: 50px;
+    padding-bottom: 20px;
+
+    overflow: auto;
+    overflow: overlay;
+    scrollbar-width: thin;
+
+    &::-webkit-scrollbar {
+        height: 8px;
+        width: 8px;
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(169, 173, 175, 0.77);
+        border-radius: 8px;
+        border: 2px solid rgba(0, 0, 0, 0.01);
+        background-clip: padding-box;
+
+        &:hover {
+            background: #727475;
+            border: 2px solid rgba(0, 0, 0, 0.01);
+            background-clip: padding-box;
+        }
+    }
+}
+
+.box {
+}
+
+.box-inside {
+    background: #0d0f14;
+    box-shadow: 0 2px 0 0 rgba(255,102,42,0.56);
+    border-radius: 3px;
+    padding: 10px;
+    padding-bottom: 50px;
+    height: 100%;
+    color: #C6C3C3;
+
+    .inline-labels {
+        display: none;
+    }
+
+    h4 {
+        margin-top: 2px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        line-height: 16px;
+        font-weight: 600;
+        color: #FF662A;
+    }
+
+    div {
+        font-size: 13px;
+        letter-spacing: 0.7px;
+        line-height: 19px;
+        margin: 0;
+        padding: 0;
+    }
+}
+
+@media(max-width: 700px) {
+    .labels {
+        display: none;
+    }
+
+    .boxes {
+        display: block;
+
+        .box {
+            display: flex;
+            margin-bottom: 50px;
+
+            .inline-labels {
+                display: block;
+            }
+
+            .box-inside {
+                flex: 1;
+            }
+        }
+    }
+}

@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "commonjs",
+    "baseUrl": ".",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "downlevelIteration": true,
+    "target": "es2017",
+    "esModuleInterop": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "node_modules/@deepkit/core/typings"
+    ],
+    "types": [
+      "node",
+      "ndarray",
+      "@petamoriken/float16"
+    ],
+    "lib": [
+      "es2017",
+      "es2016",
+      "dom"
+    ],
+    "paths": {
+      "@deepkit/core": ["../core/src"],
+      "@deepkit/core-node": ["../core-node/src"]
+    }
+  },
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "name": "deepkit",
+  "main": "dist/main.js",
+  "version": "2020.1.5",
+  "description": "Deepkit application to manage, track, and debug deep learning/machine learning experiments and models.",
+  "author": "Deepkit UG (limited) <info@deepkit.ai>",
+  "license": "closed",
+  "private": true,
+  "sideEffects": false,
+  "scripts": {
+    "build": "webpack-cli --mode development --config webpack.config.js",
+    "electron:watch": "webpack-cli --mode development --watch --progress --config webpack.config.js",
+    "electron:start": "electron . --app --dev",
+    "electron:local": "npm run build:prod && electron .",
+    "electron:linux": "npm run build:prod && npx electron-builder build --linux",
+    "electron:windows": "npm run build:prod && npx electron-builder build --windows",
+    "electron:mac": "npm run build:prod && electron-packager . Deepkit --overwrite"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.6",
+    "@babel/preset-env": "^7.1.6",
+    "@types/fs-extra": "^5.0.2",
+    "babel-loader": "^8.0.4",
+    "electron": "^8.1.1",
+    "electron-packager": "^14.2.1",
+    "electron-reload": "^1.5.0",
+    "electron-notarize": "^0.2.1",
+    "electron-updater": "^4.2.5",
+    "execa": "^2.0.3",
+    "reflect-metadata": "^0.1.13",
+    "ts-loader": "^5.3.0",
+    "typescript": "^3.3.3333",
+    "webpack": "^4.26.0",
+    "webpack-cli": "^3.1.2",
+    "electron-builder": "^22.4.1",
+    "webpack-visualizer-plugin": "^0.1.11",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3"
+  },
+  "dependencies": {},
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest"
+    },
+    "testMatch": [
+      "**/tests/**/*.+(ts|tsx|js)"
+    ],
+    "setupTestFrameworkScriptFile": "jest-extended"
+  }
+}

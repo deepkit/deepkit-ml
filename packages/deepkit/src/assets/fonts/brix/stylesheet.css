@@ -1,0 +1,96 @@
+@font-face {
+    font-family: 'Brix Sans';
+    src: url('BrixSansBlack-Italic.woff2') format('woff2'),
+        url('BrixSansBlack-Italic.woff') format('woff');
+    font-weight: 900;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Brix Sans';
+    src: url('BrixSansRegular.woff2') format('woff2'),
+        url('BrixSansRegular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Brix Sans';
+    src: url('BrixSansMedium-Italic.woff2') format('woff2'),
+        url('BrixSansMedium-Italic.woff') format('woff');
+    font-weight: 500;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Brix Sans';
+    src: url('BrixSansMedium.woff2') format('woff2'),
+        url('BrixSansMedium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Brix Sans';
+    src: url('BrixSansExtraLight.woff2') format('woff2'),
+        url('BrixSansExtraLight.woff') format('woff');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Brix Sans';
+    src: url('BrixSansLight-Italic.woff2') format('woff2'),
+        url('BrixSansLight-Italic.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Brix Sans';
+    src: url('BrixSansExtraLight-Italic.woff2') format('woff2'),
+        url('BrixSansExtraLight-Italic.woff') format('woff');
+    font-weight: 200;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Brix Sans';
+    src: url('BrixSansRegular-Italic.woff2') format('woff2'),
+        url('BrixSansRegular-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Brix Sans';
+    src: url('BrixSansBold-Italic.woff2') format('woff2'),
+        url('BrixSansBold-Italic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Brix Sans';
+    src: url('BrixSansLight.woff2') format('woff2'),
+        url('BrixSansLight.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Brix Sans';
+    src: url('BrixSansBlack.woff2') format('woff2'),
+        url('BrixSansBlack.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Brix Sans';
+    src: url('BrixSansBold.woff2') format('woff2'),
+        url('BrixSansBold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+

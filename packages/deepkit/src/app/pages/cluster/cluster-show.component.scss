@@ -1,0 +1,219 @@
+:host {
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0;
+    left: 0;
+    bottom: 0;
+}
+
+.top-overview {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 200px;
+    left: 0;
+    padding: 14px;
+    background-color: var(--dui-window-content-bg);
+    border-bottom: 1px solid var(--line-color-light);
+}
+
+.grid {
+    display: flex;
+
+    > div {
+        flex: 1;
+    }
+
+    > div:first-child {
+        flex: 0 0 300px;
+        margin-right: 40px;
+    }
+}
+
+table.hardware-utilisation {
+    td:last-child {
+        width: 110px;
+    }
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: 1000;
+    }
+}
+
+@keyframes dash-up {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+svg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    //border: 1px solid silver;
+    path {
+        fill: none;
+        stroke: var(--line-color-prominent);
+        stroke-width: 1px;
+        transition: all 0.3s ease-in;
+    }
+
+    path.down {
+        stroke: var(--color-black1);
+        //stroke: rgba(255, 0, 0, 0.71);
+        stroke-dasharray: 5;
+        animation: dash 180s linear infinite;
+    }
+
+    path.up {
+        stroke: var(--color-black1);
+        //stroke: rgba(0, 128, 0, 0.71);
+        stroke-dasharray: 5;
+        stroke-dashoffset: 1000;
+        animation: dash-up 180s linear infinite;
+    }
+}
+
+.list {
+    position: absolute;
+    height: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    min-height: 50px;
+    border-top: 1px solid var(--line-color-light);
+}
+
+dui-table {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
+
+.graph {
+    position: absolute;
+    right: 0;
+    top: 200px;
+    left: 0;
+    bottom: 0;
+    overflow: auto;
+}
+
+.graph-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100%;
+    min-width: 100%;
+    padding: 10px 0;
+}
+
+.graph-top-info {
+    position: absolute;
+    left: 15px;
+    top: 155px;
+    width: 300px;
+    max-width: 100%;
+    font-size: 11px;
+}
+
+.graph-right {
+    position: absolute;
+    top: 200px;
+    right: 0;
+    bottom: 0;
+    width: 220px;
+    font-size: 11px;
+    border-left: 1px solid var(--line-color-light);
+    background-color: var(--background-semi-transparent);
+}
+
+.node {
+    position: absolute;
+    //width: 100px;
+    //height: 75px;
+    font-size: 12px;
+    line-height: 16px;
+    transition: all 0.3s ease-in;
+
+    &.cluster-node {
+        //background-color: grey;
+        transform: translateY(27px);
+        background-color: rgba(255, 255, 255, 0.12);
+        border: 1px solid #3a3a3a38;
+    }
+
+    &.cluster-node.selected {
+        background-color: rgba(255, 255, 255, 0.25);
+        transform: translateY(0px);
+    }
+
+    .connection-info {
+        transform: translateY(-6px);
+        position: absolute;
+        left: -105px;
+        width: 100px;
+        height: 45px;
+        text-align: right;
+        top: 3px;
+        font-size: 9px;
+        color: var(--color-green);
+        transition: all 0.3s ease-in;
+    }
+
+    &.selected &.multiple-nodes .connection-info {
+        transform: translateY(-16px);
+        left: -370px;
+    }
+
+    .connection-info-right {
+        position: absolute;
+        right: -105px;
+        width: 100px;
+        text-align: left;
+        top: -5px;
+        font-size: 9px;
+        color: var(--color-green);
+    }
+
+    .title {
+        font-weight: 500;
+    }
+
+    .number {
+        display: inline-block;
+        position: relative;
+        top: -1px;
+        left: -1px;
+        border: 1px solid var(--line-color);
+        padding: 2px;
+        margin-right: 3px;
+    }
+
+    .desc {
+        font-size: 11px;
+        padding: 1px 2px;
+    }
+}
+
+:host-context(.dark) .node.cluster-node {
+    border: 1px solid #b5b5b554;
+}
+
+.small-bar {
+    height: 5px;
+    margin: 2px 0;
+    background-color: rgba(255, 255, 255, 0.2);
+
+    .active {
+        height: 5px;
+        width: 0;
+        background-color: rgba(255, 255, 255, 0.36);
+        transition: width 0.2s linear;
+    }
+}

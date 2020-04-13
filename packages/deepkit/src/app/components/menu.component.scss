@@ -1,0 +1,19 @@
+.menu {
+    min-width: 100px;
+    text-align: right;
+    background-color: white;
+    padding: 5px 0;
+    //border: 1px solid #bfbfbf;
+
+    ::ng-deep a, button {
+        text-decoration: none;
+        color: #333;
+        display: block;
+        padding: 12px 14px;
+        line-height: 16px;
+
+        &:hover {
+            background-color: #ddd;
+        }
+    }
+}

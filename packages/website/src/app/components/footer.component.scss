@@ -1,0 +1,66 @@
+@import "../../scss/vars";
+
+:host {
+    display: block;
+    background-color: #f0f3f8;
+    color: black;
+    padding: 25px 0;
+}
+
+.wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.left {
+    display: flex;
+    align-items: center;
+}
+
+.copyright {
+    margin-left: 15px;
+    font-size: 11px;
+    color: #4b4c4e;
+    letter-spacing: 1px;
+    text-align: center;
+    line-height: 14px;
+    width: 150px;
+}
+
+.navi {
+    margin-left: auto;
+    text-align: right;
+
+    a, a:link {
+        font-weight: 500;
+        font-size: 14px;
+        color: #171b1e;
+        letter-spacing: 1px;
+        text-align: right;
+        text-decoration: none;
+        margin-left: 35px;
+
+        &:hover {
+            color: $linkHover;
+        }
+    }
+}
+
+@media(max-width: 450px) {
+    .wrapper, .left, .navi {
+        display: block;
+        text-align: center;
+    }
+
+    .navi {
+        margin-top: 15px;
+        a, a:link {
+            margin-left: 15px;
+        }
+    }
+
+    .copyright {
+        margin: auto;
+    }
+}

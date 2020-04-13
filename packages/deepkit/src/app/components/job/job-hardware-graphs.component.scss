@@ -1,0 +1,31 @@
+:host {
+    display: grid;
+    grid-gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+
+    & > div {
+        //flex: 1 1 140px;
+        //min-width: 130px;
+        //max-width: 160px;
+        text-align: center;
+
+        .value {
+            font-size: 11px;
+            margin-top: 6px;
+        }
+
+        .title {
+            margin-top: 2px;
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+    }
+}
+
+:host-context(.dark) ::ng-deep svg.main-svg .trace g.lines path {
+    stroke: white !important;
+}
+
+:host-context(.dark) ::ng-deep svg.main-svg .trace:nth-child(2n) g.lines path {
+    stroke: var(--color-orange) !important;
+}
