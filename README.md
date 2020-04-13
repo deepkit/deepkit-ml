@@ -4,38 +4,46 @@
  <img src="https://raw.githubusercontent.com/deepkit/deepkit/master/assets/logo-white.png" />
 </p>
 
-Deepkit is an open-source platform and desktop application to execute, track, and debug machine learning experiments. The integrated server management tools
-enables to execute experiments on any Linux server by just entering their SSH credentials. 
+Deepkit is an open-source platform and cross-platform desktop application to execute, track, and debug modern machine learning experiments.
+With integrated server management tool to execute experiments on any Linux server with a simple click or cli command. 
+
+[Download](https://deepkit.ai/download) - 
+[Live Demo](https://app.deepkit.ai/public/marcj/deepkit-python-sdk?experimentView%5Bfilter%5D%5Blist%5D=0b3e5215-289b-48b3-8108-284337766eb2) -
+[Example Python](https://github.com/deepkit/deepkit-python-sdk/tree/master/examples)
 
 ## Features
 
 - Experiment execution using uniform experiment definition
 - Execute experiments locally or in the cloud, seamlessly
-- Pipelining (to increase execution time and reduce hardware costs)
+- Pipeline support to increase execution time and reduce hardware costs
 - Layer debugger for Keras2 and Pytorch
 - Automatic source code versioning
 - Experiment artifacts (aka output: weights, snapshots, etc)
 - Experiment execution via Docker container with auto-build
-- Server job scheduling with resource assignment (and NVIDIA Docker GPU support)
+- Server job scheduling with resource limitation and assignment (and NVIDIA Docker GPU support)
 - Real-time experiment tracking: Log metrics, text, images, numpy arrays, and more
 - [Python SDK](https://github.com/deepkit/deepkit-python-sdk)
-- Project management: Issue tracker, Kanban board, notes
-- Real-time desktop (and web) app with analytical tools to manage experiments
+- Project management: Issue tracker, Kanban board, and notes
+- Real-time desktop (and web) app with analytical tools to monitor and organize experiments
 - Centralized server for teams
-- Free community server at https://app.deepkit.ai to share your experiments with thr world
+- Free community server at https://app.deepkit.ai to share your experiments with the world
 
 ## Development
 
 Deepkit is written entirely in Typescript and consists of following main packages:
 
-- cli: command line interface tools
-- app: The desktop and web app interface
-- server: The server component that stores all the data using the filesystem and mongodb
+- packages/cli: command line interface tools
+- packages/deepkit: The GUI, desktop and web app interface
+- packages/server: The server component that stores all the data using the filesystem and mongodb
+- packages/website: The website as SSR Angular 9 SPA app
+- packages/core: Common models, functions, services
+- packages/core-node: Common models, functions, services for node environment
+- packages/electron: The electron bootstrapper for the GUI
 
 Following open-source packages have been created for Deepkit that wouldn't exist otherwise and were absolutely necessary:
 
 - [Marshal.ts](https://github.com/marcj/marshal.ts) - The fastest universal Typescript data serializer and validator
-- [Glut.ts](https://github.com/marcj/glut.ts) - A real-time server framework with entity/file abstraction based on ReactJS
+- [Glut.ts](https://github.com/marcj/glut.ts) - A reactive real-time server framework with distributed entity/file abstraction and syncing based on ReactJS
 - [angular-desktop-ui](https://github.com/marcj/angular-desktop-ui) - A GUI library for native-like GUI widget based on Angular 9+
 
 ### Development app
