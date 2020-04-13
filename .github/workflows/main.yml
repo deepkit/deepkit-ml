@@ -132,12 +132,12 @@ jobs:
         if: runner.os == 'Linux' && success()
         run: |
           cp -r build/linux/server prebuild-server
-          docker build -t docker.pkg.github.com/deepit/deepkit/app:${{env.VERSION_FILE_PATH}} -f docker-build/app.Dockerfile .;
+          docker build -t docker.pkg.github.com/deepkit/deepkit/app:${{env.VERSION_FILE_PATH}} -f docker-build/app.Dockerfile .;
 
           echo "${{secrets.GITHUB_TOKEN}}" | docker login docker.pkg.github.com --username \$GITHUB_ACTOR  --password-stdin
-          docker push docker.pkg.github.com/deepit/deepkit/app:${{env.VERSION_FILE_PATH}}
-          docker tag docker.pkg.github.com/deepit/deepkit/app:${{env.VERSION_FILE_PATH}} docker.pkg.github.com/deepit/deepkit/app:latest
-          docker push docker.pkg.github.com/deepit/deepkit/app:latest
+          docker push docker.pkg.github.com/deepkit/deepkit/app:${{env.VERSION_FILE_PATH}}
+          docker tag docker.pkg.github.com/deepkit/deepkit/app:${{env.VERSION_FILE_PATH}} docker.pkg.github.com/deepkit/deepkit/app:latest
+          docker push docker.pkg.github.com/deepkit/deepkit/app:latest
 
       - name: Deploy app.deepkit.ai
         uses: appleboy/ssh-action@master
@@ -148,10 +148,10 @@ jobs:
           script_stop: true
           script: |
             echo "${{secrets.GITHUB_TOKEN}}" | docker login docker.pkg.github.com --username \$GITHUB_ACTOR  --password-stdin
-            docker pull docker.pkg.github.com/deepit/deepkit/app:${{env.VERSION_FILE_PATH}}
+            docker pull docker.pkg.github.com/deepkit/deepkit/app:${{env.VERSION_FILE_PATH}}
             docker stop deepkit-app || true;
             docker rm -f deepkit-app || true;
-            docker run -d --name deepkit-app -v /root/deepkit/app.deepkit.ai-fs:/app/data/fs -v /root/deepkit/app.deepkit.ai-project-git:/app/data/project-git -v /root/deepkit/app.deepkit.ai-mongo:/app/data/mongo -e DEEPKIT_VERSION=${{env.VERSION}} --restart=unless-stopped --network nginx-proxy -e VIRTUAL_HOST=app.deepkit.ai -e VIRTUAL_PORT=80 -e LETSENCRYPT_HOST=app.deepkit.ai docker.pkg.github.com/deepit/deepkit/app:${{env.VERSION_FILE_PATH}};
+            docker run -d --name deepkit-app -v /root/deepkit/app.deepkit.ai-fs:/app/data/fs -v /root/deepkit/app.deepkit.ai-project-git:/app/data/project-git -v /root/deepkit/app.deepkit.ai-mongo:/app/data/mongo -e DEEPKIT_VERSION=${{env.VERSION}} --restart=unless-stopped --network nginx-proxy -e VIRTUAL_HOST=app.deepkit.ai -e VIRTUAL_PORT=80 -e LETSENCRYPT_HOST=app.deepkit.ai docker.pkg.github.com/deepkit/deepkit/app:${{env.VERSION_FILE_PATH}};
 
   website:
     runs-on: [ubuntu-latest]
@@ -180,9 +180,9 @@ jobs:
           COMMIT=$(git log -n 1 --pretty=format:%h packages/website)
           VERSION=$(git describe --tag $COMMIT)
 
-          docker build -t docker.pkg.github.com/deepit/deepkit/website:latest -f docker-build/website.Dockerfile .;
+          docker build -t docker.pkg.github.com/deepkit/deepkit/website:latest -f docker-build/website.Dockerfile .;
 
-          docker push docker.pkg.github.com/deepit/deepkit/website:latest
+          docker push docker.pkg.github.com/deepkit/deepkit/website:latest
 
       - name: Deploy website
         uses: appleboy/ssh-action@master
@@ -193,8 +193,8 @@ jobs:
           script_stop: true
           script: |
             echo "${{secrets.GITHUB_TOKEN}}" | docker login docker.pkg.github.com --username \$GITHUB_ACTOR  --password-stdin
-            docker pull docker.pkg.github.com/deepit/deepkit/website:latest
+            docker pull docker.pkg.github.com/deepkit/deepkit/website:latest
             docker rm -f deepkit-website || true;
             docker rm -f next-deepkit-website || true;
-            docker run -d --name deepkit-website --restart=unless-stopped --network nginx-proxy -e CONTENTFUL_ACCESS_TOKEN="${{secrets.CONTENTFUL_ACCESS_TOKEN}}" -e VIRTUAL_HOST=deepkit.ai -e VIRTUAL_PORT=80 -e LETSENCRYPT_HOST=deepkit.ai docker.pkg.github.com/deepit/deepkit/website:latest;
-#            docker run -d --name next-deepkit-website --restart=unless-stopped --network nginx-proxy -e VIRTUAL_HOST=next.deepkit.ai -e VIRTUAL_PORT=80 -e LETSENCRYPT_HOST=next.deepkit.ai docker.pkg.github.com/deepit/deepkit/website:latest;
+            docker run -d --name deepkit-website --restart=unless-stopped --network nginx-proxy -e CONTENTFUL_ACCESS_TOKEN="${{secrets.CONTENTFUL_ACCESS_TOKEN}}" -e VIRTUAL_HOST=deepkit.ai -e VIRTUAL_PORT=80 -e LETSENCRYPT_HOST=deepkit.ai docker.pkg.github.com/deepkit/deepkit/website:latest;
+#            docker run -d --name next-deepkit-website --restart=unless-stopped --network nginx-proxy -e VIRTUAL_HOST=next.deepkit.ai -e VIRTUAL_PORT=80 -e LETSENCRYPT_HOST=next.deepkit.ai docker.pkg.github.com/deepkit/deepkit/website:latest;
