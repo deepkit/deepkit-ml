@@ -20,12 +20,13 @@ With integrated server management tool to execute experiments on any Linux serve
 - Automatic source code versioning
 - Experiment artifacts (aka output: weights, snapshots, etc)
 - Experiment execution via Docker container with auto-build
+- Experiment comparison: Side by side, file diff, metrics diff
 - Server job scheduling with resource limitation and assignment (and NVIDIA Docker GPU support)
 - Real-time experiment tracking: Log metrics, text, images, numpy arrays, and more
 - [Python SDK](https://github.com/deepkit/deepkit-python-sdk)
 - Project management: Issue tracker, Kanban board, and notes
 - Real-time desktop (and web) app with analytical tools to monitor and organize experiments
-- Centralized server for teams
+- Optional centralized server for teams
 - Free community server at https://app.deepkit.ai to share your experiments with the world
 
 ## Development
