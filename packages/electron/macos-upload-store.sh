@@ -14,9 +14,8 @@ RESULT_PATH="dist/mas/$APP.pkg"
 
 
 USER=apple@deepkit.ai
-PW='cgnu-wcrx-deku-msmj'
-#echo -n "Password: "
-#read -s PW
+echo -n "Password: "
+read -s PW
 
 # team ids
 xcrun altool --list-providers -u $USER -p $PW
