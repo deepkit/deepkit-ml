@@ -28,7 +28,7 @@ export class AuthCommand extends Command {
 
     public static flags = {
         port: flags.integer({char: 'p', description: 'Port', default: 443}),
-        ssl: flags.boolean({description: 'If SSL is enabled', default: true}),
+        ssl: flags.boolean({description: 'If SSL is enabled. Use --no-ssl to disable it', default: true, allowNo: true}),
         delete: flags.boolean({char: 'd', description: 'Deletes the account'}),
         token: flags.string({description: 'Manually assign a access token'}),
         overwrite: flags.boolean({description: 'Overwrite settings if account name is already used', default: false}),
