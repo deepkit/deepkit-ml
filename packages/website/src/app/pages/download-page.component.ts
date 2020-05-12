@@ -61,6 +61,10 @@ class Release {
                 </div>
             </div>
 
+            <div style="margin-top: 30px;">
+                <a class="button" target="_blank" href="https://github.com/deepkit/deepkit">Github Repository</a>
+            </div>
+
             <div class="doc-content changelog">
                 <h2>Changelog</h2>
                 <ng-container *ngIf="next as release">

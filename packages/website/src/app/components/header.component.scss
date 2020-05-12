@@ -53,7 +53,7 @@ nav {
             color: $linkActive;
         }
 
-        svg {
+        img, svg {
             position: relative;
             top: 4px;
         }
@@ -79,6 +79,12 @@ nav {
     #twitter-logo {
         position: absolute;
         right: 15px;
+        top: 15px;
+    }
+
+    #github-logo {
+        position: absolute;
+        right: 45px;
         top: 15px;
     }
 

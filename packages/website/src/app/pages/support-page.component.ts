@@ -27,12 +27,13 @@ import {HttpClient} from "@angular/common/http";
                     <h3>GitHub</h3>
 
                     <p class="sub">
-                        You can post issues regarding the Python SDK
-                        directly in our open-source Github repository.
+                        You can post issues regarding the Python SDK or Deepkit App
+                        in our open-source Github repositories.
                     </p>
 
                     <div class="buttons">
-                        <a class="button" target="_blank" href="https://github.com/deepkit/deepkit-python-sdk">Open Python SDK Github Repository</a>
+                        <a class="button" target="_blank" href="https://github.com/deepkit/deepkit">Deepkit</a>
+                        <a class="button" target="_blank" href="https://github.com/deepkit/deepkit-python-sdk">Python SDK</a>
                     </div>
                 </div>
             </div>
