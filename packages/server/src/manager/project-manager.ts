@@ -467,8 +467,10 @@ export class ProjectManager {
                  * /experiments/deepkit.yml
                  */
                 if (path.match(/([^\/]+\.|^|\/)deepkit\.yml$/)) {
-                    const config = await getJobConfig(path, reader);
-                    result.push(config);
+                    try {
+                        const config = await getJobConfig(path, reader);
+                        result.push(config);
+                    } catch (e) {}
                 }
             }
 
