@@ -409,7 +409,7 @@ export interface ProjectControllerInterface {
 
     addExperimentLabel(projectId: string, name: string): Promise<string>;
 
-    addExperimentList(projectId: string, name: string): Promise<string>;
+    addExperimentList(projectId: string, name: string): Promise<void>;
 
     changeExperimentListName(projectId: string, listId: string, name: string): Promise<void>;
 
