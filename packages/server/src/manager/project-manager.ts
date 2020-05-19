@@ -108,7 +108,10 @@ export class ProjectManager {
         }
     }
 
-    public async addOrReturnExperimentList(projectId: string, name: string, color?: string): Promise<string> {
+    public async addOrReturnExperimentList(projectId: string, name: string, color?: string): Promise<string | null> {
+        //default or Default is reserved and is used when value is null
+        if (name.toLowerCase() === 'default') return null;
+
         const lock = await this.exchange.lock('project/list/' + projectId);
         try {
             let lists: ProjectExperimentList[] = await this.database.query(Project).filter({id: projectId}).findOneField('experimentLists');

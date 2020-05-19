@@ -63,10 +63,10 @@ export class ProjectController implements ProjectControllerInterface {
 
     @Action()
     @Role(RoleType.regular)
-    async addExperimentList(projectId: string, name: string): Promise<string> {
+    async addExperimentList(projectId: string, name: string): Promise<void> {
         await this.permission.checkProjectAdminAccess(projectId);
 
-        return await this.projectManager.addOrReturnExperimentList(projectId, name);
+        await this.projectManager.addOrReturnExperimentList(projectId, name);
     }
 
     @Action()
