@@ -3,8 +3,8 @@
  * This file is part of Deepkit and licensed under GNU GPL v3. See the LICENSE file for more information.
  */
 
-import {Job, Project, QueueResult} from "@deepkit/core";
-import {JobQueueItem, ResourcesManager} from "../node/resources";
+import {Job, Project, QueueResult, JobQueueItem} from "@deepkit/core";
+import {ResourcesManager} from "../node/resources";
 import {Injectable} from "injection-js";
 import {Database} from "@marcj/marshal-mongo";
 import {Exchange, ExchangeDatabase} from "@marcj/glut-server";
@@ -73,7 +73,7 @@ export class JobManager {
             const item = new JobQueueItem(project.owner, job.id);
             item.task = task.name;
             item.priority = priority;
-            await this.database.add(item);
+            await this.exchangeDatabase.add(item);
         }
 
         await this.resourcesManager.assignJobs();

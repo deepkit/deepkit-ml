@@ -34,7 +34,7 @@ export class InstallNvidiaCommand extends Command {
             exec(`echo blacklist nouveau > /etc/modprobe.d/blacklist-nvidia-nouveau.conf`);
             exec(`echo options nouveau modeset=0 >> /etc/modprobe.d/blacklist-nvidia-nouveau.conf`);
             exec(`update-initramfs -u`);
-            console.log('Nouveau disabled. Please restart this server.');
+            exec(`rmmod nouveau || true`);
             return;
         }
 
@@ -54,7 +54,8 @@ export class InstallNvidiaCommand extends Command {
         exec(`curl -s -L https://nvidia.github.io/nvidia-docker/${distribution}/nvidia-docker.list | tee /etc/apt/sources.list.d/nvidia-docker.list`);
         exec('apt-get update');
         exec(env + ' apt-get install -y nvidia-container-toolkit');
-        exec(`systemctl restart docker`);
+        exec(`systemctl restart docker || true`);
+
         console.log('Done');
     }
 }

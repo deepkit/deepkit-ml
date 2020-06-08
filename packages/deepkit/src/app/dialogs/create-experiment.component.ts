@@ -260,6 +260,7 @@ export class CreateExperimentComponent implements OnInit, OnDestroy {
     }
 
     public findNodes(jobConfig: JobConfig, resources: JobResources): NodesFound {
+        let availableClusters = this.store.value.clusters!.all().slice(0);
         let availableNodes = this.store.value.nodes!.all().slice(0);
 
         availableNodes = availableNodes.filter(v => v.isConnected());
@@ -277,6 +278,9 @@ export class CreateExperimentComponent implements OnInit, OnDestroy {
             availableNodes = availableNodes.filter(v => {
                 return v.cluster === (this.clusterOrNode as Cluster).id;
             });
+            availableClusters = availableClusters.filter(v => {
+                return v.id === (this.clusterOrNode as Cluster).id;
+            });
         }
 
         if (this.clusterOrNode instanceof ClusterNode) {
@@ -285,11 +289,10 @@ export class CreateExperimentComponent implements OnInit, OnDestroy {
             } else {
                 availableNodes = [];
             }
+            availableClusters = [];
         }
 
-        const result = findNodesForQueueItem(availableNodes, 1, resources);
-
-        return result;
+        return findNodesForQueueItem(availableClusters, availableNodes, 1, resources);
     }
 
     public filterNodes(nodes: ClusterNode[], cluster: Cluster): ClusterNode[] {

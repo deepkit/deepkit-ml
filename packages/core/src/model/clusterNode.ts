@@ -11,6 +11,7 @@ import {
 } from '@marcj/marshal';
 import {JobAssignedResources, JobAssignedResourcesGpu, JobResources} from "./job";
 import {IdInterface} from "@marcj/glut-core";
+import {eachPair} from "@marcj/estdlib";
 
 export class NodeGpuResource {
     @f
@@ -23,7 +24,8 @@ export class NodeGpuResource {
     memory: number = 1;
 
     constructor(
-        @f.asName('uuid') public uuid: string,
+        //index starts at 0, and is later mapped to the actual UUID. 0 means first gpu found by gpuReader
+        @f.asName('index') public index: number,
         @f.asName('name') public name: string,
     ) {
     }
@@ -53,7 +55,8 @@ export class AssignedJobTaskInstance {
         @f.asName('taskName') public taskName: string,
         @f.asName('instance') public instance: number,
         @f.asName('assignedResources') public assignedResources: JobAssignedResources,
-    ) {}
+    ) {
+    }
 }
 
 @Entity('nodeResources')
@@ -70,6 +73,20 @@ export class NodeResources {
     @f.map(AssignedJobTaskInstance)
     assignedJobTaskInstances: { [taskInstanceId: string]: AssignedJobTaskInstance } = {};
 
+    public static create(cpus: number, memory: number, gpus: { name: string, memory: number }[]) {
+        const resources = new NodeResources();
+        resources.cpu.total = cpus;
+        resources.memory.total = memory;
+
+        for (const [id, gpu] of eachPair(gpus)) {
+            const nodeGpuResource = new NodeGpuResource(id, gpu.name);
+            nodeGpuResource.memory = gpu.memory;
+            resources.gpu.push(nodeGpuResource);
+        }
+
+        return resources;
+    }
+
     public free(jobId: string, taskName: string, instanceId: number) {
         const id = getJobTaskInstanceId(jobId, taskName, instanceId);
 
@@ -84,7 +101,7 @@ export class NodeResources {
         this.memory.reserved -= resources.memory;
 
         for (const assignedGpu of resources.gpus) {
-            const gpu = this.getGpu(assignedGpu.uuid);
+            const gpu = this.getGpu(assignedGpu.index);
             if (!gpu) continue;
             gpu.reserved = false;
         }
@@ -111,7 +128,7 @@ export class NodeResources {
         this.memory.reserved += a.memory;
 
         for (const gpu of a.gpus) {
-            const ourGpu = this.getGpu(gpu.uuid);
+            const ourGpu = this.getGpu(gpu.index);
             if (ourGpu) {
                 ourGpu.reserved = true;
             }
@@ -206,7 +223,6 @@ export class NodeResources {
             gpu = reserveGpu;
         }
 
-
         this.cpu.reserved += cpu;
         this.memory.reserved += memory;
 
@@ -223,7 +239,7 @@ export class NodeResources {
                 needGpus--;
                 ourGpu.reserved = true;
                 result.gpus.push(new JobAssignedResourcesGpu(
-                    ourGpu.uuid,
+                    ourGpu.index,
                     ourGpu.name,
                     ourGpu.memory,
                 ));
@@ -233,9 +249,9 @@ export class NodeResources {
         return result;
     }
 
-    public getGpu(uuid: string): NodeGpuResource | undefined {
+    public getGpu(id: number): NodeGpuResource | undefined {
         for (const gpu of this.gpu) {
-            if (gpu.uuid === uuid) {
+            if (gpu.index === id) {
                 return gpu;
             }
         }
@@ -514,6 +530,11 @@ export class NodeDockerInformation {
 }
 
 export enum ClusterNodeStatus {
+    //cloud auto-scaling status
+    creating = 100,
+    creating_failed = 110,
+
+    //regular status
     offline = 0,
     booting = 200,
     connecting = 300,
@@ -522,12 +543,6 @@ export enum ClusterNodeStatus {
     started = 600,
     ended = 700,
     error = 800,
-}
-
-export enum ClusterNodeType {
-    dedicated = 0,
-    google_cloud = 100,
-    aws = 200,
 }
 
 export class ClusterNodeDockerMount {
@@ -559,14 +574,32 @@ export class ClusterNode implements IdInterface {
     @f
     version: number = 1;
 
-    @f.enum(ClusterNodeType)
-    type: ClusterNodeType = ClusterNodeType.dedicated;
-
     @f.enum(ClusterNodeStatus)
     status: ClusterNodeStatus = ClusterNodeStatus.offline;
 
     /**
-     * The instance id for cloud nodes
+     * Whether this machine has been created dynamically (by a cloud cluster).
+     * Dynamic cluster nodes can not be edited.
+     */
+    @f
+    dynamic: boolean = false;
+
+    /**
+     * Cloud adapter used for managing this cluster node.
+     * We store it additionally here to Cluster.adapter, to make sure that created ClusterNodes
+     * are still manageable after changing Cluster.adapter.
+     */
+    @f
+    adapter: string = '';
+
+    /**
+     * The vendor specific instance type name, like for example 'vcpu-24_memory-72g_disk-80g_nvidia1080ti-6'
+     */
+    @f
+    instanceType: string = '';
+
+    /**
+     * The vendor specific instance id for cloud nodes
      */
     @f
     instanceId: string = '';
@@ -587,6 +620,12 @@ export class ClusterNode implements IdInterface {
      */
     @f.index()
     disabled: boolean = false;
+
+    /**
+     * Whether DEBUG=deepkit is enabled or not. Activates additional debug logging output.
+     */
+    @f
+    debugMode: boolean = false;
 
     @f.uuid().optional().index()
     owner!: string;
@@ -667,22 +706,6 @@ export class ClusterNode implements IdInterface {
         return this.dockerInfo && this.dockerInfo.ServerVersion;
     }
 
-    /**
-     * For dedicated this returns always true, which indicates that the machine actually exists
-     * For cloud server this is true when the machine is created and (automatically) booting.
-     */
-    isCreated(): boolean {
-        if (this.isCloud()) {
-            return !!this.instanceId;
-        }
-
-        return true;
-    }
-
-    isCloud(): boolean {
-        return this.type === ClusterNodeType.google_cloud || this.type === ClusterNodeType.aws;
-    }
-
     getJobStartConfig(): ClusterNodeJobStartConfig {
         return cloneClass(this.jobStartConfig);
     }
@@ -709,6 +732,35 @@ export class ClusterNode implements IdInterface {
 
     public getGpuMemoryUsageInPercent(): number {
         return Math.min(1, this.stats.getTotalGpuMemoryUsage() / this.stats.getGPUCoreCount());
+    }
+
+    /**
+     * Whether this node can be deleted due to being to long idle.
+     */
+    public isDeletable() {
+        if (!this.dynamic) return false;
+
+        if (!this.connectedTime) {
+            //it wasn't connected yet, so we don't delete it
+            return false;
+        }
+
+        if (this.resources.hasAssignedJobs()) {
+            //when there are still jobs assigned, we don't delete it
+            return false;
+        }
+
+        //todo, implement idle. We need a new property "endedLastJob" which stores when last job ended.
+        // if (!this.resources.hasAssignedJobs() && this.endedLastJob) {
+        // }
+
+        // const maxConnectionLostSeconds = 15 * 60; //15min
+        // if (this.ping && Date.now() - this.ping.getTime() > maxConnectionLostSeconds * 1000) {
+        //     //last ping was way too long ago, so delete it
+        //     return true;
+        // }
+
+        return false;
     }
 }
 

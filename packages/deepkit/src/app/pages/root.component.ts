@@ -9,7 +9,7 @@ import {observe, unsubscribe} from "../reactivate-change-detection";
 import {Collection, EntitySubject} from "@marcj/glut-core";
 import {Subscriptions} from "@marcj/estdlib-rxjs";
 import {ControllerClient} from "../providers/controller-client";
-import {Cluster, ClusterNode, FrontendUser, HomeAccountConfig, Job, Project, RoleType} from "@deepkit/core";
+import {Cluster, ClusterNode, FrontendUser, HomeAccountConfig, Job, JobTaskQueue, Project, RoleType} from "@deepkit/core";
 import {LocalStorage} from "ngx-store";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {getClassName, singleStack, sleep, stack} from "@marcj/estdlib";
@@ -24,6 +24,8 @@ import {UserSettingsDialogComponent} from "../dialogs/user-settings-dialog.compo
 import {NodeSettingsDialogComponent} from "../dialogs/node-settings-dialog.component";
 import {AppControllerInterface, createAnonSocketClient} from "@deepkit/core";
 import {InstallCliComponent} from "../dialogs/install-cli.component";
+import {JobQueueItem} from "@deepkit/core";
+import {JobQueueDialogComponent} from "../dialogs/job-queue-dialog.component";
 
 @Component({
     selector: 'dk-root',
@@ -197,7 +199,13 @@ import {InstallCliComponent} from "../dialogs/install-cli.component";
                         (ngModelChange)="storeLastSelected($event)"
                         [ngModel]="store.value.selected">
 
-                        <dui-list-title>Cluster</dui-list-title>
+                        <dui-list-title>
+                            Cluster
+
+                            <ng-container *ngIf="jobQueue|async as jobQueue">
+                                <div *ngIf="jobQueue.length" (click)="openJobQueue()" style="position: absolute; right: 5px; top: 5px;">{{jobQueue.length}}</div>
+                            </ng-container>
+                        </dui-list-title>
 
                         <ng-container *ngFor="let cluster of store.value.clusters|asyncRender">
                             <dui-list-item class="cluster" [value]="store.value.clusters.getEntitySubject(cluster)">
@@ -377,6 +385,9 @@ export class RootComponent implements OnDestroy, OnInit {
     @observe({unsubscribe: true})
     public activeJobs?: Collection<Job>;
 
+    @observe({unsubscribe: true})
+    public jobQueue?: Collection<JobQueueItem>;
+
     @unsubscribe()
     protected subs = new Subscriptions();
 
@@ -422,6 +433,12 @@ export class RootComponent implements OnDestroy, OnInit {
 
     public openAppSettings() {
         this.dialog.open(AppSettingsComponent);
+    }
+
+    public openJobQueue() {
+        this.dialog.open(JobQueueDialogComponent, {
+            jobQueue: this.jobQueue
+        });
     }
 
     public openServerAdministration() {
@@ -659,6 +676,7 @@ export class RootComponent implements OnDestroy, OnInit {
             this.subs.add = projects.subscribe((projects) => {
                 this.subscribeActiveExperiments(projects);
                 this.subscribeTotalExperiments(projects);
+                this.subscribeJobQueue();
                 this.cd.detectChanges();
             });
 
@@ -727,6 +745,10 @@ export class RootComponent implements OnDestroy, OnInit {
         //     this.activeExperiments[filters[item.index].project] = item.count;
         //     this.cd.detectChanges();
         // });
+    }
+
+    protected async subscribeJobQueue() {
+        this.jobQueue = await this.controllerClient.app().subscribeJobQueue();
     }
 
     protected subscribeTotalExperiments(projects: Project[]) {

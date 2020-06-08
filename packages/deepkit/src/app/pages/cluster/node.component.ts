@@ -33,7 +33,7 @@ import compareVersions = require("compare-versions");
             <dui-button-group *ngIf="node$">
                 <dui-button textured *ngIf="node$.value.isConnected()"
                             (click)="stop()">Stop</dui-button>
-                <dui-button textured *ngIf="!node$.value.isConnected() && node$.value.tunnelActive" (click)="closeTunnel()">Disconnect</dui-button>
+                <dui-button textured *ngIf="!node$.value.isConnected() && node$.value.tunnelActive" (click)="closeTunnel()">Disconnect tunnel</dui-button>
             </dui-button-group>
 
             <dui-button-group padding="none" float="right">
@@ -134,7 +134,7 @@ import compareVersions = require("compare-versions");
                     <div class="monospace">{{node.host || 'n/a'}}</div>
                 </div>
                 <div>
-                    <div>Connection established</div>
+                    <div>Tunnel active</div>
                     <div class="monospace">
                         {{node.tunnelActive ? 'Yes' : 'No'}}
                     </div>
@@ -592,9 +592,6 @@ export class NodeComponent implements OnDestroy, AfterViewInit, OnChanges {
             total += v;
         }, () => {
         }, () => {
-            if (total.indexOf('')) {
-
-            }
             this.dockerInstallationDone();
         });
 
@@ -613,11 +610,7 @@ export class NodeComponent implements OnDestroy, AfterViewInit, OnChanges {
         this.installNvidiaObservable = subject;
 
         let total = '';
-        observable.subscribe((v) => {
-            total += v;
-            subject.next(v);
-        }, () => {
-        }, async () => {
+        const done = async () => {
             this.nvidiaInstallationDone();
 
             setTimeout(() => {
@@ -630,8 +623,8 @@ export class NodeComponent implements OnDestroy, AfterViewInit, OnChanges {
 
             if (-1 !== total.indexOf('Nouveau kernel driver')) {
                 const a = await this.dialog.confirm(
-                    'Installation failed',
-                    'Should the Nouveau kernel driver be disabled now? You need to restart the system after that operation.\n' +
+                    'Installation failed due to Nouveau kernel',
+                    'Should the Nouveau kernel driver be disabled now?\n' +
                     'WARNING: If you use that system als Desktop workstation, you graphical system might not work after reboot.'
                 );
 
@@ -640,15 +633,19 @@ export class NodeComponent implements OnDestroy, AfterViewInit, OnChanges {
                         subject.next('Disabling Nouveau kernel driver ...');
                         await this.controllerClient.admin().clusterNodeDisableNouveau(this.node$!.id);
                         subject.next('Successfully disabled.');
-                        await this.dialog.alert('Nouveau driver disabled.', 'Please restart now this server.');
+                        await this.dialog.alert('Nouveau driver disabled.', 'Please try installing NVIDIA driver again.');
                     } catch (error) {
-                        subject.next('Error disabling Nouveau.');
                         await this.dialog.alert('Failed.', error.message);
                     }
                 }
             }
             subject.complete();
-        });
+        };
+
+        observable.subscribe((v) => {
+            total += v;
+            subject.next(v);
+        }, done, done);
 
         this.cd.detectChanges();
     }

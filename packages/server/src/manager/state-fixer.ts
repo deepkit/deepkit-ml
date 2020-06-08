@@ -6,11 +6,13 @@
 import {ClusterNode, ClusterNodeStatus, Job} from "@deepkit/core";
 import {Database} from "@marcj/marshal-mongo";
 import {Injectable} from "injection-js";
+import {Exchange} from "@marcj/glut-server";
 
 @Injectable()
 export class StateFixer {
     constructor(
         protected database: Database,
+        protected exchange: Exchange,
     ) {
     }
 

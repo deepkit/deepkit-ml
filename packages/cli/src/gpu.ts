@@ -107,6 +107,18 @@ export class GPUReader {
         return this.parsedData;
     }
 
+    public async getGpuUUIDsForIndex(indexes: number[]): Promise<string[]> {
+        const gpus = await this.getGpus();
+        const result: string[] = [];
+        for (const index of indexes) {
+            if (gpus[index]) {
+                result.push(gpus[index].uuid);
+            }
+        }
+
+        return result;
+    }
+
     public async getGpus(uuids?: string[]): Promise<GpuInformation[]> {
         const gpus: GpuInformation[] = [];
 

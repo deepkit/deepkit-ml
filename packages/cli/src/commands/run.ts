@@ -100,7 +100,7 @@ export class RunCommand extends Command {
         //     'Docker access', 'Please confirm the Docker socket file', 'Confirm Docker access', true);
         try {
             const starter = new Starter();
-            const config = flags.configBase64 ? plainToClass(JobConfig, JSON.parse(Buffer.from(flags.configBase64, 'base64').toString('utf8'))) : undefined;
+            const config = flags.configBase64 ? plainToClass(JobConfig, JSON.parse(Buffer.from(flags.configBase64 || '', 'base64').toString('utf8'))) : undefined;
             const exitCode = await starter.create(account, controller, flags, project, folderLink.path, config);
 
             process.exit(exitCode);

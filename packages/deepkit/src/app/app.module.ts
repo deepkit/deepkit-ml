@@ -86,11 +86,7 @@ import {ProgressArcComponent} from "./components/progress-arc.component";
 import {SectionHeaderComponent} from './components/section-header.component';
 import {JobHardwareGraphsComponent} from "./components/job/job-hardware-graphs.component";
 import {ProjectExperimentsComponent} from "./pages/project/show/project-experiments.component";
-import {
-    ProjectSourceComponent,
-    SourceDirectoryItemComponent,
-    SourceDirectoryListingComponent
-} from './pages/project/show/project-source.component';
+import {ProjectSourceComponent, SourceDirectoryItemComponent, SourceDirectoryListingComponent} from './pages/project/show/project-source.component';
 import {JobsGraphComponent, JobsGraphsComponent} from './components/jobs-graphs.component';
 import {ProjectNotesComponent} from "./pages/project/show/project-notes.component";
 import {ClusterShowComponent} from "./pages/cluster/cluster-show.component";
@@ -104,25 +100,15 @@ import {AdminComponent} from "./pages/admin/admin.component";
 import {ResourcesComponent} from "./components/resources.component";
 import {ChannelReader} from "./providers/channel-reader";
 import {AppSettingsComponent} from "./dialogs/app-settings.component";
-import {
-    JobGraphNodeDetailComponent,
-    JobModelGraphSnapshot,
-    SetXLinkHrefDirective
-} from "./components/job/job-model-graph.component";
-import {
-    JobDebuggerRecordDialogComponent,
-    JobShowDebuggerComponent
-} from './pages/project/job/job-show-debugger.component';
+import {JobGraphNodeDetailComponent, JobModelGraphSnapshot, SetXLinkHrefDirective} from "./components/job/job-model-graph.component";
+import {JobDebuggerRecordDialogComponent, JobShowDebuggerComponent} from './pages/project/job/job-show-debugger.component';
 import {TagComponent} from "./components/tag.component";
 import {AccountsComponent, AccountsTokenFieldComponent} from "./dialogs/accounts.component";
 import {Store, StoreModule} from '@ngrx/store';
 import {MainStore, MainStoreInterface, mainStoreReducer} from "./store";
 import {CreateProjectComponent} from "./dialogs/create-project.component";
 import {UserSettingsDialogComponent} from "./dialogs/user-settings-dialog.component";
-import {
-    OrganisationMemberAssignComponent,
-    OrganisationMemberListComponent
-} from "./pages/admin/organisation-member-list.component";
+import {OrganisationMemberAssignComponent, OrganisationMemberListComponent} from "./pages/admin/organisation-member-list.component";
 import {AdminCreateUserDialogComponent} from "./pages/admin/dialogs/create-user-dialog.component";
 import {ProjectListComponent} from "./pages/admin/project-list.component";
 import {RegisterAccountComponent} from './dialogs/register-account.component';
@@ -151,12 +137,10 @@ import {
 import {AppRoutingModule} from "./app-routing.module";
 import {PublicJobComponent} from "./pages/project/job/public-job.component";
 import {PublicProjectComponent} from "./pages/project/public-project.component";
-import {
-    JobShowInsightComponent,
-    JobShowInsightEntryComponent,
-    JobShowInsightsComponent, JobShwoInsightEntryNumpyComponent
-} from "./pages/project/job/job-show-insights.component";
+import {JobShowInsightComponent, JobShowInsightEntryComponent, JobShowInsightsComponent, JobShwoInsightEntryNumpyComponent} from "./pages/project/job/job-show-insights.component";
 import {InstallCliComponent} from "./dialogs/install-cli.component";
+import {ClusterSettingsDialogComponent} from "./dialogs/cluster-settings-dialog.component";
+import {JobQueueDialogComponent} from './dialogs/job-queue-dialog.component';
 
 @NgModule({
     declarations: [
@@ -237,6 +221,7 @@ import {InstallCliComponent} from "./dialogs/install-cli.component";
         ClusterShowComponent,
         CreateExperimentComponent,
         NodeSettingsDialogComponent,
+        ClusterSettingsDialogComponent,
         ShellCommandComponent,
         TermComponent,
         ProjectSettingsComponent,
@@ -282,6 +267,7 @@ import {InstallCliComponent} from "./dialogs/install-cli.component";
         JobHistogramComponent,
         PublicJobComponent,
         PublicProjectComponent,
+        JobQueueDialogComponent,
     ],
     entryComponents: [
         CreateOrganisationDialogComponent,
@@ -318,6 +304,7 @@ import {InstallCliComponent} from "./dialogs/install-cli.component";
         DuiSliderModule,
         DuiIndicatorModule,
         DuiButtonModule,
+        DuiTableModule,
     ],
     providers: [
         ControllerClient,

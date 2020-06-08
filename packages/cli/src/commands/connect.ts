@@ -23,19 +23,16 @@ import {
     NodePeerControllerInterface,
     NodeResources
 } from '@deepkit/core';
-import {Docker, dockerRunWithStdIn, onProcessExit, pidLocker, SpeedClient} from "@deepkit/core-node";
+import {Docker, pidLocker, SpeedClient} from "@deepkit/core-node";
 import os from "os";
-import {createReadStream, createWriteStream} from "fs";
-import {join} from "path";
+import {createWriteStream} from "fs";
 import {CpuHelper} from "../util/cpu";
-import {eachKey} from "@marcj/estdlib/dist/iterators";
-import {each, sleep} from "@marcj/estdlib";
+import {each, eachKey, eachPair, sleep} from "@marcj/estdlib";
 import {ClientController, NodeClient} from "../client-controller";
 import {AuthenticationError} from "@marcj/glut-client";
 import {Action, RemoteController} from "@marcj/glut-core";
 import {IConfig} from "@oclif/config";
 import systeminformation from "systeminformation";
-import {getDistPath} from "../helper";
 import {Subject} from "rxjs";
 import {GPUReader} from "../gpu";
 import {bufferTime} from "rxjs/operators";
@@ -531,8 +528,8 @@ export class ConnectCommand extends Command {
 
         const gpu = new GPUReader();
         const gpus = await gpu.getGpus();
-        for (const gpu of gpus) {
-            const gpuResource = new NodeGpuResource(gpu.uuid, gpu.name);
+        for (const [i, gpu] of eachPair(gpus)) {
+            const gpuResource = new NodeGpuResource(i, gpu.name);
             gpuResource.memory = gpu.memoryTotal;
             resources.gpu.push(gpuResource);
         }

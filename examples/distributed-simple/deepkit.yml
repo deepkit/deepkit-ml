@@ -8,12 +8,11 @@ docker:
 
 
 
-parameters:
+conffig:
     lr: 50
     optimizer: sgd
-    training:
-        epochs: 50
-        samples: 20
+    training_epochs: 50
+    training_samples: 20
 
 tasks:
     prepare_data:

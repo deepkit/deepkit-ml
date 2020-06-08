@@ -15,12 +15,13 @@ import {
     JobInsight,
     JobModelGraphInfo,
     JobModelSnapshot,
+    JobQueueItem,
     JobStatus,
     JobTaskStatus,
     Project,
     RoleType
 } from "@deepkit/core";
-import {JobQueueItem, ResourcesManager} from "../node/resources";
+import {ResourcesManager} from "../node/resources";
 import {ProjectManager} from "../manager/project-manager";
 import {PermissionManager} from "../manager/permission";
 import {Injectable} from "injection-js";
@@ -406,7 +407,7 @@ export class JobController implements JobControllerInterface {
     async getJobFiles(): Promise<DeepKitFile[]> {
         return await this.database.query(DeepKitFile).filter({
             job: this.jobSession.jobId,
-            jobType: {$or: [JobFileType.input, JobFileType.output]},
+            jobType: {$in: [JobFileType.input, JobFileType.output]},
         }).find();
     }
 
@@ -475,7 +476,7 @@ export class JobController implements JobControllerInterface {
                     const item = new JobQueueItem(project.owner, job.id);
                     item.task = task.name;
                     item.priority = job.config.priority;
-                    await this.database.add(item);
+                    await this.exchangeDatabase.add(item);
                 }
 
                 await this.resourcesManager.assignJobs();

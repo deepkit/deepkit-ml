@@ -7,12 +7,30 @@ import {ActivatedRoute, ActivatedRouteSnapshot, Event, NavigationEnd, Router} fr
 import {ClassType, eachPair, getClassName} from "@marcj/estdlib";
 import {Observable, Subscription} from "rxjs";
 import {filter} from "rxjs/operators";
-import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn} from "@angular/forms";
+import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from "@angular/forms";
 import {
     getClassSchema,
     ValidationError,
     jitValidateProperty
 } from "@marcj/marshal";
+
+/* Todo: Move this class to @super-hornet/angular */
+
+export function requiredIfValidator(predicate: () => boolean, validator: ValidatorFn) {
+    return (formControl: AbstractControl) => {
+        if (!formControl.parent) {
+            return null;
+        }
+        if (predicate()) {
+            return validator(formControl);
+        }
+        return null;
+    };
+}
+
+export interface TypedFormGroupConditionalValidators<T> {
+    [path: string]: (value: T) => ValidatorFn | ValidatorFn[] | void;
+}
 
 export class TypedFormGroup<T> extends FormGroup {
     public classType?: ClassType<T>;
@@ -48,7 +66,7 @@ export class TypedFormGroup<T> extends FormGroup {
             this.updateValueAndValidity();
         } else {
             //angular tries to set via _updateValue() `this.value` again using `{}`, which we simply ignore.
-            //except when its reetted
+            //except when its resetted
             if (v === undefined) {
                 this.typedValue = undefined;
                 this.updateValueAndValidity();
@@ -56,14 +74,42 @@ export class TypedFormGroup<T> extends FormGroup {
         }
     }
 
-    static fromEntityClass<T>(classType: ClassType<T>, validation?: ValidatorFn): TypedFormGroup<T> {
+    static fromEntityClass<T>(
+        classType: ClassType<T>,
+        validation?: (control: TypedFormGroup<T>) => ValidationErrors | null,
+        conditionalValidators?: TypedFormGroupConditionalValidators<T>,
+        path?: string,
+    ): TypedFormGroup<T> {
         const controls: { [name: string]: AbstractControl | TypedFormGroup<any> } = {};
 
         const entitySchema = getClassSchema(classType);
 
         for (const [name, prop] of entitySchema.classProperties.entries()) {
+            const propPath = path ? path + '.' + name : name;
+
             const validator = (control: AbstractControl): ValidationErrors | null => {
+                const rootFormGroup = control.root as TypedFormGroup<T>;
+
+                if (!rootFormGroup.value) {
+                    //not yet initialized
+                    return null;
+                }
+
                 const errors: ValidationError[] = [];
+                if (conditionalValidators && conditionalValidators[propPath]) {
+                    const res = conditionalValidators[propPath](rootFormGroup.value);
+                    if (res) {
+                        console.log('errors', propPath, rootFormGroup.value, res);
+                        const validators: ValidatorFn[] = Array.isArray(res) ? res : [res];
+                        for (const val of validators) {
+                            const errors = val(control);
+                            if (errors) {
+                                return errors;
+                            }
+                        }
+                    }
+                }
+
                 jitValidateProperty(entitySchema.getProperty(name))(control.value, name, errors);
                 if (errors.length) {
                     const res: ValidationErrors = {};
@@ -79,13 +125,13 @@ export class TypedFormGroup<T> extends FormGroup {
             };
 
             if (prop.type === 'class' && !prop.isArray && !prop.isMap) {
-                controls[name] = TypedFormGroup.fromEntityClass(prop.getResolvedClassType(), validator);
+                controls[name] = TypedFormGroup.fromEntityClass(prop.getResolvedClassType(), validator, conditionalValidators, propPath);
             } else {
                 controls[name] = new FormControl(undefined, validator);
             }
         }
 
-        const t = new TypedFormGroup<T>(controls, validation);
+        const t = new TypedFormGroup<T>(controls, validation as ValidatorFn);
         t.classType = classType;
         return t;
     }

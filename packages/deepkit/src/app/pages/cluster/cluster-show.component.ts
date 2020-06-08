@@ -12,39 +12,14 @@ import {ControllerClient} from "../../providers/controller-client";
 import {average} from "@marcj/estdlib";
 import {graphlib, layout, Node} from "dagre";
 import {Subscription} from "rxjs";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {detectChangesNextFrame, ExecutionState, ViewState} from "@marcj/angular-desktop-ui";
+import {FormGroup} from "@angular/forms";
+import {detectChangesNextFrame, DuiDialog, ViewState} from "@marcj/angular-desktop-ui";
 import {MainStore, selectEntity} from "../../store";
+import {ClusterSettingsDialogComponent} from "../../dialogs/cluster-settings-dialog.component";
 
 @Component({
     selector: 'dk-cluster-show',
     template: `
-        <dui-dialog #editClusterDialog (open)="loadClusterForm()">
-            <ng-container *dialogContainer>
-                <dui-form
-                    [formGroup]="clusterForm"
-                    #duiForm
-                    [disabled]="deleteExecutor.running"
-                    [submit]="saveCluster.bind(this)"
-                    (success)="editClusterDialog.close()"
-                >
-                    <dui-form-row label="Name">
-                        <dui-input focus formControlName="name"></dui-input>
-                    </dui-form-row>
-
-                    <dui-dialog-actions>
-                        <dui-button confirm="Really delete the whole cluster? All nodes will be stopped and deleted."
-                                    (click)="deleteExecutor.execute(); editClusterDialog.close()"
-                                    style="margin-right: auto;">Delete
-                        </dui-button>
-                        <dui-button closeDialog>Cancel</dui-button>
-                        <dui-button [submitForm]="duiForm" [disabled]="clusterForm.invalid || !clusterForm.dirty">Save
-                        </dui-button>
-                    </dui-dialog-actions>
-                </dui-form>
-            </ng-container>
-        </dui-dialog>
-
         <dui-window-toolbar *ngIf="viewState.attached">
             <dui-button-group padding="none" float="right">
                 <dui-button textured [highlighted]="showList" (click)="showList = !showList"
@@ -54,7 +29,7 @@ import {MainStore, selectEntity} from "../../store";
             </dui-button-group>
 
             <dui-button-group padding="none">
-                <dui-button textured (click)="editClusterDialog.show()" icon="settings"></dui-button>
+                <dui-button textured (click)="showEditCluster()" icon="settings"></dui-button>
             </dui-button-group>
         </dui-window-toolbar>
 
@@ -140,27 +115,27 @@ import {MainStore, selectEntity} from "../../store";
                             </td>
                         </tr>
                     </table>
-<!--                    <table class="hardware-utilisation">-->
-<!--                        <tr>-->
-<!--                            <td>Disk</td>-->
-<!--                            <td>{{util.diskSize | number:'.0-2'}} GB</td>-->
-<!--                            <td>-->
-<!--                                <dk-progress-bar [height]="12" [value]="util.diskUtil"></dk-progress-bar>-->
-<!--                            </td>-->
-<!--                        </tr>-->
-<!--                        <tr>-->
-<!--                            <td>Network</td>-->
-<!--                            <td colspan="2">-->
-<!--                                UP | DOWN-->
-<!--                            </td>-->
-<!--                        </tr>-->
-<!--                        <tr>-->
-<!--                            <td>Block</td>-->
-<!--                            <td colspan="2">-->
+                    <!--                    <table class="hardware-utilisation">-->
+                    <!--                        <tr>-->
+                    <!--                            <td>Disk</td>-->
+                    <!--                            <td>{{util.diskSize | number:'.0-2'}} GB</td>-->
+                    <!--                            <td>-->
+                    <!--                                <dk-progress-bar [height]="12" [value]="util.diskUtil"></dk-progress-bar>-->
+                    <!--                            </td>-->
+                    <!--                        </tr>-->
+                    <!--                        <tr>-->
+                    <!--                            <td>Network</td>-->
+                    <!--                            <td colspan="2">-->
+                    <!--                                UP | DOWN-->
+                    <!--                            </td>-->
+                    <!--                        </tr>-->
+                    <!--                        <tr>-->
+                    <!--                            <td>Block</td>-->
+                    <!--                            <td colspan="2">-->
 
-<!--                            </td>-->
-<!--                        </tr>-->
-<!--                    </table>-->
+                    <!--                            </td>-->
+                    <!--                        </tr>-->
+                    <!--                    </table>-->
                 </div>
             </div>
         </div>
@@ -480,8 +455,6 @@ export class ClusterShowComponent implements OnChanges {
     public graphNodes: Node[] = [];
     public graphEdges: { v: string, w: string, nodeLeft?: ClusterNode, nodeRight?: ClusterNode, path: (offset?: number) => string }[] = [];
 
-    deleteExecutor = new ExecutionState(this.cd, this.deleteCluster.bind(this));
-
     clusterForm?: FormGroup;
 
     graphRightShow = true;
@@ -513,6 +486,7 @@ export class ClusterShowComponent implements OnChanges {
     constructor(
         public cd: ChangeDetectorRef,
         protected controllerClient: ControllerClient,
+        private dialog: DuiDialog,
         public store: MainStore,
     ) {
         this.nodes = store.value.nodes!;
@@ -535,15 +509,17 @@ export class ClusterShowComponent implements OnChanges {
         }
     }
 
-    loadClusterForm() {
-        this.clusterForm = new FormGroup({
-            name: new FormControl(this.cluster$!.value.name, [Validators.required]),
-        });
-    }
-
     ngOnDestroy(): void {
         if (this.nodeSub) {
             this.nodeSub.unsubscribe();
+        }
+    }
+
+    showEditCluster() {
+        if (this.cluster$) {
+            this.dialog.open(ClusterSettingsDialogComponent, {
+                cluster: this.cluster$.value
+            });
         }
     }
 
@@ -552,10 +528,6 @@ export class ClusterShowComponent implements OnChanges {
             const peerId = getPeerId(node1, node2);
             return this.cluster$.value.peerSpeed[peerId];
         }
-    }
-
-    async deleteCluster() {
-        await this.controllerClient.admin().deleteCluster(this.cluster$!.id);
     }
 
     public trackGraphNode(index: number, node: Node) {
@@ -622,7 +594,7 @@ export class ClusterShowComponent implements OnChanges {
 
     public rebuildGraph() {
         let nodes = this.forThisCluster(this.store.value.nodes!.all()).slice(0);
-        this.nodeClusterCount = nodes.length
+        this.nodeClusterCount = nodes.length;
 
         const cacheKey = JSON.stringify([nodes.map(n => [n.id, n.priority]), this.selectedNode]);
         if (cacheKey === this.lastGraphCacheKey) {
@@ -836,11 +808,5 @@ export class ClusterShowComponent implements OnChanges {
             diskSize: disk.size,
             diskUtil: disk.used / disk.size,
         };
-    }
-
-    public async saveCluster() {
-        await this.controllerClient.app().patchCluster(this.cluster$!.id, {
-            name: this.clusterForm!.value.name,
-        });
     }
 }

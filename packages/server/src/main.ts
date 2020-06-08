@@ -12,6 +12,7 @@ import {ensureDirSync, removeSync} from "fs-extra";
 import execa from "execa";
 import {
     Cluster,
+    ClusterAdapter,
     ClusterNode,
     ClusterNodeCredentials,
     DeepKitFile,
@@ -21,6 +22,7 @@ import {
     isMASBuild,
     Job,
     JobModelSnapshot,
+    JobQueueItem,
     Note,
     OrganisationMember,
     Project,
@@ -29,21 +31,14 @@ import {
     UniversalComment,
     User
 } from "@deepkit/core";
-import {
-    Application,
-    ApplicationModule,
-    ApplicationServer,
-    ApplicationServerConfig,
-    ClientConnection,
-    Session,
-} from "@marcj/glut-server";
+import {Application, ApplicationModule, ApplicationServer, ApplicationServerConfig, ClientConnection, Session,} from "@marcj/glut-server";
 import {ClassType, sleep} from "@marcj/estdlib";
 import {FileType} from '@marcj/glut-core';
 import {Connection, Database} from '@marcj/marshal-mongo';
 import {setupHomeAccountIfNecessary} from "./home";
 import {AppController} from "./controller/app.controller";
 import {ServerAdminController} from "./controller/serverAdminController";
-import {JobQueueItem, ResourcesManager} from "./node/resources";
+import {ResourcesManager} from "./node/resources";
 import {NodeManager} from "./node/node.manager";
 import {PermissionManager} from "./manager/permission";
 import {Injector} from "injection-js";
@@ -71,6 +66,8 @@ import {PublicJobController} from "./controller/public-job.controller";
 import {ProjectController} from "./controller/project.controller";
 import {PermissionController} from "./controller/permission.controller";
 import {createServer} from "net";
+import {CloudAdapterRegistry} from "./cloud/adapter";
+import {GenesisAdapter, GenesisApi} from "./cloud/genesis";
 
 // const Promise = require('bluebird');
 // Promise.longStackTraces(); //needs to be disabled in production since it leaks memory
@@ -200,6 +197,9 @@ removeSync(exchangeSocketPath);
             PermissionManager,
             StateFixer,
             MachineManager,
+            CloudAdapterRegistry,
+            GenesisAdapter,
+            GenesisApi,
         ],
         notifyEntities: [
             Project,
@@ -213,6 +213,7 @@ removeSync(exchangeSocketPath);
             ProjectIssue,
             UniversalComment,
             JobModelSnapshot,
+            JobQueueItem,
         ],
         config: {
             workers: 1,
@@ -233,6 +234,7 @@ removeSync(exchangeSocketPath);
             protected serverSettings: ServerSettings,
             protected machineManager: MachineManager,
             protected config: ApplicationServerConfig,
+            protected adapterRegistry: CloudAdapterRegistry,
         ) {
             super();
         }
@@ -259,8 +261,11 @@ removeSync(exchangeSocketPath);
             // we should add mainBootstrap() which is only executed once
             console.log('mongo', mongoConfig);
 
+            this.adapterRegistry.add(ClusterAdapter.genesis_cloud, GenesisAdapter);
+
             //same here
             await this.stateFixer.startFixStates();
+
             this.machineManager.start().catch(e => {
                 console.error('machineManager.start failed', e);
             });
@@ -311,7 +316,7 @@ removeSync(exchangeSocketPath);
             console.log('Worker bootstrapped', this.serverSettings);
         }
 
-        public async hasAccess<T>(injector: Injector, session: Session | undefined, controller: ClassType<T>, action: string): Promise<boolean> {
+        public async hasAccess<T>(injector: Injector, session: any, controller: ClassType<T>, action: string): Promise<boolean> {
             const requiredControllerRole = getRole(controller, action);
             let currentRole = RoleType.anonymouse;
 

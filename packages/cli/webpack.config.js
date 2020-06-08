@@ -95,7 +95,7 @@ module.exports = {
             // 'systeminformation': 'commonjs systeminformation',
 
             // //because of oclif's plugin stuff necessary
-            // '@oclif/command': 'commonjs @oclif/command',
+            '@oclif/command': 'commonjs @oclif/command',
             // '@oclif/config': 'commonjs @oclif/config',
             // '@oclif/errors': 'commonjs @oclif/errors',
             // '@oclif/linewrap': 'commonjs @oclif/linewrap',

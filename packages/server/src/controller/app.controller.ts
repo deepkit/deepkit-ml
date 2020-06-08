@@ -32,8 +32,9 @@ import {
     SourceFile,
     User,
     UserType,
+    JobQueueItem,
 } from '@deepkit/core';
-import {JobQueueItem, ResourcesManager} from '../node/resources';
+import {ResourcesManager} from '../node/resources';
 import {getHomeConfig, setHomeConfig, setHomeFolderLink} from "@deepkit/core-node";
 import {Observable} from "rxjs";
 import {Subscriptions} from "@marcj/estdlib-rxjs";
@@ -602,7 +603,7 @@ export class AppController implements AppControllerInterface {
             const item = new JobQueueItem(project.owner, id);
             item.task = task.name;
             item.priority = job.config.priority;
-            await this.database.add(item);
+            await this.exchangeDatabase.add(item);
         }
 
         await this.resources.assignJobs();
@@ -751,6 +752,14 @@ export class AppController implements AppControllerInterface {
         return await this.entityStorage.findOne(ClusterNode, {
             id: id
         });
+    }
+
+    @Action()
+    @Role(RoleType.regular)
+    async subscribeJobQueue(): Promise<Collection<JobQueueItem>> {
+        return await this.entityStorage.collection(JobQueueItem).filter({
+            userId: this.getUserId()
+        }).find();
     }
 
     @Action()
