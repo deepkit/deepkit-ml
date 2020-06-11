@@ -599,21 +599,23 @@ export class TaskExecutor {
             }
         }
 
+        const env = [
+            'PYTHONUNBUFFERED=1',
+            'DEEPKIT_SSL=' + deepkitSSL,
+            'DEEPKIT_HOST=' + deepkitHost,
+            'DEEPKIT_SOCKET=' + deepkitSocket,
+            'DEEPKIT_PORT=' + deepkitPort,
+            'DEEPKIT_ROOT_DIR=/job',
+            'DEEPKIT_JOB_ACCESSTOKEN=' + this.jobStorage.job.accessToken,
+            'DEEPKIT_JOB_ID=' + this.jobStorage.job.id,
+            'DEEPKIT_JOB_CONFIG=' + JSON.stringify(this.jobStorage.job.config.config),
+        ].concat(this.jobStartConfig.env).concat(this.taskConfig.env).concat(this.taskConfig.docker.env);
+
         const createOptions = {
             name: containerName,
             StopTimeout: 1,
             HostConfig: hostConfig,
-            Env: [
-                'PYTHONUNBUFFERED=1',
-                'DEEPKIT_SSL=' + deepkitSSL,
-                'DEEPKIT_HOST=' + deepkitHost,
-                'DEEPKIT_SOCKET=' + deepkitSocket,
-                'DEEPKIT_PORT=' + deepkitPort,
-                'DEEPKIT_ROOT_DIR=/job',
-                'DEEPKIT_JOB_ACCESSTOKEN=' + this.jobStorage.job.accessToken,
-                'DEEPKIT_JOB_ID=' + this.jobStorage.job.id,
-                'DEEPKIT_JOB_CONFIG=' + JSON.stringify(this.jobStorage.job.config.config),
-            ].concat(this.jobStartConfig.env).concat(this.taskConfig.docker.env),
+            Env: env,
             WorkingDir: '/job'
         };
 
