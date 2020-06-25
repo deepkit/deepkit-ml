@@ -391,7 +391,7 @@ export interface AppControllerInterface {
 
     missingFiles(md5s: string[]): Promise<string[]>;
 
-    addJob(data: Partial<Job>): Promise<boolean>;
+    addJob(data: Partial<Job>): Promise<Job>;
 
     queueJob(jobId: string, priority: number): Promise<QueueResult[]>;
 

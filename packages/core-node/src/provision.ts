@@ -82,6 +82,9 @@ export class SshConnection {
             this.client.on('error', (error: any) => {
                 reject(error);
             });
+            this.client.on('timeout', (error: any) => {
+                reject(error);
+            });
             this.client.once('ready', () => {
                 this.connected = true;
                 resolve();
@@ -94,6 +97,7 @@ export class SshConnection {
                 privateKey: this.privateKey,
                 passphrase: this.privateKeyPassphrase,
                 compress: false,
+                readyTimeout: 10 * 1000,
                 algorithms: {
                     compress: []
                 }

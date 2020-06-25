@@ -1007,14 +1007,15 @@ export class AppController implements AppControllerInterface {
 
     @Action()
     @Role(RoleType.regular)
-    async addJob(job: Job): Promise<boolean> {
+    @f.type(Job)
+    async addJob(job: Job): Promise<Job> {
         await this.permission.checkProjectWriteAccess(job.project);
         job.user = this.getAuthenticatedUserId();
         const newFields = await this.exchangeDatabase.increase(Project, {id: job.project}, {jobNumber: 1});
         job.number = newFields.jobNumber;
         await this.jobManager.handleNewJob(job);
         await this.exchangeDatabase.add(job);
-        return true;
+        return job;
     }
 
     /**

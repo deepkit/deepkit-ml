@@ -192,6 +192,7 @@ export class MachineManager {
     protected async connectNode(node: ClusterNode) {
         //check if this is already in process for this particular node
         const lockId = 'node/connect/' + node.id;
+
         if (await this.locker.isLocked(lockId)) {
             return;
         }

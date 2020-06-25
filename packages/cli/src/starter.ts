@@ -188,7 +188,7 @@ export class Starter {
         }
         job.status = JobStatus.creating;
 
-        await app.addJob(job);
+        const createdJob = await app.addJob(job);
 
         // todo, add indicator in GUI and CLI.
         await this.commitJobFiles(userController, job, rootDir);
@@ -197,7 +197,7 @@ export class Starter {
 
         let exitCode = 0;
 
-        console.log('Experiment created', '#' + job.number, 'in', project.name);
+        console.log('Experiment created', '#' + createdJob.number, 'in', project.name);
 
         if (!flags.cluster) {
             const jobAccessToken = await app.getJobAccessToken(job.id);

@@ -526,8 +526,6 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
 
     @observe({unsubscribe: true})
     public jobs?: Collection<Job>;
-    public jobsMap = new Map<string, Job>();
-    public jobsIdSortMap = new Map<string, number>();
 
     protected jobsSubscriptions = new Subscriptions();
 
@@ -633,7 +631,7 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
         if (path === 'id') {
 
             const getDeepId = (job: Job): number => {
-                const parent = this.jobsMap.get(job.parent || '');
+                const parent = this.jobs!.get(job.parent || '');
                 if (parent) {
                     return parent.number + (job.number / parent.childNumber);
                 }
@@ -858,6 +856,7 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
             this.jobs = await this.controllerClient.app().getJobs(loadForProject, loadForList);
             console.debug('loading jobs took', Date.now() - start, 'ms for', this.jobs.count(), 'items');
 
+            //when user switched the list/project before we were done finishing ngOnChanges() we stop immediately
             if (!this.project$ || this.project$.id !== loadForProject) return;
             if (this.filter.list !== loadForList) return;
 
@@ -867,10 +866,6 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
             this.selected = [];
             this.load.emit(this.jobs!.all());
 
-            this.jobsSubscriptions.add = this.jobs!.added.subscribe(this.rebuildIndexAdded.bind(this));
-            this.jobsSubscriptions.add = this.jobs!.removed.subscribe(this.rebuildIndexRemoved.bind(this));
-
-            this.rebuildIndex();
             this.jobs!.subscribe(() => {
                 this.listChanged.emit(this.jobs!.all());
             });
@@ -900,22 +895,6 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
             this.availableChannelNames.clear();
         }
         this.filterJobs();
-    }
-
-    protected rebuildIndex() {
-        if (!this.jobs) return;
-        this.jobsMap.clear();
-        for (const job of this.jobs.all()) {
-            this.jobsMap.set(job.id, job);
-        }
-    }
-
-    protected rebuildIndexAdded(job: Job) {
-        this.jobsMap.set(job.id, job);
-    }
-
-    protected rebuildIndexRemoved(job: Job) {
-        this.jobsMap.delete(job.id);
     }
 
     public search(query: string) {
