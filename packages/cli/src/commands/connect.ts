@@ -581,7 +581,7 @@ export class ConnectCommand extends Command {
 
         for (const gpu of gpus) {
             const gpuHardware = new NodeHardwareInformationGpu(
-                gpu.uuid, gpu.name, gpu.clockMax, gpu.memoryTotal
+                gpu.index, gpu.uuid, gpu.name, gpu.clockMax, gpu.memoryTotal
             );
             gpuHardware.powerLimit = gpu.powerLimit;
             gpuHardware.temperatureMax = gpu.temperatureMax;

@@ -338,6 +338,7 @@ export class NodeHardwareInformationGpu {
     temperatureMax: number = 0;
 
     constructor(
+        @f.asName('index') public index: number,
         @f.asName('uuid') public uuid: string,
         @f.asName('name') public name: string,
         /**

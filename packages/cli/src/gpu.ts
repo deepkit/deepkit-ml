@@ -9,6 +9,8 @@ import {readFile} from "fs-extra";
 import {isArray} from "@marcj/estdlib";
 
 export interface GpuInformation {
+    index: number,
+
     name: string;
 
     brand: string;
@@ -122,8 +124,10 @@ export class GPUReader {
     public async getGpus(uuids?: string[]): Promise<GpuInformation[]> {
         const gpus: GpuInformation[] = [];
 
+        let i = 0;
         for (const gpu of await this.getFullGpus()) {
             gpus.push({
+                index: i,
                 name: gpu.product_name,
                 brand: gpu.product_brand,
                 uuid: gpu.uuid,
@@ -137,6 +141,7 @@ export class GPUReader {
                 temperature: parseFloat(gpu.temperature.gpu_temp) || -1,
                 temperatureMax: parseFloat(gpu.temperature.gpu_temp_max_threshold) || -1,
             });
+            i++;
         }
 
         if (uuids && uuids.length) {

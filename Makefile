@@ -251,11 +251,6 @@ packages/electron/dist/main.js:
 electron-darwin-prebuild:
 	cd packages/electron && npm version $(VERSION_FILE_PATH) --allow-same-version && cd -
 	cd packages/electron && ./macos-build.sh;
-	#./macos-sign.sh
-	#./macos-notarize.sh
-
-	#mv packages/electron/Deepkit-darwin-x64/*.zip packages/electron/Deepkit-darwin-x64/deepkit-app-macOS-$(VERSION).zip
-#	cd packages/electron/Deepkit-darwin-x64 && zip -8 -qr deepkit-app-macOS-$(VERSION).zip Deepkit.app
 
 _always/electron:
 	rm -rf packages/electron/dist/main.js
