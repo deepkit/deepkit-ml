@@ -5,11 +5,11 @@
 
 import {Inject, Injectable} from "injection-js";
 import {Exchange, ExchangeDatabase, ProcessLocker} from "@marcj/glut-server";
-import {ClusterNode, ClusterNodeCredentials, ClusterNodeStatus} from "@deepkit/core";
+import {ClusterNode, ClusterNodeCredentials, ClusterNodeStatus, Cluster} from "@deepkit/core";
 import {Database} from "@marcj/marshal-mongo";
 import {onProcessExit, Provision, SshConnection} from "@deepkit/core-node";
 import {auditTime} from "rxjs/operators";
-import {google} from 'googleapis';
+import {CloudAdapterRegistry} from "../cloud/adapter";
 
 
 /**
@@ -26,6 +26,7 @@ export class MachineManager {
         protected exchange: Exchange,
         protected database: Database,
         protected exchangeDatabase: ExchangeDatabase,
+        protected adapterRegistry: CloudAdapterRegistry,
         @Inject('HTTP_PORT') protected HTTP_PORT: number,
     ) {
     }
@@ -39,7 +40,37 @@ export class MachineManager {
             this.doIt();
         });
 
+        this.exchange.subscribe('cloud/dynamic-created', (message: { nodeId: string }) => {
+            this.createAndStartInstance(message.nodeId).catch(console.error);
+        });
+
         this.doIt();
+        this.checkDynamicCluster().catch(console.error);
+    }
+
+    public async checkDynamicCluster() {
+        try {
+            for (const node of await this.database.query(ClusterNode).filter({dynamic: true}).find()) {
+                // console.log('checkDynamicCluster', node.name, node.isDeletable(), node.status, node.ping);
+                if (node.isDeletable()) {
+                    if (node.instanceId) {
+                        try {
+                            const adapter = this.adapterRegistry.get(node.adapter);
+                            await adapter.remove(node);
+                            await this.exchangeDatabase.remove(ClusterNode, node.id);
+                        } catch (error) {
+                            console.error(`Could not deleted node ${node.name}`, error);
+                        }
+                    } else {
+                        await this.exchangeDatabase.remove(ClusterNode, node.id);
+                    }
+                }
+            }
+        } finally {
+            setTimeout(() => {
+                this.checkDynamicCluster();
+            }, 10_000);
+        }
     }
 
     protected async doIt() {
@@ -51,10 +82,10 @@ export class MachineManager {
                 {connected: false, disabled: {$ne: true}},
                 {$or: [{lastConnectionTry: {$exists: false}}, {lastConnectionTry: {$lt: lessThanThisDate}}]}
             ]
-        }).select(['id', 'name']).find();
+        }).find();
 
         for (const node of nodes) {
-            this.connectNodeIfNecessary(node.id).catch(console.error);
+            this.connectNodeIfNecessary(node).catch(console.error);
         }
 
         this.lastTimeout = setTimeout(() => {
@@ -62,55 +93,68 @@ export class MachineManager {
         }, 10_000);
     }
 
-    protected async connectNodeIfNecessary(nodeId: string) {
+    protected async connectNodeIfNecessary(node: ClusterNode) {
         //at this point the machine needs to be created, online, and available.
         //if a job has been created for a cloud node, its creation and starting is done in another place.
+        //(when an job is assigned (resources.ts) or when the user created a non-on-demand cloud node)
+
+        if (node.dynamic && !node.host) {
+            //we need to check if host is available
+            try {
+                const adapter = this.adapterRegistry.get(node.adapter);
+                const ip = await adapter.getPublicIp(node);
+                console.log('check public ip of dynamic node', ip);
+                if (ip) {
+                    node.host = ip;
+                    await this.exchangeDatabase.patch(ClusterNode, node.id, {host: ip});
+                }
+            } catch (error) {
+                console.error(`Node adapter getHost failed ${node.name}, ${node.adapter}, ${node.instanceType}:`, error);
+            }
+        }
 
         //this Promise will either run forever or error
         //which means we cannot wait for it
-        this.ensureTunnel(nodeId).catch(async (error) => {
-            await this.exchangeDatabase.patch(ClusterNode, nodeId, {machineError: error.message || error});
+        this.ensureTunnel(node).catch(async (error) => {
+            await this.exchangeDatabase.patch(ClusterNode, node.id, {machineError: error.message || error});
         });
 
         //this Promise will either run forever or error
         //which means we cannot wait for it
-        this.connectNode(nodeId).catch(console.error);
+        this.connectNode(node).catch(console.error);
     }
 
-    protected async ensureTunnel(nodeId: string) {
-        const lockId = 'node/tunnel/' + nodeId;
+    protected async ensureTunnel(node: ClusterNode) {
+        const lockId = 'node/tunnel/' + node.id;
         if (await this.locker.isLocked(lockId)) {
             return;
         }
         const lock = await this.locker.acquireLock(lockId);
 
         try {
-            const node = await this.database.query(ClusterNode).filter({id: nodeId}).findOneOrUndefined();
-            if (!node) return;
             if (!node.host) return;
             if (node.disabled) return;
-            if (!node.isCreated()) return;
 
             const connection = await this.getSshConnection(node);
             //block unlimited until connection breaks
             const promises: Promise<any>[] = [];
 
-            const sub = await this.exchange.subscribe('node/tunnel-close/' + nodeId, (message: { close?: true }) => {
+            const sub = await this.exchange.subscribe('node/tunnel-close/' + node.id, (message: { close?: true }) => {
                 if (message.close) {
-                    this.exchangeDatabase.patch(ClusterNode, nodeId, {tunnelActive: false, tunnelError: ''}).catch(console.error);
+                    this.exchangeDatabase.patch(ClusterNode, node.id, {tunnelActive: false, tunnelError: ''}).catch(console.error);
                     connection.disconnect();
                 }
             });
 
-            await this.exchangeDatabase.patch(ClusterNode, nodeId, {tunnelActive: false, tunnelError: ''});
+            await this.exchangeDatabase.patch(ClusterNode, node.id, {tunnelActive: false, tunnelError: ''});
             await connection.connect();
-            await this.exchangeDatabase.patch(ClusterNode, nodeId, {tunnelActive: true, tunnelError: ''});
+            await this.exchangeDatabase.patch(ClusterNode, node.id, {tunnelActive: true, tunnelError: ''});
             promises.push(connection.forwardToUs(this.HTTP_PORT, 8961));
             promises.push(connection.forwardToUs(61720, 61721));
             await Promise.all(promises);
             sub.unsubscribe();
         } catch (error) {
-            await this.exchangeDatabase.patch(ClusterNode, nodeId, {tunnelActive: false, tunnelError: error.message || String(error)});
+            await this.exchangeDatabase.patch(ClusterNode, node.id, {tunnelActive: false, tunnelError: error.message || String(error)});
         } finally {
             lock.unlock();
         }
@@ -145,9 +189,9 @@ export class MachineManager {
         }
     }
 
-    protected async connectNode(nodeId: string) {
+    protected async connectNode(node: ClusterNode) {
         //check if this is already in process for this particular node
-        const lockId = 'node/connect/' + nodeId;
+        const lockId = 'node/connect/' + node.id;
         if (await this.locker.isLocked(lockId)) {
             return;
         }
@@ -155,15 +199,11 @@ export class MachineManager {
         const lock = await this.locker.acquireLock(lockId);
 
         try {
-            const node = await this.database.query(ClusterNode).filter({id: nodeId}).findOneOrUndefined();
-
-            if (!node) return;
             if (!node.host) return;
             if (node.connected) return;
             if (node.disabled) return;
-            if (!node.isCreated()) return;
 
-            await this.exchangeDatabase.patch(ClusterNode, nodeId, {
+            await this.exchangeDatabase.patch(ClusterNode, node.id, {
                 machineError: '',
                 status: ClusterNodeStatus.connecting,
                 lastConnectionTry: new Date()
@@ -187,15 +227,15 @@ export class MachineManager {
             try {
                 await connection.connect();
 
-                await this.exchangeDatabase.patch(ClusterNode, nodeId, {status: ClusterNodeStatus.provisioning});
+                await this.exchangeDatabase.patch(ClusterNode, node.id, {status: ClusterNodeStatus.provisioning});
                 const provision = new Provision(connection);
 
                 await provision.provision();
 
                 const s = await provision.ensureSudoAccess(credentials);
-                await this.exchangeDatabase.patch(ClusterNode, nodeId, {sudoFailed: !s});
+                await this.exchangeDatabase.patch(ClusterNode, node.id, {sudoFailed: !s});
 
-                await this.exchangeDatabase.patch(ClusterNode, nodeId, {status: ClusterNodeStatus.starting});
+                await this.exchangeDatabase.patch(ClusterNode, node.id, {status: ClusterNodeStatus.starting});
                 //this will hang as long as the connection is established.
                 await provision.startConnect(node, credentials.token, credentials.sshRequiresSudo);
             } finally {
@@ -203,14 +243,13 @@ export class MachineManager {
                 connection.disconnect();
             }
         } catch (error) {
-            await this.exchangeDatabase.patch(ClusterNode, nodeId, {status: ClusterNodeStatus.error, machineError: error.message || ''});
+            await this.exchangeDatabase.patch(ClusterNode, node.id, {status: ClusterNodeStatus.error, machineError: error.message || ''});
         } finally {
             await lock.unlock();
         }
     }
 
-    protected async createAndStartInstance(nodeId: string) {
-
+    public async createAndStartInstance(nodeId: string) {
         const lockId = 'node/create-instance/' + nodeId;
         if (await this.locker.isLocked(lockId)) {
             return;
@@ -221,13 +260,17 @@ export class MachineManager {
         try {
             const node = await this.database.query(ClusterNode).filter({id: nodeId}).findOneOrUndefined();
             if (!node) return;
-            if (!node.host) return;
             if (node.connected) return;
             if (node.disabled) return;
 
-            const compute = google.compute('v1');
-            // compute.instances.insert({project: 'asd', zone: 'asd', requestId: 'asd'});
-
+            await this.exchangeDatabase.patch(ClusterNode, nodeId, {status: ClusterNodeStatus.creating});
+            try {
+                const adapter = this.adapterRegistry.get(node.adapter);
+                await adapter.createAndStart(node);
+            } catch (error) {
+                console.error(`Node adapter creation failed ${node.name}, ${node.adapter}, ${node.instanceType}:`, error);
+                await this.exchangeDatabase.patch(ClusterNode, nodeId, {status: ClusterNodeStatus.creating_failed, machineError: String(error)});
+            }
         } finally {
             lock.unlock();
         }

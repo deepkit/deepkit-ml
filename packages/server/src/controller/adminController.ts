@@ -27,6 +27,8 @@ import {SessionHelper} from "../session";
 import {f} from "@marcj/marshal";
 import * as forge from 'node-forge';
 import {ProjectManager} from "../manager/project-manager";
+import {ResourcesManager} from "../node/resources";
+import {CloudAdapterRegistry} from "../cloud/adapter";
 
 @Controller('admin')
 export class AdminController implements AppAdminControllerInterface {
@@ -41,6 +43,8 @@ export class AdminController implements AppAdminControllerInterface {
         private projectManager: ProjectManager,
         private permission: SessionPermissionManager,
         private internalClient: InternalClient,
+        private resourcesManager: ResourcesManager,
+        private adapterRegistry: CloudAdapterRegistry,
     ) {
     }
 
@@ -60,40 +64,21 @@ export class AdminController implements AppAdminControllerInterface {
         await this.stopClusterNode(nodeId);
         await this.closeConnectionClusterNode(nodeId);
 
+        const node = await this.database.query(ClusterNode).filter({id: nodeId}).findOne();
+        if (this.adapterRegistry.has(node.adapter)) {
+            const adapter = this.adapterRegistry.get(node.adapter);
+            await adapter.remove(node);
+        }
+
         await this.exchangeDatabase.remove(ClusterNode, nodeId);
         await this.database.query(ClusterNodeCredentials).filter({nodeId: nodeId}).deleteOne();
     }
 
-    @Action()
-    @Role(RoleType.admin)
-    async getGoogleCloudZones(): Promise<void> {
-    }
 
     @Action()
-    @Role(RoleType.admin)
-    async getGoogleCloudMachineTypes(): Promise<void> {
-        //which machine supports what GPU?
-        //https://cloud.google.com/compute/docs/reference/rest/v1/acceleratorTypes/list?apix_params=%7B%22project%22%3A%22marc-167410%22%2C%22zone%22%3A%22us-west1-b%22%7D
-    }
-
-    @Action()
-    @Role(RoleType.admin)
-    async getGoogleCloudPrices(): Promise<void> {
-        //https://console.cloud.google.com/m/price_list?folder&organizationId
-
-        //standard persistent disk
-        //CP-COMPUTEENGINE-STORAGE-PD-CAPACITY
-
-        //ssd
-        //CP-COMPUTEENGINE-STORAGE-PD-SSD
-
-        //vm instance price
-        //CP-COMPUTEENGINE-VMIMAGE-<id>
-        //gpu
-        //GPU_NVIDIA_TESLA_P100
-        //GPU_NVIDIA_TESLA_T4
-        //GPU_NVIDIA_TESLA_V100
-        //GPU_NVIDIA_TESLA_K80
+    @Role(RoleType.regular)
+    async assignJobs(): Promise<void> {
+        await this.resourcesManager.assignJobs();
     }
 
     @Action()
@@ -106,6 +91,10 @@ export class AdminController implements AppAdminControllerInterface {
         for (const node of nodes) {
             await this.stopClusterNode(node.id);
             await this.closeConnectionClusterNode(node.id);
+            if (this.adapterRegistry.has(node.adapter)) {
+                const adapter = this.adapterRegistry.get(node.adapter);
+                await adapter.remove(node);
+            }
             await this.exchangeDatabase.remove(ClusterNode, node.id);
             await this.database.query(ClusterNodeCredentials).filter({nodeId: node.id}).deleteOne();
         }
@@ -121,7 +110,7 @@ export class AdminController implements AppAdminControllerInterface {
 
         let credentials = await this.database.query(ClusterNodeCredentials).filter({
             nodeId: nodeId,
-        }).findOne();
+        }).findOneOrUndefined();
 
         if (!credentials) {
             credentials = new ClusterNodeCredentials(nodeId);

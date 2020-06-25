@@ -3,13 +3,14 @@
  * This file is part of Deepkit and licensed under GNU GPL v3. See the LICENSE file for more information.
  */
 
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from "@angular/core";
-import {ClusterNode, ClusterNodeCredentials} from "@deepkit/core";
+import {ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from "@angular/core";
+import {ClusterNode, ClusterNodeCredentials, InstanceTypes, instanceTypesMap} from "@deepkit/core";
 import {DialogComponent, ExecutionState} from "@marcj/angular-desktop-ui";
-import { f, cloneClass } from "@marcj/marshal";
-import {TypedFormGroup} from "../utils";
+import {cloneClass, f} from "@marcj/marshal";
+import {TypedFormGroup, TypedFormGroupConditionalValidators} from "../utils";
 import {MainStore} from "../store";
 import {ControllerClient} from "../providers/controller-client";
+import {Validators} from "@angular/forms";
 
 class FormEntity {
     @f node!: ClusterNode;
@@ -32,19 +33,15 @@ class FormEntity {
                     </dui-form-row>
 
                     <dui-form-row label="Priority">
-                        <dui-input type="number" required formControlName="priority"></dui-input>
+                        <dui-input type="number" formControlName="priority"></dui-input>
                     </dui-form-row>
 
                     <dui-form-row label="Disabled">
                         <dui-checkbox formControlName="disabled"></dui-checkbox>
                     </dui-form-row>
 
-                    <dui-form-row label="Host IP/domain">
-                        <dui-input required formControlName="host"></dui-input>
-                    </dui-form-row>
-
                     <dui-form-row label="Cluster">
-                        <dui-select textured required formControlName="cluster">
+                        <dui-select textured formControlName="cluster">
                             <dui-option
                                 *ngFor="let cluster of store.value.clusters|async"
                                 [value]="cluster.id">{{cluster.name}}</dui-option>
@@ -64,7 +61,7 @@ class FormEntity {
                         </dui-form-row>
                     </ng-container>
 
-                    <dui-form-row label="Default environment">
+                    <dui-form-row label="Default environment variables">
                         <dui-input type="textarea" [(ngModel)]="envString" [ngModelOptions]="{standalone: true}"></dui-input>
                         <div class="text-light" style="margin-top: 5px;">
                             Use format <code>NAME=value</code>, one variable per line.
@@ -77,37 +74,50 @@ class FormEntity {
                             Use format <code>/host/path:/container/path</code>, one mount per line.
                         </div>
                     </dui-form-row>
+
+                    <dui-form-row label="Debug mode">
+                        <dui-checkbox formControlName="debugMode">Print additional debugging output to node log</dui-checkbox>
+                    </dui-form-row>
                 </ng-container>
 
-                <h4 style="margin-bottom: 5px;">SSH settings</h4>
-                <ng-container formGroupName="credentials">
-                    <dui-form-row label="SSH port">
-                        <dui-input type="number" required formControlName="sshPort"></dui-input>
-                    </dui-form-row>
+                <ng-container *ngIf="!node || (node && !node.dynamic)">
+                    <h4 style="margin-bottom: 5px;">SSH settings</h4>
 
-                    <dui-form-row label="SSH username">
-                        <dui-input required formControlName="sshUsername"></dui-input>
-                    </dui-form-row>
+                    <ng-container formGroupName="node">
+                        <dui-form-row label="Host IP/domain">
+                            <dui-input formControlName="host"></dui-input>
+                        </dui-form-row>
+                    </ng-container>
 
-                    <dui-form-row label="SSH password">
-                        <dui-input type="password" formControlName="sshPassword"></dui-input>
-                    </dui-form-row>
+                    <ng-container formGroupName="credentials">
+                        <dui-form-row label="SSH port">
+                            <dui-input type="number" formControlName="sshPort"></dui-input>
+                        </dui-form-row>
 
-                    <dui-form-row label="SSH private key">
-                        <dui-input type="textarea" formControlName="sshPrivateKey"></dui-input>
-                    </dui-form-row>
+                        <dui-form-row label="SSH username">
+                            <dui-input formControlName="sshUsername"></dui-input>
+                        </dui-form-row>
 
-                    <dui-form-row label="SSH private key passphrase">
-                        <dui-input type="password" formControlName="sshPrivateKeyPassphrase"></dui-input>
-                    </dui-form-row>
+                        <dui-form-row label="SSH password">
+                            <dui-input type="password" formControlName="sshPassword"></dui-input>
+                        </dui-form-row>
 
-                    <dui-form-row label="Requires sudo">
-                        <dui-checkbox formControlName="sshRequiresSudo">Yes</dui-checkbox>
-                        <div style="margin-top: 5px;" class="text-light">
-                            If sudo is required for Docker access and file access to
-                            $HOME. This is probably required if you don't use root.
-                        </div>
-                    </dui-form-row>
+                        <dui-form-row label="SSH private key">
+                            <dui-input type="textarea" formControlName="sshPrivateKey"></dui-input>
+                        </dui-form-row>
+
+                        <dui-form-row label="SSH private key passphrase">
+                            <dui-input type="password" formControlName="sshPrivateKeyPassphrase"></dui-input>
+                        </dui-form-row>
+
+                        <dui-form-row label="Requires sudo">
+                            <dui-checkbox formControlName="sshRequiresSudo">Yes</dui-checkbox>
+                            <div style="margin-top: 5px;" class="text-light">
+                                If sudo is required for Docker access and file access to
+                                $HOME. This is probably required if you don't use root.
+                            </div>
+                        </dui-form-row>
+                    </ng-container>
                 </ng-container>
 
                 <div *ngIf="success">
@@ -130,7 +140,8 @@ class FormEntity {
                                 style="margin-right: auto">Delete
                     </dui-button>
                     <dui-button closeDialog>Cancel</dui-button>
-                    <dui-button (click)="testConnection()" [disabled]="testing || form.invalid">Test Connection
+                    <dui-button (click)="testConnection()"
+                                [disabled]="testing || form.invalid">Test Connection
                     </dui-button>
                     <dui-button [submitForm]="duiForm" [disabled]="form.invalid || !form.dirty">
                         {{node ? 'Save' : 'Create'}}
@@ -208,7 +219,7 @@ export class NodeSettingsDialogComponent implements OnDestroy, OnInit {
             // console.log('this.credentials', this.credentials);
             // this.form.printDeepErrors();
         }
-        console.log('this.form.value.node', this.form.value.node);
+        console.log('form', this.form);
 
         this.cd.detectChanges();
     }

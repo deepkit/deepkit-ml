@@ -14,7 +14,8 @@ import {flatObject} from "../core";
 @Entity('JobAssignedResourcesGpu')
 export class JobAssignedResourcesGpu {
     constructor(
-        @f.asName('uuid') public uuid: string,
+        //index starts at 0, and is later mapped to the actual UUID. 0 means first gpu found by gpuReader
+        @f.asName('index') public index: number,
         @f.asName('name') public name: string,
         @f.asName('memory') public memory: number,
     ) {
@@ -53,8 +54,8 @@ export class JobAssignedResources {
         return maxGpuMemory;
     }
 
-    public getGpuUUIDs(): string[] {
-        return this.gpus.map(v => v.uuid);
+    public getGpuIDs(): number[] {
+        return this.gpus.map(v => v.index);
     }
 
     public getGpuMemoryRange(): string {

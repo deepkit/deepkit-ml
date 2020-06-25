@@ -33,20 +33,20 @@ test('test basic', async () => {
         throw new Error('Wrong JobConfig loaded. It has no @f defined.');
     }
 
-    const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-        'deepkit.yaml': {
+    const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+        'deepkit.yml': {
             command: 'Hello'
         }
     }));
 
     console.log('config.commands', config.commands);
-    expect(config.path).toBe('deepkit.yaml');
+    expect(config.path).toBe('deepkit.yml');
     expect(config.commands[0].command).toBe('Hello');
 });
 
 test('test basic commands', async () => {
-    const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-        'deepkit.yaml': {
+    const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+        'deepkit.yml': {
             commands: ['Hello']
         }
     }));
@@ -56,8 +56,8 @@ test('test basic commands', async () => {
 });
 
 test('test basic commands 2', async () => {
-    const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-        'deepkit.yaml': {
+    const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+        'deepkit.yml': {
             commands: {myHallo: 'Hello'}
         }
     }));
@@ -69,8 +69,8 @@ test('test basic commands 2', async () => {
 
 test('test import', async () => {
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
                 import: 'deepkit/another.yaml',
             },
             'deepkit/another.yaml': {
@@ -87,11 +87,11 @@ test('test import', async () => {
 
     {
         const config = await getJobConfig('deepkit/another.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+            'deepkit.yml': {
                 ignore: ['zips/*']
             },
             'deepkit/another.yaml': {
-                import: '../deepkit.yaml',
+                import: '../deepkit.yml',
                 command: 'My command',
                 ignore: ['$inherit', 'datasets/*']
             }
@@ -105,18 +105,18 @@ test('test import', async () => {
 
     {
         const config = await getJobConfig('deepkit/another.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+            'deepkit.yml': {
                 ignore: ['zips/*']
             },
             'deepkit/another.yaml': {
-                import: '../deepkit.yaml',
+                import: '../deepkit.yml',
                 command: 'My command',
                 ignore: ['../*', '!.', '$inherit']
             }
         }));
 
         expect(config.path).toBe('deepkit/another.yaml');
-        expect(config.paths).toEqual(['deepkit/another.yaml', 'deepkit.yaml']);
+        expect(config.paths).toEqual(['deepkit/another.yaml', 'deepkit.yml']);
         expect(config.dirs).toEqual(['deepkit', '']);
         expect(config.commands[0].command).toBe('cd deepkit && (My command)');
 
@@ -125,8 +125,8 @@ test('test import', async () => {
     }
 
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
                 command: 'Hello',
                 import: 'another.yaml'
             },
@@ -135,8 +135,8 @@ test('test import', async () => {
             }
         }));
 
-        expect(config.path).toBe('deepkit.yaml');
-        expect(config.paths).toEqual(['deepkit.yaml', 'another.yaml']);
+        expect(config.path).toBe('deepkit.yml');
+        expect(config.paths).toEqual(['deepkit.yml', 'another.yaml']);
         expect(config.dirs).toEqual(['']);
         expect(config.commands[0].command).toBe('Hello');
     }
@@ -144,8 +144,8 @@ test('test import', async () => {
 
 test('test command directory', async () => {
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
                 command: 'Hello',
             }
         }));
@@ -153,8 +153,8 @@ test('test command directory', async () => {
         expect(config.commands[0].command).toBe('Hello');
     }
     {
-        const config = await getJobConfig('experiments/deepkit.yaml', new MockedFileReader({
-            'experiments/deepkit.yaml': {
+        const config = await getJobConfig('experiments/deepkit.yml', new MockedFileReader({
+            'experiments/deepkit.yml': {
                 command: 'Hello',
             }
         }));
@@ -163,8 +163,8 @@ test('test command directory', async () => {
     }
 
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
                 import: 'deepkit/another.yaml',
                 command: 'Hello',
             },
@@ -177,8 +177,8 @@ test('test command directory', async () => {
     }
 
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
                 import: 'deepkit/another.yaml',
             },
             'deepkit/another.yaml': {
@@ -192,8 +192,8 @@ test('test command directory', async () => {
 
 test('test build directory', async () => {
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
                 import: 'deepkit/another.yaml',
                 command: 'Hello',
             },
@@ -207,8 +207,8 @@ test('test build directory', async () => {
     }
 
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
                 import: 'deepkit/another.yaml',
             },
             'deepkit/another.yaml': {
@@ -227,8 +227,8 @@ test('test build directory', async () => {
 
 test('test build directory tasks', async () => {
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
                 import: 'deepkit/another.yaml',
                 tasks: {
                     peter: {
@@ -247,8 +247,8 @@ test('test build directory tasks', async () => {
     }
 
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
                 import: 'deepkit/another.yaml',
                 tasks: {
                     peter: {
@@ -268,8 +268,8 @@ test('test build directory tasks', async () => {
     }
 
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
                 import: 'deepkit/another.yaml',
                 build: 'pip install tensorflow',
             },
@@ -289,8 +289,8 @@ test('test build directory tasks', async () => {
     }
 
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
                 import: 'deepkit/another.yaml',
                 build: 'pip install tensorflow',
             },
@@ -309,12 +309,12 @@ test('test build directory tasks', async () => {
     }
 
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
-                import: ['build/deepkit.yaml', 'deepkit/tasks.yaml'],
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
+                import: ['build/deepkit.yml', 'deepkit/tasks.yaml'],
                 build: ['pip install tensorflow', '$inherit'],
             },
-            'build/deepkit.yaml': {
+            'build/deepkit.yml': {
                 build: 'make dataset\nADD dataset.txt',
             },
             'deepkit/tasks.yaml': {
@@ -338,12 +338,12 @@ test('test build directory tasks', async () => {
 
 test('test overwriting & inherit', async () => {
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
-                import: 'build/deepkit.yaml',
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
+                import: 'build/deepkit.yml',
                 build: 'pip install tensorflow',
             },
-            'build/deepkit.yaml': {
+            'build/deepkit.yml': {
                 build: 'make dataset',
             },
         }));
@@ -351,16 +351,16 @@ test('test overwriting & inherit', async () => {
     }
 
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
                 build: ['$inherit', 'pip install tensorflow'],
-                import: 'build/deepkit.yaml',
+                import: 'build/deepkit.yml',
             },
-            'build/deepkit.yaml': {
+            'build/deepkit.yml': {
                 build: ['$inherit', 'make dataset'],
-                import: '../nested/deep/deepkit.yaml',
+                import: '../nested/deep/deepkit.yml',
             },
-            'nested/deep/deepkit.yaml': {
+            'nested/deep/deepkit.yml': {
                 build: 'make another',
             },
         }));
@@ -368,12 +368,12 @@ test('test overwriting & inherit', async () => {
     }
 
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
-                import: 'build/deepkit.yaml',
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
+                import: 'build/deepkit.yml',
                 build: ['pip install tensorflow', '$inherit', 'echo done'],
             },
-            'build/deepkit.yaml': {
+            'build/deepkit.yml': {
                 build: 'make dataset',
             },
         }));
@@ -381,24 +381,24 @@ test('test overwriting & inherit', async () => {
     }
 
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
-                import: 'build/deepkit.yaml',
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
+                import: 'build/deepkit.yml',
                 build: ['pip install tensorflow', '$inherit', 'echo done'],
             },
-            'build/deepkit.yaml': {
+            'build/deepkit.yml': {
             },
         }));
         expect(config.build).toEqual(['pip install tensorflow', 'echo done']);
     }
 
     {
-        const config = await getJobConfig('experiments/deepkit.yaml', new MockedFileReader({
-            'build/deepkit.yaml': {
+        const config = await getJobConfig('experiments/deepkit.yml', new MockedFileReader({
+            'build/deepkit.yml': {
                 build: ['pip install tensorflow', 'echo done'],
             },
-            'experiments/deepkit.yaml': {
-                import: '../build/deepkit.yaml',
+            'experiments/deepkit.yml': {
+                import: '../build/deepkit.yml',
                 command: 'echo hi',
                 build: ['$inherit', 'yet another install after base'],
             },
@@ -409,8 +409,8 @@ test('test overwriting & inherit', async () => {
 
 test('test import complex', async () => {
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
                 import: 'deepkit/another.yaml',
                 config: {optimizer: 'adam', lr: 0.5}
             },
@@ -432,8 +432,8 @@ test('test import complex', async () => {
 
 test('test tasks', async () => {
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
                 image: 'ubuntu',
                 tasks: {
                     stage1: {
@@ -476,8 +476,8 @@ test('test tasks', async () => {
 
 test('test asd', async () => {
     {
-        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
-            'deepkit.yaml': {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
                 image: 'ubuntu',
                 build: ['ADD requirements.txt', 'pip install --upgrade pip'],
             }
@@ -490,8 +490,8 @@ test('test asd', async () => {
 
 test('test relative build_files', async () => {
     {
-        const config = await getJobConfig('examples/one/deepkit.yaml', new MockedFileReader({
-            'examples/one/deepkit.yaml': {
+        const config = await getJobConfig('examples/one/deepkit.yml', new MockedFileReader({
+            'examples/one/deepkit.yml': {
                 image: 'ubuntu',
                 build: ['ADD requirements.txt', 'pip install --upgrade pip'],
             }
@@ -506,8 +506,8 @@ test('test relative build_files', async () => {
     }
 
     {
-        const config = await getJobConfig('examples/one/deepkit.yaml', new MockedFileReader({
-            'examples/one/deepkit.yaml': {
+        const config = await getJobConfig('examples/one/deepkit.yml', new MockedFileReader({
+            'examples/one/deepkit.yml': {
                 image: 'ubuntu',
                 build: ['ADD ../../requirements.txt', 'pip install --upgrade pip'],
             }
@@ -522,8 +522,8 @@ test('test relative build_files', async () => {
     }
 
     {
-        const config = await getJobConfig('examples/one/deepkit.yaml', new MockedFileReader({
-            'examples/one/deepkit.yaml': {
+        const config = await getJobConfig('examples/one/deepkit.yml', new MockedFileReader({
+            'examples/one/deepkit.yml': {
                 image: 'ubuntu',
                 build: ['ADD ../../requirements.txt:requirements.txt', 'pip install --upgrade pip'],
             }
@@ -541,8 +541,8 @@ test('test relative build_files', async () => {
 
 test('test files', async () => {
     {
-        const config = await getJobConfig('examples/one/deepkit.yaml', new MockedFileReader({
-            'examples/one/deepkit.yaml': {
+        const config = await getJobConfig('examples/one/deepkit.yml', new MockedFileReader({
+            'examples/one/deepkit.yml': {
                 image: 'ubuntu',
                 files: '**/*.py',
             }
@@ -554,9 +554,44 @@ test('test files', async () => {
 
 });
 
+test('test deepkit folder', async () => {
+    {
+        const config = await getJobConfig('deepkit.yml', new MockedFileReader({
+            'deepkit.yml': {
+                image: 'ubuntu',
+                config: {
+                    test: 12
+                },
+                files: '**/*.py',
+            }
+        }), '/my/long/root/with/deepkit');
+
+        expect(config.image).toBe('ubuntu');
+        expect(config.files).toEqual(['**/*.py']);
+        expect(config.config.test).toEqual(12);
+    }
+
+    {
+        const config = await getJobConfig('deepkit/deepkit.yml', new MockedFileReader({
+            'deepkit/deepkit.yml': {
+                image: 'ubuntu',
+                config: {
+                    test: 12
+                },
+                files: '**/*.py',
+            }
+        }), '/my/long/root/with/deepkit');
+
+        expect(config.image).toBe('ubuntu');
+        expect(config.files).toEqual(['deepkit/**/*.py']);
+        expect(config.config.test).toEqual(12);
+    }
+
+});
+
 test('test tasks circular dependency', async () => {
-    await expect(getJobConfig('deepkit.yaml', new MockedFileReader({
-        'deepkit.yaml': {
+    await expect(getJobConfig('deepkit.yml', new MockedFileReader({
+        'deepkit.yml': {
             image: 'ubuntu',
             tasks: {
                 stage1: {
@@ -578,8 +613,8 @@ test('test tasks circular dependency', async () => {
 });
 
 test('test tasks wrong dependency', async () => {
-    await expect(getJobConfig('deepkit.yaml', new MockedFileReader({
-        'deepkit.yaml': {
+    await expect(getJobConfig('deepkit.yml', new MockedFileReader({
+        'deepkit.yml': {
             image: 'ubuntu',
             tasks: {
                 stage1: {

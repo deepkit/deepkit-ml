@@ -73,6 +73,8 @@
     "lerna": "^3.4.3",
     "md5": "^2.2.1",
     "mocha": "^6.1.2",
+    "node-fetch": "^2.5.7",
+    "@types/node-fetch": "^2.5.7",
     "googleapis": "^48.0.0",
     "nodemon": "^1.18.10",
     "reflect-metadata": "^0.1.12",

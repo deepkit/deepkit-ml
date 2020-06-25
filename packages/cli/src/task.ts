@@ -23,10 +23,10 @@ import {StdoutApiReader} from "./stdout";
 import {
     catchSilentSigint,
     Docker,
-    getHomeDockerConfig,
     getJobTaskInstanceFiles,
     getMd5,
     getUserHome,
+    logger,
     normalizeRelativePathToBeIncluded
 } from "@deepkit/core-node";
 import {plainToClass} from "@marcj/marshal";
@@ -493,10 +493,9 @@ export class TaskExecutor {
         // this.log('links', homeDockerConfig.links.concat(this.taskConfig.docker.links));
 
         const deviceRequests: any[] = [];
-        const gpuUUIDs: string[] = [];
-        for (const gpu of instance.assignedResources.gpus) {
-            gpuUUIDs.push(gpu.uuid);
-        }
+        const gpuReader = new GPUReader();
+        const gpuUUIDs = await gpuReader.getGpuUUIDsForIndex(instance.assignedResources.gpus.map(v => v.index));
+
         if (gpuUUIDs.length) {
             deviceRequests.push({
                 Driver: 'nvidia',
@@ -633,6 +632,8 @@ export class TaskExecutor {
         if (!instance.dockerImage.name) {
             throw new Error('No dockerImage defined for job');
         }
+
+        logger.debug('Docker createOptions', createOptions);
 
         return catchSilentSigint(async () => {
             //note: does NOT abort automatically when node process dies.
@@ -788,14 +789,12 @@ export class TaskExecutor {
             public stopped = false;
 
             constructor(public jobStorage: JobStorage) {
-                this.start();
+                this.start().catch(console.error);
             }
 
-            public start() {
-                const gpuUUIDs: string[] = [];
-                for (const gpu of instance.assignedResources.gpus) {
-                    gpuUUIDs.push(gpu.uuid);
-                }
+            public async start() {
+                const gpuReader = new GPUReader();
+                const gpuUUIDs = await gpuReader.getGpuUUIDsForIndex(instance.assignedResources.gpus.map(v => v.index));
 
                 const containerName = 'deepkit_' + this.jobStorage.job.id + '_' + taskConfig.name + '_' + replica;
 

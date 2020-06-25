@@ -8,13 +8,14 @@ import {SimplePatches} from "./data";
 import {Collection, EntitySubject, StreamBehaviorSubject} from "@marcj/glut-core";
 import {HomeAccountConfig, HomeConfig} from "./model/home";
 import {Job, JobConfig, JobDebuggingState} from "./model/job";
-import {ProjectIssue, ProjectIssueBase, ProjectJobListFilter, Project} from "./model/project";
+import {Project, ProjectIssue, ProjectIssueBase, ProjectJobListFilter} from "./model/project";
 import {DeepKitFile} from "./model/deepKitFile";
 import {Cluster} from "./model/cluster";
 import {
     AssignedJobTaskInstance,
     ClusterNode,
-    ClusterNodeCredentials, ClusterNodeJobStartConfig,
+    ClusterNodeCredentials,
+    ClusterNodeJobStartConfig,
     NodeHardwareInformation,
     NodeHardwareStats,
     NodeResources
@@ -27,8 +28,11 @@ import {Note} from "./model/note";
 import {QueueResult} from "./model/queue";
 import {Buffer} from "buffer";
 import {UniversalComment} from "./model/comment";
+import {JobQueueItem} from "./model/job-queue";
 
 export interface AppAdminControllerInterface {
+    assignJobs(): Promise<void>;
+
     deleteCluster(clusterId: string): Promise<void>;
 
     deleteClusterNode(nodeId: string): Promise<void>;
@@ -354,6 +358,8 @@ export interface AppControllerInterface {
     subscribeCluster(id: string): Promise<EntitySubject<Cluster>>;
 
     subscribeClusterNode(id: string): Promise<EntitySubject<ClusterNode>>;
+
+    subscribeJobQueue(): Promise<Collection<JobQueueItem>>;
 
     subscribeClusterNodeStdout(nodeId: string): Promise<StreamBehaviorSubject<Uint8Array | undefined>>;
 

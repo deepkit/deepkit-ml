@@ -4,50 +4,12 @@
  */
 
 import {Injectable} from 'injection-js';
-import {
-    Job,
-    JobTaskStatus,
-    ClusterNode,
-    NodePeerControllerInterface,
-    FitsStatus,
-} from '@deepkit/core';
+import {Cluster, ClusterNode, findNodesForQueueItem, FitsStatus, Job, JobQueueItem, JobTaskStatus, NodePeerControllerInterface,} from '@deepkit/core';
 import {NodeManager} from './node.manager';
-import {Entity, f, MultiIndex} from '@marcj/marshal';
-import {Exchange, ExchangeDatabase, ProcessLocker, InternalClient} from '@marcj/glut-server';
-import {eachPair, eachKey} from '@marcj/estdlib';
+import {Exchange, ExchangeDatabase, InternalClient, ProcessLocker} from '@marcj/glut-server';
+import {eachKey, eachPair} from '@marcj/estdlib';
 import {Database} from '@marcj/marshal-mongo';
-import {findNodesForQueueItem} from "@deepkit/core";
-
-@Entity('JobQueueItem', 'jobQueue')
-@MultiIndex(['job', 'task'], {})
-export class JobQueueItem {
-    @f.mongoId().primary()
-    _id?: string;
-
-    /**
-     * Name of task
-     */
-    @f
-    task: string = 'main';
-
-    @f
-    priority: number = 0;
-
-    @f
-    position: number = 0;
-
-    @f
-    tries: number = 0;
-
-    @f
-    added: Date = new Date();
-
-    constructor(
-        @f.uuid().asName('userId') public userId: string,
-        @f.uuid().asName('job') public job: string,
-    ) {
-    }
-}
+import {MachineManager} from "./machine.manager";
 
 export enum QueueStatus {
     assigned,
@@ -64,6 +26,7 @@ export class ResourcesManager {
         private exchange: Exchange,
         private database: Database,
         private internalClient: InternalClient,
+        private machineManager: MachineManager,
         private exchangeDatabase: ExchangeDatabase,
     ) {
     }
@@ -98,7 +61,9 @@ export class ResourcesManager {
         const lock = await this.locker.acquireLock('assign-jobs');
 
         try {
-            const assignedJobsToNodes: {[nodeId: string]: true} = {};
+            const assignedJobsToNodes: { [nodeId: string]: true } = {};
+            const createdDynamicNodes: ClusterNode[] = [];
+
             const availableNodesAll = await this.nodeManager.getReadyAndConnectedNodes();
             const availableNodesMap: { [id: string]: ClusterNode } = {};
             const availableNodesPerUser: { [userId: string]: ClusterNode[] } = {};
@@ -120,20 +85,35 @@ export class ResourcesManager {
                 availableNodesPerUser[i].reverse();
             }
 
+            const clusters = await this.database.query(Cluster).filter({
+                disabled: false,
+            }).find();
+            const availableClustersPerUser: { [userId: string]: Cluster[] } = {};
+            const clusterNameMap: { [clusterId: string]: string } = {};
+
+            for (const cluster of clusters) {
+                if (!availableClustersPerUser[cluster.owner]) availableClustersPerUser[cluster.owner] = [];
+                availableClustersPerUser[cluster.owner].push(cluster);
+                clusterNameMap[cluster.id] = cluster.name;
+            }
+
             const items = await this.database.query(JobQueueItem).sort({
                 priority: 'desc',
                 added: 'asc'
             }).find();
 
+            console.log('assign jobs', items.length);
+
             let queuePosition = 0;
             for (const queueItem of items) {
                 const job = await this.database.query(Job).filter({id: queueItem.job}).findOne();
                 if (!job) continue;
-                if (!availableNodesPerUser[queueItem.userId]) {
+                if (!availableNodesPerUser[queueItem.userId] && !availableClustersPerUser[queueItem.userId]) {
                     continue;
                 }
 
-                const availableNodes = availableNodesPerUser[queueItem.userId];
+                const availableNodes = availableNodesPerUser[queueItem.userId] || [];
+                const availableClusters = availableClustersPerUser[queueItem.userId] || [];
 
                 const task = job.getTask(queueItem.task);
                 const taskConfig = job.getTaskConfig(queueItem.task);
@@ -157,17 +137,19 @@ export class ResourcesManager {
                     task.queue.added = queueItem.added;
 
                     let nodes = availableNodes;
+                    let clusters = availableClusters;
 
                     if (taskConfig.nodes && taskConfig.nodes.length > 0) {
-                        nodes = availableNodes.filter(v => -1 !== taskConfig.nodes.indexOf(v.name));
+                        nodes = nodes.filter(v => -1 !== taskConfig.nodes.indexOf(v.name));
                     }
 
                     if (taskConfig.nodeIds && taskConfig.nodeIds.length > 0) {
-                        nodes = availableNodes.filter(v => -1 !== taskConfig.nodeIds.indexOf(v.id));
+                        nodes = nodes.filter(v => -1 !== taskConfig.nodeIds.indexOf(v.id));
                     }
 
                     if (taskConfig.clusters && taskConfig.clusters.length > 0) {
-                        nodes = availableNodes.filter(v => -1 !== taskConfig.clusters.indexOf(v.cluster));
+                        nodes = nodes.filter(v => -1 !== taskConfig.clusters.indexOf(clusterNameMap[v.cluster]));
+                        clusters = clusters.filter(v => -1 !== taskConfig.clusters.indexOf(v.name));
                     }
 
                     if (job.cluster) {
@@ -182,14 +164,15 @@ export class ResourcesManager {
                     }
 
                     try {
-                        const result = findNodesForQueueItem(nodes, taskConfig.replicas, taskConfig.resources);
+                        const result = findNodesForQueueItem(clusters, nodes, taskConfig.replicas, taskConfig.resources);
+                        // console.log('findNodesForQueueItem', clusters, nodes, queuePosition, result.status, result.newNodes, result.nodeAssignment);
 
                         if (result.status === FitsStatus.neverFits) {
-                            task.queue.result = 'impossible';
+                            task.queue.result = 'never fits';
                             queuePosition++;
                             task.queue.position = queuePosition;
                         } else if (result.status === FitsStatus.notFree) {
-                            task.queue.result = 'failed';
+                            task.queue.result = 'not free';
                             queuePosition++;
                             task.queue.position = queuePosition;
                         } else {
@@ -199,10 +182,16 @@ export class ResourcesManager {
                             task.status = JobTaskStatus.assigned;
                             task.assigned = new Date();
 
-                            await this.database.query(JobQueueItem).filter({
-                                job: queueItem.job,
-                                task: queueItem.task
-                            }).deleteOne();
+                            for (const newNode of result.newNodes) {
+                                if (!availableNodesPerUser[queueItem.userId]) availableNodesPerUser[queueItem.userId] = [];
+
+                                availableNodesPerUser[queueItem.userId].push(newNode);
+                                await this.exchangeDatabase.add(newNode);
+                                availableNodesMap[newNode.id] = newNode;
+                                createdDynamicNodes.push(newNode);
+                            }
+
+                            await this.exchangeDatabase.remove(JobQueueItem, queueItem.id);
 
                             for (const [nodeId, assignedResourcesPerInstance] of eachPair(assignedResourcesPerNode)) {
                                 const node: ClusterNode = availableNodesMap[nodeId];
@@ -246,15 +235,21 @@ export class ResourcesManager {
                     });
                 } else {
                     //task has already been started, so remove that job queue item
-                    await this.database.query(JobQueueItem).filter({job: queueItem.job, task: queueItem.task}).deleteOne();
+                    await this.exchangeDatabase.remove(JobQueueItem, queueItem.id);
                 }
+            }
+
+            for (const node of createdDynamicNodes) {
+                //this calls MachineManager.createAndStartInstance()
+                await this.exchange.publish('cloud/dynamic-created', {nodeId: node.id});
+                delete assignedJobsToNodes[node.id];
             }
 
             for (const nodeId of eachKey(assignedJobsToNodes)) {
                 //we don't need the result or want to wait
                 this.internalClient.auto<NodePeerControllerInterface>('node/' + nodeId, async (c) => {
                     await c.loadJobsToStart();
-                }).catch(() => {});
+                }).catch(console.error);
             }
         } catch (error) {
             console.error('Could not assign job tasks', error);

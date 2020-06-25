@@ -1,5 +1,6 @@
 export * from './src/model/role';
 export * from './src/model/job';
+export * from './src/model/job-queue';
 export * from './src/model/project';
 export * from './src/model/clusterNode';
 export * from './src/model/deepKitFile';
@@ -25,3 +26,4 @@ export * from './src/resources';
 export * from './src/search';
 export * from './src/numpy';
 export * from './src/electron';
+export * from './src/cloud';

@@ -1,10 +1,10 @@
 import 'reflect-metadata';
 import 'jest-extended';
 import {each, eachPair, first, firstKey, size} from '@marcj/estdlib';
-import {getEntitySchema, plainToClass} from "@marcj/marshal";
+import {getClassSchema, plainToClass} from "@marcj/marshal";
 import {findNodesForQueueItem, FitsStatus, requirementFits} from '../src/resources';
 import {ClusterNode, NodeGpuResource, NodeResources} from '../src/model/clusterNode';
-import {Cluster, JobAssignedResources, JobResources} from "..";
+import {Cluster, ClusterAdapter, JobAssignedResources, JobResources} from "..";
 
 test('test resources free', () => {
     const nodeFree = new ClusterNode('1', 'node1');
@@ -42,7 +42,7 @@ test('test resources free', () => {
 });
 
 test('schema', () => {
-    const s = getEntitySchema(ClusterNode);
+    const s = getClassSchema(ClusterNode);
     expect(s.propertyNames.length).toBeGreaterThan(0);
 });
 
@@ -87,7 +87,7 @@ const nodeGpu = plainToClass(ClusterNode, {
         cpu: {total: 4, reserved: 0},
         memory: {total: 4, reserved: 0},
         gpu: [
-            {id: 1, name: 'TitanX', memory: 4, reserved: false},
+            {d: 1, name: 'TitanX', memory: 4, reserved: false},
             {id: 2, name: 'TitanX 2', memory: 6, reserved: false}
         ]
     }
@@ -104,6 +104,30 @@ const busyGpu = plainToClass(ClusterNode, {
             {id: 1, name: 'TitanX 3', memory: 4, reserved: true},
             {id: 2, name: 'TitanX 4', memory: 16, reserved: false}
         ]
+    }
+});
+
+
+const cluster1Custom = plainToClass(Cluster, {
+    id: 'cluster1',
+    name: 'cluster1-custom',
+});
+
+const cluster2Genesis = plainToClass(Cluster, {
+    id: 'cluster2',
+    name: 'cluster2-genesis',
+    adapter: ClusterAdapter.genesis_cloud,
+    autoScale: {
+        maxInstances: 1
+    }
+});
+
+const cluster3Genesis = plainToClass(Cluster, {
+    id: 'cluster3',
+    name: 'cluster3-genesis',
+    adapter: ClusterAdapter.genesis_cloud,
+    autoScale: {
+        maxInstances: 4
     }
 });
 
@@ -125,7 +149,7 @@ function consume(given: {cpu: [number, number], memory: [number, number], gpus?:
 
     let id = 0;
     for (const [reserved, gpuMemory] of given.gpus || []) {
-        const gpu = new NodeGpuResource(String(id), 'name-' + id);
+        const gpu = new NodeGpuResource(id, 'name-' + id);
         gpu.reserved = reserved;
         gpu.memory = gpuMemory;
         resources.gpu.push(gpu);
@@ -134,7 +158,7 @@ function consume(given: {cpu: [number, number], memory: [number, number], gpus?:
 
     const assignedResources = resources.consume(JobResources.fromPartial(consume));
 
-    return {cpu: assignedResources.cpu, memory: assignedResources.memory, gpus: assignedResources.getGpuUUIDs()};
+    return {cpu: assignedResources.cpu, memory: assignedResources.memory, gpus: assignedResources.getGpuIDs()};
 }
 
 test('test consume', () => {
@@ -161,13 +185,13 @@ test('test consume', () => {
     expect(() => consume({cpu: [0, 4], memory: [0, 4]}, {minGpu: 1})).toThrow();
 
 
-    expect(consume({cpu: [0, 4], memory: [0, 4], gpus: [[false, 4]]}, {cpu: 1, memory: 1, gpu: 1, minGpuMemory: 4})).toEqual({cpu: 1, memory: 1, gpus: ['0']});
-    expect(consume({cpu: [0, 4], memory: [0, 4], gpus: [[false, 4]]}, {cpu: 1, memory: 1, gpu: 1})).toEqual({cpu: 1, memory: 1, gpus: ['0']});
+    expect(consume({cpu: [0, 4], memory: [0, 4], gpus: [[false, 4]]}, {cpu: 1, memory: 1, gpu: 1, minGpuMemory: 4})).toEqual({cpu: 1, memory: 1, gpus: [0]});
+    expect(consume({cpu: [0, 4], memory: [0, 4], gpus: [[false, 4]]}, {cpu: 1, memory: 1, gpu: 1})).toEqual({cpu: 1, memory: 1, gpus: [0]});
 
-    expect(consume({cpu: [0, 4], memory: [0, 4], gpus: [[false, 4], [true, 6], [false, 6]]}, {cpu: 1, memory: 1, gpu: 2})).toEqual({cpu: 1, memory: 1, gpus: ['0', '2']});
-    expect(consume({cpu: [0, 4], memory: [0, 4], gpus: [[false, 4], [true, 6], [false, 6]]}, {cpu: 1, memory: 1, minGpu: 1})).toEqual({cpu: 1, memory: 1, gpus: ['0', '2']});
+    expect(consume({cpu: [0, 4], memory: [0, 4], gpus: [[false, 4], [true, 6], [false, 6]]}, {cpu: 1, memory: 1, gpu: 2})).toEqual({cpu: 1, memory: 1, gpus: [0, 2]});
+    expect(consume({cpu: [0, 4], memory: [0, 4], gpus: [[false, 4], [true, 6], [false, 6]]}, {cpu: 1, memory: 1, minGpu: 1})).toEqual({cpu: 1, memory: 1, gpus: [0, 2]});
     expect(
-        consume({cpu: [0, 4], memory: [0, 4], gpus: [[false, 4], [true, 6], [false, 6]]}, {cpu: 1, memory: 1, minGpu: 1, minGpuMemory: 6})).toEqual({cpu: 1, memory: 1, gpus: ['2']}
+        consume({cpu: [0, 4], memory: [0, 4], gpus: [[false, 4], [true, 6], [false, 6]]}, {cpu: 1, memory: 1, minGpu: 1, minGpuMemory: 6})).toEqual({cpu: 1, memory: 1, gpus: [2]}
     );
 });
 
@@ -212,12 +236,17 @@ test('test resources reserved', () => {
     expect(requirementFits(nodeGpu.resources, JobResources.fromPartial({cpu: 1, memory: 1, gpu: 1, minGpuMemory: 8}))).toEqual(FitsStatus.neverFits);
 });
 
+function simpleFindNodesForQueryItem(jobResources: Partial<JobResources>, availableClusters: Cluster[], availableNodes?: ClusterNode[], instances?: number) {
+    const resources = plainToClass(JobResources, jobResources);
+    return findNodesForQueueItem(availableClusters, availableNodes || [], instances || 1, resources);
+}
+
 function expectAssignment(jobResources: Partial<JobResources>, node: ClusterNode, availableNodes?: ClusterNode[]): JobAssignedResources | FitsStatus {
     availableNodes = availableNodes || [node1, nodeBig, nodeBusy, nodeGpu, busyGpu];
     const nodeName = node.id;
 
     const resources = plainToClass(JobResources, jobResources);
-    const result = findNodesForQueueItem(availableNodes, 1, resources);
+    const result = findNodesForQueueItem([], availableNodes, 1, resources);
     if (result.status !== FitsStatus.fits) {
         return result.status;
     }
@@ -257,7 +286,7 @@ function expectAssignments(
     availableNodes = availableNodes || [node1, nodeBig, nodeBusy, nodeGpu, busyGpu];
 
     const resources = plainToClass(JobResources, jobResources);
-    const result = findNodesForQueueItem(availableNodes, replicas, resources);
+    const result = findNodesForQueueItem([], availableNodes, replicas, resources);
     if (result.status !== FitsStatus.fits) {
         return result.status;
     }
@@ -355,3 +384,57 @@ test('test find nodes: gpu stuff', () => {
 
     expect(expectAssignments({cpu: 1, gpu: 1, minGpuMemory: 16}, {}, 2)).toBe(FitsStatus.neverFits);
 });
+
+test('test auto-scaling', () => {
+    {
+        const res = simpleFindNodesForQueryItem({cpu: 1}, [cluster1Custom]);
+        expect(res.status).toBe(FitsStatus.neverFits);
+        expect(res.newNodes).toBeEmpty();
+        expect(res.nodeAssignment).toEqual({});
+    }
+
+    {
+        const res = simpleFindNodesForQueryItem({cpu: 1}, [cluster1Custom, cluster2Genesis]);
+        expect(res.status).toBe(FitsStatus.fits);
+        expect(res.newNodes).toBeArrayOfSize(1);
+        expect(res.newNodes[0].cluster).toBe(cluster2Genesis.id);
+        expect(res.newNodes[0].dynamic).toBe(true);
+    }
+
+    {
+        const res = simpleFindNodesForQueryItem({cpu: 1}, [cluster1Custom, cluster2Genesis], [], 2);
+        expect(res.status).toBe(FitsStatus.neverFits);
+    }
+
+    {
+        const res = simpleFindNodesForQueryItem({cpu: 1}, [cluster1Custom, cluster2Genesis, cluster3Genesis], [], 2);
+        expect(res.status).toBe(FitsStatus.fits);
+        expect(res.newNodes).toBeArrayOfSize(2);
+        expect(res.newNodes[0].cluster).toBe(cluster2Genesis.id);
+        expect(res.newNodes[0].dynamic).toBe(true);
+        expect(res.newNodes[1].cluster).toBe(cluster3Genesis.id);
+        expect(res.newNodes[1].dynamic).toBe(true);
+    }
+
+    {
+        const res = simpleFindNodesForQueryItem({cpu: 1}, [cluster1Custom, cluster2Genesis, cluster3Genesis], [], 3);
+        expect(res.status).toBe(FitsStatus.fits);
+        expect(res.newNodes).toBeArrayOfSize(3);
+        expect(res.newNodes[0].cluster).toBe(cluster2Genesis.id);
+        expect(res.newNodes[1].cluster).toBe(cluster3Genesis.id);
+        expect(res.newNodes[2].cluster).toBe(cluster3Genesis.id);
+    }
+});
+
+
+test('test auto-scaling cluster + available nodes', () => {
+    {
+        expect(cluster2Genesis.autoScaleState.instanceIds).toBeArrayOfSize(0);
+        const res = simpleFindNodesForQueryItem({cpu: 1}, [cluster1Custom, cluster3Genesis], [nodeBig]);
+        expect(res.status).toBe(FitsStatus.fits);
+        expect(res.newNodes).toBeArrayOfSize(0);
+        expect(Object.keys(res.nodeAssignment)).toBeArrayOfSize(1);
+        expect(Object.keys(res.nodeAssignment)[0]).toBe(nodeBig.id);
+    }
+});
+

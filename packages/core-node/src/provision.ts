@@ -62,6 +62,9 @@ export class SshConnection {
 
     disconnect() {
         this.destroyed = true;
+
+        //todo, is it necessary to unForwardToUs everything?
+
         this.client.end();
 
         if (this.sftp) {
@@ -122,12 +125,13 @@ export class SshConnection {
                 }
 
                 let error = '';
-                stream.on('close', function (code: number, signal: number) {
+                stream.on('exit', function (code: number, signal: number) {
                     if (code && !options.failSilent) {
                         reject(new Error('code:' + code + ', error: ' + error));
                     }
                     resolve(code);
-                }).on('data', function (d: any) {
+                })
+                    .on('data', function (d: any) {
                     if (options.redirectTo) {
                         options.redirectTo.write(d);
                     }
@@ -154,7 +158,7 @@ export class SshConnection {
 
                 let data = '';
                 let error = '';
-                stream.on('close', function (code: string, signal: number) {
+                stream.on('exit', function (code: string, signal: number) {
                     resolve(data);
                 }).on('data', function (d: any) {
                     data += d instanceof Buffer ? d.toString('utf8') : d;

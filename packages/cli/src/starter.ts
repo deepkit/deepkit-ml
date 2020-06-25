@@ -172,8 +172,8 @@ export class Starter {
                     }
 
                     const gpuReader = new GPUReader();
-                    for (const gpu of await gpuReader.getGpus()) {
-                        const assignedGpu = new JobAssignedResourcesGpu(gpu.uuid, gpu.name, gpu.memoryTotal);
+                    for (const [i, gpu] of eachPair(await gpuReader.getGpus())) {
+                        const assignedGpu = new JobAssignedResourcesGpu(i, gpu.name, gpu.memoryTotal);
                         instance.assignedResources.gpus.push(assignedGpu);
                     }
                 }
@@ -197,7 +197,7 @@ export class Starter {
 
         let exitCode = 0;
 
-        console.log('Experiment created', job.id, 'in', project.name);
+        console.log('Experiment created', '#' + job.number, 'in', project.name);
 
         if (!flags.cluster) {
             const jobAccessToken = await app.getJobAccessToken(job.id);

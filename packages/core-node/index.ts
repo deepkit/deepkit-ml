@@ -7,3 +7,4 @@ export * from './src/docker';
 export * from './src/network';
 export * from './src/provision';
 export * from './src/utils';
+export * from './src/logging';
