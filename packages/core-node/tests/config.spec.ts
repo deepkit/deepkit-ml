@@ -643,3 +643,18 @@ test('relative path resolution', () => {
     expect(normalizeRelativePathToBeIncluded('../../file/')).toBe('.parent-file/__/__/file/');
     expect(normalizeRelativePathToBeIncluded('../.../file/')).toBe('.parent-file/__/__./file/');
 });
+
+test('env', async () => {
+    {
+        const config = await getJobConfig('deepkit.yaml', new MockedFileReader({
+            'deepkit.yaml': {
+                image: 'ubuntu',
+                env: ['PETER=BLA']
+            }
+        }));
+
+        expect(config.image).toBe('ubuntu');
+        expect(config.env).toEqual(['PETER=BLA']);
+        expect(config.getTasks().main.env).toEqual(['PETER=BLA']);
+    }
+});

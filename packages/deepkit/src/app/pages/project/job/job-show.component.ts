@@ -83,7 +83,7 @@ import {MainStore} from "../../../store";
             <div>
                 <div class="left overlay-scrollbar-small" *ngIf="job$|asyncRender as job">
                     <div>
-                        <div class="sidebar-title">#{{job.number}} Experiment</div>
+                        <div class="sidebar-title">#{{job.fullNumberCombat}} Experiment</div>
 
                         <job-status [job]="job"></job-status>
 

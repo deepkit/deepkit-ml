@@ -1,0 +1,301 @@
+
+<dui-window *ngIf="needLogin || !(ready|async)">
+    <dui-window-header>
+        Deepkit
+    </dui-window-header>
+    <dui-window-content transparent [sidebarVisible]="sidebarVisible">
+        <div class="not-connected" *ngIf="needLogin">
+            <div class="logo">
+                <dui-icon name="logo" [size]="85" style="color: black"></dui-icon>
+            </div>
+
+            <dui-form #loginForm [formGroup]="loginFormGroup" [submit]="login.bind(this)">
+                <p style="margin-top: 25px;">
+                    <dui-input formControlName="username" placeholder="Username"></dui-input>
+                </p>
+                <p>
+                    <dui-input formControlName="password" type="password" placeholder="Password"></dui-input>
+                </p>
+
+                <dui-button [submitForm]="loginForm">Login</dui-button>
+            </dui-form>
+        </div>
+
+        <div class="not-connected" *ngIf="!needLogin && !(ready|async)">
+            <div class="logo">
+                <dui-icon name="logo" [size]="85" style="color: black"></dui-icon>
+            </div>
+
+            <div *ngIf="wasConnected">
+                Connecting ...
+            </div>
+            <div *ngIf="!wasConnected">
+                Loading ...
+            </div>
+
+            <div *ngIf="wasConnected && lastLoginError" style="color: var(--color-red)">
+                {{lastLoginError}}}
+            </div>
+
+            <div style="margin-top: 15px;" *ngIf="isElectron">
+                <dui-button *ngIf="wasConnected || controllerClient.getConfig().name !== 'localhost'"
+                            (click)="openAccountsSettings()">Switch account
+                </dui-button>
+            </div>
+            <div style="margin-top: 15px;" *ngIf="!isElectron">
+                <dui-button *ngIf="wasConnected"
+                            (click)="openLogin()">Login
+                </dui-button>
+            </div>
+        </div>
+    </dui-window-content>
+</dui-window>
+
+<dui-window *ngIf="(ready|async) && controllerClient.isLoggedIn()">
+    <dui-menu label="Deepkit" onlyMacOs>
+        <dui-menu-item role="about"></dui-menu-item>
+        <dui-menu-separator></dui-menu-separator>
+        <dui-menu-item label="Preferences" (click)="openAppSettings()"></dui-menu-item>
+        <dui-menu-separator></dui-menu-separator>
+        <dui-menu-item role="hide"></dui-menu-item>
+        <dui-menu-item role="hideothers"></dui-menu-item>
+        <dui-menu-item role="unhide"></dui-menu-item>
+        <dui-menu-separator></dui-menu-separator>
+        <dui-menu-item role="quit"></dui-menu-item>
+    </dui-menu>
+    <dui-menu role="editMenu"></dui-menu>
+    <dui-menu role="viewMenu"></dui-menu>
+    <dui-menu role="windowMenu"></dui-menu>
+
+    <dui-window-header>
+        <ng-container *ngIf="!store.value.isProjectSelected()">
+            Deepkit
+        </ng-container>
+
+        <ng-container *ngIf="store.value.isProjectSelected()">
+            {{store.value.selected.value.name}}
+        </ng-container>
+
+        <div class="top-info">
+            <div class="errors" *ngIf="errors.length" (click)="errorsDialog.show()">{{errors.length}}</div>
+
+            <ng-container *ngIf="controllerClient.getUser()|asyncRender as user">
+                <img
+                    *ngIf="user.image"
+                    class="user-image-small"
+                    [src]="user.image|objectURL"/>
+
+                <div tabindex="0" class="user" [openDropdown]="userSelect" *ngIf="controllerClient.userLoaded">
+                    {{user.username}}
+                    <dui-icon [size]="10" name="arrow_down"></dui-icon>
+                </div>
+            </ng-container>
+
+            <div tabindex="0" class="user" [openDropdown]="accountSelect" *ngIf="!controllerClient.isBrowser">
+                {{controllerClient.getConfig().name}}
+                <dui-icon [size]="10" name="arrow_down"></dui-icon>
+            </div>
+
+            <div class="user"
+                 *ngIf="controllerClient.getAuthenticatedUser().value.hasRole(RoleType.serverAdmin)"
+                 (click)="openServerAdministration()">
+                Administration
+            </div>
+
+            <dui-dropdown #accountSelect>
+                <dui-dropdown-item disabled>Switch account</dui-dropdown-item>
+
+                <dui-dropdown-item *ngFor="let account of controllerClient.accounts"
+                                   [selected]="controllerClient.getConfig().name === account.name"
+                                   (click)="switchAccount(account)"
+                >
+                    {{account.name}} ({{account.host}})
+                </dui-dropdown-item>
+                <dui-dropdown-splitter></dui-dropdown-splitter>
+                <dui-dropdown-item (click)="openAccountsSettings()">Manage accounts</dui-dropdown-item>
+                <dui-dropdown-item (click)="openAppSettings()">Preferences</dui-dropdown-item>
+            </dui-dropdown>
+
+            <dui-dropdown #userSelect>
+                <dui-dropdown-item disabled>Switch user</dui-dropdown-item>
+
+                <dui-dropdown-item [selected]="!controllerClient.organisation"
+                                   (click)="switchOrganisation('')">
+                    {{controllerClient.getAuthenticatedUser().value.username}}
+                </dui-dropdown-item>
+
+                <dui-dropdown-item *ngFor="let user of store.value.organisations|asyncRender"
+                                   [selected]="user.id === controllerClient.organisation"
+                                   (click)="switchOrganisation(user.id)"
+                >
+                    {{user.username}}
+                </dui-dropdown-item>
+                <dui-dropdown-splitter></dui-dropdown-splitter>
+                <dui-dropdown-item (click)="openCreateOrganisation()">Create organisation</dui-dropdown-item>
+                <dui-dropdown-item (click)="openUserSettings()">Settings</dui-dropdown-item>
+                <dui-dropdown-splitter *ngIf="!isElectron"></dui-dropdown-splitter>
+                <dui-dropdown-item *ngIf="!isElectron" (click)="logout()">Logout</dui-dropdown-item>
+            </dui-dropdown>
+        </div>
+
+        <dui-window-toolbar>
+            <dui-button-group>
+                <dui-button textured [openDropdown]="createDropdown">
+                    <dui-icon name="add"></dui-icon>
+                </dui-button>
+            </dui-button-group>
+
+            <dui-button-group float="sidebar">
+                <dui-button textured (click)="sidebarVisible = !sidebarVisible;"
+                            icon="toggle_sidebar"></dui-button>
+            </dui-button-group>
+        </dui-window-toolbar>
+    </dui-window-header>
+
+    <dui-window-content transparent [sidebarVisible]="sidebarVisible">
+        <dui-window-sidebar>
+            <dui-list
+                [focusable]="false"
+                (ngModelChange)="storeLastSelected($event)"
+                [ngModel]="store.value.selected">
+
+                <dui-list-title>
+                    Cluster
+
+                    <ng-container *ngIf="jobQueue|async as jobQueue">
+                        <div *ngIf="jobQueue.length" (click)="openJobQueue()" style="position: absolute; right: 5px; top: 5px;">{{jobQueue.length}}</div>
+                    </ng-container>
+                </dui-list-title>
+
+                <ng-container *ngFor="let cluster of store.value.clusters|asyncRender">
+                    <dui-list-item class="cluster" [value]="store.value.clusters.getEntitySubject(cluster)">
+                        <dui-icon *ngIf="!hideNodes[cluster.id]"
+                                  (mousedown)="$event.stopPropagation(); hideNodes[cluster.id] = true; hideNodes = hideNodes"
+                                  name="triangle_down"></dui-icon>
+                        <dui-icon *ngIf="hideNodes[cluster.id]"
+                                  (mousedown)="$event.stopPropagation(); hideNodes[cluster.id] = false; hideNodes = hideNodes"
+                                  name="triangle_right"></dui-icon>
+
+                        {{cluster.name}}
+                    </dui-list-item>
+
+                    <ng-container *ngIf="!hideNodes[cluster.id]">
+                        <dui-list-item class="node"
+                                       *ngFor="let node of filterNodes(store.value.nodes|asyncRender, cluster)"
+                                       [value]="store.value.nodes.getEntitySubject(node)"
+                        >
+                            <div class="node-mini-utils" [class.connected]="node.connected">
+                                <div>
+                                    <dk-progress-bar [height]="2"
+                                                     [value]="node.connected ? node.getCpuUsageInPercent() : 0"></dk-progress-bar>
+                                    <dk-progress-bar [height]="2"
+                                                     [value]="node.connected ? node.getMemoryUsageInPercent() : 0"></dk-progress-bar>
+                                    <dk-progress-bar [height]="2"
+                                                     [value]="node.connected ? node.getGpuUsageInPercent() : 0"></dk-progress-bar>
+                                </div>
+                            </div>
+                            {{node.name}}
+                        </dui-list-item>
+                    </ng-container>
+                </ng-container>
+
+                <dui-list-title>Projects</dui-list-title>
+
+                <dui-list-item
+                    *ngFor="let project of filterProjects(store.value.projects|asyncRender)"
+                    [value]="store.value.projects.getEntitySubject(project)"
+                >
+                    {{project.name}}
+                </dui-list-item>
+            </dui-list>
+
+            <div class="sidebar-actions">
+                <dui-input class="semi-transparent" clearer lightFocus style="flex: 1" icon="filter"
+                           [(ngModel)]="filterQuery" round (esc)="filterQuery = ''"
+                           placeholder="Filter"></dui-input>
+            </div>
+        </dui-window-sidebar>
+
+        <div class="welcome" *ngIf="welcomeVisible()">
+            <div class="logo">
+                <dui-icon name="logo" [size]="51" style="color: black"></dui-icon>
+            </div>
+
+            <h1>Welcome to Deepkit</h1>
+
+            <div class="points">
+                <div>
+                    <h3>Experiments</h3>
+                    Manage all your experiments in one app. Track and debug your progress.
+                </div>
+                <div>
+                    <h3>Cluster</h3>
+                    Connect all your servers to run experiments easily on them.
+                </div>
+                <div>
+                    <h3>Collaboration</h3>
+                    Run your own Deepkit server to work on projects
+                    in your team.
+                </div>
+            </div>
+
+            <div>
+                <dui-button primary (click)="openProjectDialog()">Get started</dui-button>
+            </div>
+        </div>
+
+        <div>
+            <dui-dropdown #createDropdown>
+                <dui-dropdown-item (click)="openProjectDialog()">Project</dui-dropdown-item>
+                <dui-dropdown-item (click)="createClusterDialog.show()">Cluster</dui-dropdown-item>
+                <dui-dropdown-item (click)="openNodeSettings()">Cluster node</dui-dropdown-item>
+            </dui-dropdown>
+
+            <dui-dialog #errorsDialog>
+                <div class="text-selection">
+                    <div class="error-item"
+                         *ngFor="let error of errors">
+                        <div style="white-space: pre;">{{error.date|date:'M/d/yy HH:mm:ss.SSS'}}
+                            : {{error.error.stack}}</div>
+                    </div>
+                </div>
+
+                <dui-dialog-actions>
+                    <dui-button closeDialog>OK</dui-button>
+                </dui-dialog-actions>
+            </dui-dialog>
+
+            <dui-dialog #createClusterDialog [width]="400">
+                <ng-container *dialogContainer>
+                    <h4>Create cluster</h4>
+                    <dui-form [formGroup]="createClusterForm" #form
+                              (success)="createClusterDialog.close()"
+                              [submit]="createCluster.bind(this)">
+                        <dui-form-row label="Name">
+                            <dui-input focus formControlName="name"></dui-input>
+                        </dui-form-row>
+
+                        <dui-dialog-actions>
+                            <dui-button textured [disabled]="form.submitting" closeDialog>Cancel</dui-button>
+                            <dui-button textured
+                                        [submitForm]="form"
+                                        [disabled]="createClusterForm.invalid || form.submitting">
+                                Create
+                            </dui-button>
+                        </dui-dialog-actions>
+                    </dui-form>
+                </ng-container>
+            </dui-dialog>
+
+            <dk-project-show *duiView="store.value.isProjectSelected()"
+                             [project$]="store.value.selectedProject"></dk-project-show>
+
+            <dk-cluster-show *duiView="store.value.isClusterSelected()"
+                             [cluster$]="store.value.selectedCluster"></dk-cluster-show>
+            <dk-node-show *duiView="store.value.isClusterNodeSelected()"
+                          [node$]="store.value.selectedNode"></dk-node-show>
+
+            <!--                    <router-outlet class="animated"></router-outlet>-->
+        </div>
+    </dui-window-content>
+</dui-window>

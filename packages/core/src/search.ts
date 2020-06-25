@@ -137,10 +137,11 @@ export class Search<T> {
 
                 if (lvalue && operator) {
                     components++;
+                    const encodedRValue = isNaN(lastRValue as any) ? JSON.stringify(lastRValue) : lastRValue;
                     if (operator === '~') {
-                        func += ' valueComparator(' + lvalue + ', (a) => -1 !== String(a).indexOf(' + lastRValue + '))';
+                        func += ' valueComparator(' + lvalue + ', (a) => -1 !== String(a).indexOf(' + encodedRValue + '))';
                     } else {
-                        func += ' valueComparator(' + lvalue + ', (a) => a ' + operator + ' ' + lastRValue + ')';
+                        func += ' valueComparator(' + lvalue + ', (a) => a ' + operator + ' ' + encodedRValue + ')';
                     }
                     operator = '';
                     lvalue = '';

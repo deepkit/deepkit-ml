@@ -365,7 +365,7 @@ import {ClusterSettingsDialogComponent} from "../../dialogs/cluster-settings-dia
 
                 <dui-table-column name="number" header="ID" [width]="65">
                     <ng-container *duiTableCell="let job">
-                        #{{job.number}}
+                        #{{job.fullNumberCombat}}
                     </ng-container>
                 </dui-table-column>
 

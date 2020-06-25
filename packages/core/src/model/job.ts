@@ -1008,8 +1008,17 @@ export class Job implements IdInterface {
     @f.uuid().exclude('plain')
     accessToken: string = uuid();
 
+    @f.uuid().optional()
+    parent?: string;
+
+    @f number: number = 0;
+
+    @f level: number = 0;
+
+    @f.index() fullNumber: string = '';
+
     @f
-    number: number = 0;
+    childNumber: number = 0;
 
     @f.type(String).optional().uuid()
     shareToken: string | null = null;
@@ -1155,6 +1164,13 @@ export class Job implements IdInterface {
     constructor(
         @f.uuid().index().asName('project') public project: string,
     ) {
+    }
+
+    /**
+     * Necessary for backwards compatibility because fullNumber is for older experiments not defined.
+     */
+    get fullNumberCombat(): string {
+        return this.fullNumber || String(this.number);
     }
 
     getStatusLabel(): string {

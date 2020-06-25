@@ -32,7 +32,7 @@ import {ControllerClient} from "../providers/controller-client";
                 <dui-form-row label="Mode">
                     <dui-select textured formControlName="adapter">
                         <dui-option [value]="''">Custom</dui-option>
-                        <dui-option [value]="ClusterMode.genesis_cloud">Genesis Cloud</dui-option>
+<!--                        <dui-option [value]="ClusterMode.genesis_cloud">Genesis Cloud</dui-option>-->
                     </dui-select>
                     <ng-container *ngIf="!store.value.clusters!.count()">
                         No cluster created yet. Create one first.

@@ -15,15 +15,14 @@ export class AuthCommand extends Command {
 
     public static args = [
         {
-            name: 'name',
-            required: true,
-            description: 'Account name',
-        },
-        {
             name: 'host',
             default: 'app.deepkit.ai',
             description: 'Host address (IP, DNS name)',
-        }
+        },
+        {
+            name: 'name',
+            description: 'Account name. Per default the host name.',
+        },
     ];
 
     public static flags = {
@@ -36,6 +35,8 @@ export class AuthCommand extends Command {
 
     public async run(): Promise<void> {
         const {args, flags} = this.parse(AuthCommand);
+
+        if (!args.name) args.name = args.host;
 
         const homeConfig = await getHomeConfig();
         const foundAccount = homeConfig.getAccountByName(args.name);
@@ -62,7 +63,6 @@ export class AuthCommand extends Command {
             this.exit(1);
         }
 
-
         const account = new HomeAccountConfig(args.name, args.host);
         account.port = flags.port;
         account.ssl = flags.ssl;
@@ -83,7 +83,7 @@ export class AuthCommand extends Command {
         const app = client.controller<AppControllerInterface>('app');
 
         const username = await cli.prompt('username', {required: true});
-        const password = await cli.prompt('password', {required: true, type: 'mask'});
+        const password = await cli.prompt('password', {required: true, type: 'hide'});
 
         const token = await app.login(username, password);
         if (token) {
@@ -93,7 +93,7 @@ export class AuthCommand extends Command {
             console.log('Successfully authenticated and account created.');
             this.exit(1);
         } else {
-            console.log('Invalid credentials.');
+            console.log(chalk.red('Invalid credentials.'));
             this.exit(1);
         }
         client.disconnect();

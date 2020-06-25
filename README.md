@@ -51,6 +51,11 @@ Following open-source packages have been created for Deepkit that wouldn't exist
 
 ```
 cd deepkit
+npm run bootstrap
+```
+
+```
+cd deepkit
 npm-local-development
 ```
 
