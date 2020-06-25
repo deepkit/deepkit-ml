@@ -368,7 +368,7 @@ export class AppController implements AppControllerInterface {
 
         const oldProject = await this.database.query(Project).filter({id: project.id}).findOne();
 
-        const validLists: (string|null)[] = project.experimentLists.map(v => v.id);
+        const validLists: (string | null)[] = project.experimentLists.map(v => v.id);
         validLists.push(null);
         const updateJobsQuery = await this.database.query(Job).filter({
             project: project.id,
@@ -1023,14 +1023,24 @@ export class AppController implements AppControllerInterface {
     @Action()
     @Role(RoleType.regular)
     @f.type(Job)
-    async createJob(project: string): Promise<Job> {
+    async createJob(project: string, @f.optional() parentExperimentId?: string): Promise<Job> {
         await this.permission.checkProjectWriteAccess(project);
-
-        const newFields = await this.exchangeDatabase.increase(Project, {id: project}, {jobNumber: 1});
         const job = new Job(project);
-        job.selfExecution = true;
 
-        job.number = newFields.jobNumber;
+        if (parentExperimentId) {
+            await this.permission.checkJobWriteAccess(parentExperimentId);
+            const newFields = await this.exchangeDatabase.increase(Job, {id: parentExperimentId}, {childNumber: 1}, ['level', 'numberString', 'number']);
+            job.number = newFields.childNumber;
+            job.level = (newFields.level || 0) + 1;
+            const parentNumberString: string = newFields.numberString || String(newFields.number);
+            job.fullNumber = parentNumberString + '.' + job.number;
+            job.parent = parentExperimentId;
+        } else {
+            const newFields = await this.exchangeDatabase.increase(Project, {id: project}, {jobNumber: 1});
+            job.number = newFields.jobNumber;
+        }
+
+        job.selfExecution = true;
         job.status = JobStatus.running;
         job.started = new Date();
         job.user = this.getAuthenticatedUserId();

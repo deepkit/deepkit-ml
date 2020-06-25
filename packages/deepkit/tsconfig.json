@@ -25,7 +25,10 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "@marcj/angular-desktop-ui": ["node_modules/@marcj/angular-desktop-ui"]
+    }
   },
   "include": [
     "src/",

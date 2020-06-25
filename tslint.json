@@ -8,6 +8,7 @@
     "class-name": true,
     "comment-format": false,
     "curly": false,
+    "ter-indent": [true, 4],
     "deprecation": {
       "severity": "warn"
     },

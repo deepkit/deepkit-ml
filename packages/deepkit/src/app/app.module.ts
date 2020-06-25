@@ -303,8 +303,6 @@ import {JobQueueDialogComponent} from './dialogs/job-queue-dialog.component';
         DuiDialogModule,
         DuiSliderModule,
         DuiIndicatorModule,
-        DuiButtonModule,
-        DuiTableModule,
     ],
     providers: [
         ControllerClient,

@@ -7,7 +7,6 @@ import 'reflect-metadata';
 import {app, BrowserWindow, Menu} from 'electron';
 import * as path from 'path';
 import * as os from "os";
-import {pathExistsSync} from "fs-extra";
 
 const {autoUpdater} = require("electron-updater");
 

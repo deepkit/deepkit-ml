@@ -111,6 +111,7 @@ import {f, cloneClass, uuid} from "@marcj/marshal";
                         <li><code>labels ~ "tf"</code> (at least one label contains "tf")</li>
                         <li><code>34 55</code> (two experiments with id #34 and #55)</li>
                         <li><code>status = done or status = aborted</code></li>
+                        <li><code>level = 2</code> (is sub experiment on level 2)</li>
                     </ul>
 
                     <h4 style="margin-top: 5px;">Available fields</h4>
@@ -125,20 +126,27 @@ import {f, cloneClass, uuid} from "@marcj/marshal";
                     <dui-dropdown-item (click)="addToSearch('speed')">speed</dui-dropdown-item>
                     <dui-dropdown-item (click)="addToSearch('status')">status</dui-dropdown-item>
                     <dui-dropdown-item (click)="addToSearch('labels')">labels</dui-dropdown-item>
+                    <dui-dropdown-item (click)="addToSearch('level')">level</dui-dropdown-item>
                     <dui-dropdown-item (click)="addToSearch('configFile')">configFile</dui-dropdown-item>
                     <dui-dropdown-item (click)="addToSearch('runOnCluster')">runOnCluster</dui-dropdown-item>
-                    <dui-dropdown-splitter></dui-dropdown-splitter>
-                    <dui-dropdown-item
-                        (click)="addToSearch(name)"
-                        *ngFor="let name of availableChannelNames">{{name}}</dui-dropdown-item>
-                    <dui-dropdown-splitter></dui-dropdown-splitter>
-                    <dui-dropdown-item
-                        (click)="addToSearch('config.' + name)"
-                        *ngFor="let name of availableHyperParameterNames">config.{{name}}</dui-dropdown-item>
-                    <dui-dropdown-splitter></dui-dropdown-splitter>
-                    <dui-dropdown-item
-                        (click)="addToSearch('info.' + name)"
-                        *ngFor="let name of availableInformationNames">info.{{name}}</dui-dropdown-item>
+                    <ng-container *ngIf="availableChannelNames.size">
+                        <dui-dropdown-splitter></dui-dropdown-splitter>
+                        <dui-dropdown-item
+                            (click)="addToSearch(name)"
+                            *ngFor="let name of availableChannelNames">{{name}}</dui-dropdown-item>
+                    </ng-container>
+                    <ng-container *ngIf="availableHyperParameterNames.size">
+                        <dui-dropdown-splitter></dui-dropdown-splitter>
+                        <dui-dropdown-item
+                            (click)="addToSearch('config.' + name)"
+                            *ngFor="let name of availableHyperParameterNames">config.{{name}}</dui-dropdown-item>
+                    </ng-container>
+                    <ng-container *ngIf="availableInformationNames.size">
+                        <dui-dropdown-splitter></dui-dropdown-splitter>
+                        <dui-dropdown-item
+                            (click)="addToSearch('info.' + name)"
+                            *ngFor="let name of availableInformationNames">info.{{name}}</dui-dropdown-item>
+                    </ng-container>
                 </div>
             </dui-dropdown>
 
@@ -243,10 +251,11 @@ import {f, cloneClass, uuid} from "@marcj/marshal";
                 [multiSelect]="true"
                 [(selected)]="selected" (selectedChange)="jobsSelected.emit($event)"
                 (dbclick)="openJob($event)"
-                defaultSort="number"
+                defaultSort="id"
                 noFocusOutline
                 defaultSortDirection="desc"
                 [valueFetcher]="valueFetcher"
+                [sortFunction]="sortFunction.bind(this)"
                 [itemHeight]="36"
                 [borderless]="full"
                 #table
@@ -256,6 +265,9 @@ import {f, cloneClass, uuid} from "@marcj/marshal";
                     </dui-dropdown-item>
                     <ng-container *ngIf="!readOnly">
                         <dui-dropdown-item *ngIf="selected.length === 1" (click)="describe()">Describe
+                        </dui-dropdown-item>
+                        <dui-dropdown-item *ngIf="selected.length === 1" (click)="showChildren(selected[0])">
+                            Filter children
                         </dui-dropdown-item>
                         <dui-dropdown-splitter></dui-dropdown-splitter>
 
@@ -313,9 +325,17 @@ import {f, cloneClass, uuid} from "@marcj/marshal";
                     </dui-dropdown-item>
                 </dui-dropdown>
 
-                <dui-table-column class="lining" name="number" header="ID" [width]="65">
+                <!--                <dui-table-header name="actions" [sortable]="false"></dui-table-header>-->
+
+                <!--                <dui-table-column name="actions" [width]="40">-->
+                <!--                    <ng-container *duiTableCell="let job">-->
+                <!--                        <dui-icon name="triangle_down"></dui-icon>-->
+                <!--                    </ng-container>-->
+                <!--                </dui-table-column>-->
+
+                <dui-table-column class="lining" name="id" header="ID" [width]="65">
                     <ng-container *duiTableCell="let job">
-                        #{{job.number}}
+                        #{{job.fullNumberCombat}}
                     </ng-container>
                 </dui-table-column>
 
@@ -427,31 +447,12 @@ import {f, cloneClass, uuid} from "@marcj/marshal";
                         {{job.infos[name]|json}}
                     </ng-container>
                 </dui-table-column>
-
-                <!--            <dui-table-column name="kpi" class="monospace" header="KPI" [width]="150">-->
-                <!--                <ng-container *duiTableCell="let job">-->
-                <!--                    <div-->
-                <!--                            class="channel"-->
-                <!--                            *ngIf="job.getKpiChannelName() as kpiName">-->
-
-                <!--                        <div>-->
-                <!--                            <div *ngFor="let v of job.channels[kpiName].lastValue">-->
-                <!--                                {{v}}-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--&lt;!&ndash;                        <plotly&ndash;&gt;-->
-                <!--&lt;!&ndash;                                style="flex: 1; margin-left: 10px; min-width: 150px; height: 24px;"&ndash;&gt;-->
-                <!--&lt;!&ndash;                                [layout]="channelLayout" [trace]="getJobChannelTrace(job)"&ndash;&gt;-->
-                <!--&lt;!&ndash;                                [config]="channelConfig"></plotly>&ndash;&gt;-->
-                <!--                    </div>-->
-                <!--                </ng-container>-->
-                <!--            </dui-table-column>-->
             </dui-table>
 
             <div class="tabs-container">
                 <div class="tabs">
                     <dui-tab-button [active]="!filter.list" (click)="loadList(undefined)">Default</dui-tab-button>
-                    <dui-tab-button [active]="filter.list === 'ci'" (click)="loadList('ci')">CI</dui-tab-button>
+                    <!--                    <dui-tab-button [active]="filter.list === 'ci'" (click)="loadList('ci')">CI</dui-tab-button>-->
 
                     <ng-container
                         *ngFor="let list of project.experimentLists"
@@ -525,6 +526,10 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
 
     @observe({unsubscribe: true})
     public jobs?: Collection<Job>;
+    public jobsMap = new Map<string, Job>();
+    public jobsIdSortMap = new Map<string, number>();
+
+    protected jobsSubscriptions = new Subscriptions();
 
     public jobsLoadedProjectId?: string;
     public jobsLoadedList?: string;
@@ -548,6 +553,7 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
     public lastLabel: string = '';
     public labelCounts: { [id: string]: number } = {};
 
+    public childJobs = new Map<string, Job[]>();
     public availableAuthors = new Set<string>();
     public channelTraceNames: { [channelName: string]: string[] } = {};
     public availableChannelNames = new Set<string>();
@@ -610,7 +616,7 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         return (object as any)[path];
-    }
+    };
 
     constructor(
         private controllerClient: ControllerClient,
@@ -621,6 +627,37 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
         if (this.filter.query) {
             this.searchFilter.parse(this.filter.query);
         }
+    }
+
+    public sortFunction(path: string, dir: 'asc' | 'desc'): ((a: Job, b: Job) => number) | undefined {
+        if (path === 'id') {
+
+            const getDeepId = (job: Job): number => {
+                const parent = this.jobsMap.get(job.parent || '');
+                if (parent) {
+                    return parent.number + (job.number / parent.childNumber);
+                }
+                return job.number;
+            };
+
+            return (a: Job, b: Job) => {
+                //for the moment we only support one children level
+                const aN = getDeepId(a);
+                const bN = getDeepId(b);
+
+                if (dir === 'asc') {
+                    if (aN > bN) return +1;
+                    if (aN < bN) return -1;
+                } else {
+                    if (aN > bN) return -1;
+                    if (aN < bN) return +1;
+                }
+
+                return 0;
+            };
+        }
+
+        return;
     }
 
     addToSearch(name: string) {
@@ -690,6 +727,10 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
         if (a) {
             await this.controllerClient.project().addExperimentList(this.project$.id, a);
         }
+    }
+
+    public async showChildren(job: Job) {
+        this.search(`id ~ ${job.fullNumberCombat} and level > ${job.level + 1}`);
     }
 
     public async describe() {
@@ -812,6 +853,7 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
             if (this.jobs) {
                 this.jobs.unsubscribe();
             }
+            this.jobsSubscriptions.unsubscribe();
             this.progress = ClientProgress.trackDownload();
             this.jobs = await this.controllerClient.app().getJobs(loadForProject, loadForList);
             console.debug('loading jobs took', Date.now() - start, 'ms for', this.jobs.count(), 'items');
@@ -824,6 +866,11 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
 
             this.selected = [];
             this.load.emit(this.jobs!.all());
+
+            this.jobsSubscriptions.add = this.jobs!.added.subscribe(this.rebuildIndexAdded.bind(this));
+            this.jobsSubscriptions.add = this.jobs!.removed.subscribe(this.rebuildIndexRemoved.bind(this));
+
+            this.rebuildIndex();
             this.jobs!.subscribe(() => {
                 this.listChanged.emit(this.jobs!.all());
             });
@@ -855,7 +902,24 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
         this.filterJobs();
     }
 
+    protected rebuildIndex() {
+        if (!this.jobs) return;
+        this.jobsMap.clear();
+        for (const job of this.jobs.all()) {
+            this.jobsMap.set(job.id, job);
+        }
+    }
+
+    protected rebuildIndexAdded(job: Job) {
+        this.jobsMap.set(job.id, job);
+    }
+
+    protected rebuildIndexRemoved(job: Job) {
+        this.jobsMap.delete(job.id);
+    }
+
     public search(query: string) {
+        this.filter.query = query;
         if (query) {
             this.searchFilter.parse(query);
         } else {
@@ -867,7 +931,35 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
 
     public searchGetter(job: Job, path: string): any {
         if (!path) {
-            return [job.id, job.number, job.description];
+            return [job.id, job.fullNumberCombat, job.description];
+        }
+
+        if (path === 'configFile') {
+            return job.config.path;
+        }
+
+        if (path === 'progress') {
+            return job.iteration;
+        }
+
+        if (path === 'epoch') {
+            return job.iteration;
+        }
+
+        if (path === 'epochs') {
+            return job.iterations;
+        }
+
+        if (path === 'level') {
+            return job.level + 1;
+        }
+
+        if (path === 'id') {
+            return job.fullNumberCombat;
+        }
+
+        if (path === 'status') {
+            return JobStatus[job.status];
         }
 
         const [first, second] = path.split('.');
@@ -895,30 +987,6 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
             return job.infos[second];
         }
 
-        if (path === 'configFile') {
-            return job.config.path;
-        }
-
-        if (path === 'progress') {
-            return job.iteration;
-        }
-
-        if (path === 'epoch') {
-            return job.iteration;
-        }
-
-        if (path === 'epochs') {
-            return job.iterations;
-        }
-
-        if (path === 'id') {
-            return job.number;
-        }
-
-        if (path === 'status') {
-            return JobStatus[job.status];
-        }
-
         return (job as any)[path];
     }
 
@@ -930,10 +998,15 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
         this.availableChannelNames.clear();
         this.availableHyperParameterNames.clear();
         this.availableInformationNames.clear();
+        this.childJobs.clear();
+        const jobMap = new Map<string, Job>();
+        const childJobs: Job[] = [];
 
         (window as any)['jobs'] = this.jobs!.all();
 
         for (const job of this.jobs!.all()) {
+            jobMap.set(job.id, job);
+
             if (job.user) {
                 this.availableAuthors.add(job.user);
             }
@@ -946,11 +1019,9 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
                 }
             }
 
-
             const channelNames = Object.keys(job.channels);
-            for (let i = 0; i < channelNames.length; i++) {
-                const name = channelNames[i];
-                const channel = job.channels[channelNames[i]];
+            for (const name of channelNames) {
+                const channel = job.channels[name];
 
                 const traces = channel.traces.length || 1;
                 if (!this.channelTraceNames[name]) {
@@ -965,7 +1036,6 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
 
             Object.keys(job.config.config).map(v => this.availableHyperParameterNames.add(v));
             Object.keys(job.infos).map(v => this.availableInformationNames.add(v));
-
 
             if (this.searchFilter.compare && !this.searchFilter.compare(job)) {
                 continue;
@@ -987,8 +1057,27 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
                 continue;
             }
 
+            // if (job.parent) {
+            //     let childJobsPerParent = this.childJobs.get(job.parent);
+            //     if (!childJobsPerParent) {
+            //         childJobsPerParent = [];
+            //         this.childJobs.set(job.parent, childJobsPerParent);
+            //     }
+            //     childJobsPerParent.push(job);
+            //     childJobs.push(job);
+            // } else {
             this.filteredJobs.push(job);
+            // }
         }
+
+        // //make sure all parents of childJobs are visible
+        // for (let job of childJobs) {
+        //     while (job && job.parent) {
+        //         job = jobMap.get(job.parent)!;
+        //     }
+        //     //put root jobs on root level, so they are visible always
+        //     if (job) this.filteredJobs.push(job);
+        // }
 
         detectChangesNextFrame(this.cd);
     }

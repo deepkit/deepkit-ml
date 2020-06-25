@@ -55,7 +55,7 @@ export class LinkCommand extends Command {
 
         const cwd = flags.dir ? path.resolve(flags.dir) : getCWD();
 
-        const projectLink = await getFolderLinkOfDirectory(cwd, flags.account, args.name || basename(cwd));
+        const projectLink = await getFolderLinkOfDirectory(cwd, flags.account);
         const homeConfig = await getHomeConfig();
 
         if (flags.list) {
@@ -127,7 +127,6 @@ export class LinkCommand extends Command {
         const project = await controller.app().getProjectForPublicName(projectName);
 
         if (project) {
-
             await setHomeFolderLink(homeConfig, account.id, project.id, projectDir, projectName);
             await setHomeConfig(homeConfig);
             this.log(`Successfully linked ${chalk.yellow(projectDir)} to project ${chalk.yellow(projectName)} at account ${chalk.green(account.name)}`);

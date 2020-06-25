@@ -62,7 +62,7 @@ import {unsubscribe} from "../../../reactivate-change-detection";
                 <tr class="data-row">
                     <td>ID</td>
                     <td *ngFor="let job of jobsArray; trackBy: trackJob; let i = index">
-                        #{{job.number}}
+                        #{{job.fullNumberCombat}}
                     </td>
                 </tr>
                 <!--                <tr>-->
