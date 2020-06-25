@@ -63,7 +63,7 @@
     "quill-image-resize": "^3.0.9"
   },
   "devDependencies": {
-    "@marcj/angular-desktop-ui": "^0.3.24",
+    "@marcj/angular-desktop-ui": "^0.3.25",
     "@angular-devkit/build-angular": "^0.900.3",
     "@angular/cli": "^9.0.3",
     "@angular/compiler-cli": "^9.0.2",
