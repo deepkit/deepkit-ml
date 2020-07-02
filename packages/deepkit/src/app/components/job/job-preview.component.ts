@@ -6,7 +6,27 @@ import {actionExperimentMode, actionLoadAndShowJobId, MainStore, selectEntity} f
     selector: 'dk-job-preview',
     template: `
         <ng-container *ngIf="getProject() as project">
-            {{project.name}} #{{job.fullNumberCombat}}
+            <div style="display: flex; width: 100%;">
+                <div style="flex: 1; text-overflow: ellipsis; overflow: hidden; white-space: nowrap">
+                    {{project.name}} #{{job.fullNumberCombat}}
+                </div>
+                <div style="flex: 0;">
+                    <job-status [job]="job"></job-status>
+                </div>
+            </div>
+            <div style="display: flex; width: 100%;" class="text-light">
+                <div>
+                    {{job.iteration}}/{{job.iterations}}
+                </div>
+                <dk-redraw style="margin-left: 5px;">
+                    <div class="lining">
+                        {{job.ended ? ((job.ended - job.started) / 1000 | humanize) : (job.started | humanize_until_now)}}
+                    </div>
+                </dk-redraw>
+                <dk-redraw style="margin-left: auto" class="lining">
+                    {{job.eta | humanize}}
+                </dk-redraw>
+            </div>
         </ng-container>
     `,
     host: {
@@ -15,7 +35,10 @@ import {actionExperimentMode, actionLoadAndShowJobId, MainStore, selectEntity} f
     styles: [`
         :host {
             display: block;
-            padding: 5px 8px;
+            padding: 4px 20px;
+            font-size: 11px;
+            line-height: 16px;
+            font-weight: 500;
         }
 
         :host:hover {

@@ -17,20 +17,20 @@ import {MainStore} from "../../../store";
     selector: 'dk-job-show',
     template: `
         <ng-container *ngIf="!readOnly">
-            <dui-window-toolbar for="main" *ngIf="viewState.attached">
-                <dui-button-group padding="none">
-                    <ng-container *ngIf="job$|async as job">
+            <ng-container *ngIf="job$|async as job">
+                <dui-window-toolbar for="main" *ngIf="viewState.attached">
+                    <dui-button-group padding="none">
                         <dui-button textured *ngIf="!job.ended || job.isAlive()"
                                     (click)="stopJob()"
                                     title="{{job.connections}} connections">
                             {{job.stopRequested ? 'Force ' : ''}}
                             Stop
                         </dui-button>
-                    </ng-container>
-                    <dui-button textured [openDropdown]="labelDropdown" icon="flag"></dui-button>
-                    <dui-button textured [openDropdown]="shareDropdown" icon="share"></dui-button>
-                </dui-button-group>
-            </dui-window-toolbar>
+                        <dui-button textured [openDropdown]="labelDropdown" icon="flag"></dui-button>
+                        <dui-button textured [openDropdown]="shareDropdown" icon="share"></dui-button>
+                    </dui-button-group>
+                </dui-window-toolbar>
+            </ng-container>
         </ng-container>
 
         <dui-window-toolbar for="main_right" *ngIf="viewState.attached">
