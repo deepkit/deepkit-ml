@@ -633,7 +633,7 @@ export class JobsListComponent implements OnInit, OnChanges, OnDestroy {
             const getDeepId = (job: Job): number => {
                 const parent = this.jobs!.get(job.parent || '');
                 if (parent) {
-                    return parent.number + (job.number / parent.childNumber);
+                    return parent.number + (job.number / (parent.childNumber + 1));
                 }
                 return job.number;
             };
