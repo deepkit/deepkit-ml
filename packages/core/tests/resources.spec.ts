@@ -149,7 +149,7 @@ function consume(given: {cpu: [number, number], memory: [number, number], gpus?:
 
     let id = 0;
     for (const [reserved, gpuMemory] of given.gpus || []) {
-        const gpu = new NodeGpuResource(id, 'name-' + id);
+        const gpu = new NodeGpuResource('name-' + id, id);
         gpu.reserved = reserved;
         gpu.memory = gpuMemory;
         resources.gpu.push(gpu);

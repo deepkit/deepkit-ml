@@ -273,7 +273,7 @@ import compareVersions = require("compare-versions");
                 <div class="sub" *ngIf="node.stats.getGpu(gpu.uuid) as gpuStats">
                     {{gpuStats.temperature}} C, {{gpuStats.powerDraw}} Watt
 
-                    <ng-container *ngIf="node.resources.getGpu(gpu.uuid) as reservation">
+                    <ng-container *ngIf="node.resources.getGpu(gpu.index) as reservation">
                         <div class="online-chip" *ngIf="reservation.reserved">IN USE</div>
                     </ng-container>
                 </div>

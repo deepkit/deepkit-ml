@@ -9,7 +9,7 @@ import {readFile} from "fs-extra";
 import {isArray} from "@marcj/estdlib";
 
 export interface GpuInformation {
-    index: number,
+    index: number;
 
     name: string;
 

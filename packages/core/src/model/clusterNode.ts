@@ -24,9 +24,9 @@ export class NodeGpuResource {
     memory: number = 1;
 
     constructor(
-        //index starts at 0, and is later mapped to the actual UUID. 0 means first gpu found by gpuReader
-        @f.asName('index') public index: number,
         @f.asName('name') public name: string,
+        //index starts at 0, and is later mapped to the actual UUID. 0 means first gpu found by gpuReader
+        @f.asName('index') public index: number = 0
     ) {
     }
 }
@@ -79,7 +79,7 @@ export class NodeResources {
         resources.memory.total = memory;
 
         for (const [id, gpu] of eachPair(gpus)) {
-            const nodeGpuResource = new NodeGpuResource(id, gpu.name);
+            const nodeGpuResource = new NodeGpuResource(gpu.name, id);
             nodeGpuResource.memory = gpu.memory;
             resources.gpu.push(nodeGpuResource);
         }
@@ -337,15 +337,17 @@ export class NodeHardwareInformationGpu {
     @f
     temperatureMax: number = 0;
 
+    @f
+    index: number = 0; //backwards compatibility
+
     constructor(
-        @f.asName('index') public index: number,
         @f.asName('uuid') public uuid: string,
         @f.asName('name') public name: string,
-        /**
+        /*
          * Value in MHz.
          */
         @f.asName('clock') public clock: number,
-        /**
+        /*
          * Value in GB.
          */
         @f.asName('memory') public memory: number,

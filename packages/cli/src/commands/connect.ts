@@ -343,8 +343,8 @@ export class ConnectCommand extends Command {
             await this.client.client.registerController('node/' + nodeId, new NodePeerController(this, this.docker));
 
             await this.setHardwareInformation();
-            this.ready();
-            this.checkPeerConnection();
+            await this.ready();
+            await this.checkPeerConnection();
         };
 
         this.client.client.connection.subscribe(async (v) => {
@@ -529,7 +529,7 @@ export class ConnectCommand extends Command {
         const gpu = new GPUReader();
         const gpus = await gpu.getGpus();
         for (const [i, gpu] of eachPair(gpus)) {
-            const gpuResource = new NodeGpuResource(i, gpu.name);
+            const gpuResource = new NodeGpuResource(gpu.name, i);
             gpuResource.memory = gpu.memoryTotal;
             resources.gpu.push(gpuResource);
         }
@@ -581,8 +581,9 @@ export class ConnectCommand extends Command {
 
         for (const gpu of gpus) {
             const gpuHardware = new NodeHardwareInformationGpu(
-                gpu.index, gpu.uuid, gpu.name, gpu.clockMax, gpu.memoryTotal
+                gpu.uuid, gpu.name, gpu.clockMax, gpu.memoryTotal
             );
+            gpuHardware.index = gpu.index;
             gpuHardware.powerLimit = gpu.powerLimit;
             gpuHardware.temperatureMax = gpu.temperatureMax;
             info.gpus.push(gpuHardware);
