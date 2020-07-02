@@ -47,6 +47,9 @@ export class RootComponent implements OnDestroy, OnInit {
 
     public lastLoginError = '';
 
+    @LocalStorage('active-jobs-height')
+    public activeJobsHeight = 80;
+
     public errors: { name: string, error: Error, date: Date }[] = [];
 
     createClusterForm = new FormGroup({
@@ -111,7 +114,7 @@ export class RootComponent implements OnDestroy, OnInit {
 
     constructor(
         public controllerClient: ControllerClient,
-        private cd: ChangeDetectorRef,
+        public cd: ChangeDetectorRef,
         private viewContainerRef: ViewContainerRef,
         private dialog: DuiDialog,
         public store: MainStore,
@@ -376,9 +379,8 @@ export class RootComponent implements OnDestroy, OnInit {
                 clusters: await this.controllerClient.app().getClusters(),
                 nodes: await this.controllerClient.app().getNodes(),
                 organisations: await this.controllerClient.app().getMyOrganisations(),
+                activeJobs: await this.controllerClient.app().getActiveJobs()
             }));
-
-            //this.activeJobs = await this.controllerClient.app().getActiveJobs();
         }
 
         this.wasConnected = true;
@@ -388,6 +390,10 @@ export class RootComponent implements OnDestroy, OnInit {
         if (user) {
             this.checkCli(user);
         }
+    }
+
+    public trackById(index: number, item: any) {
+        return item.id;
     }
 
     protected async checkCli(user: FrontendUser) {

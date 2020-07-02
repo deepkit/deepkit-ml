@@ -121,7 +121,9 @@ import { sleep } from "@marcj/estdlib";
                                     <ul style="margin-top: 5px;">
                                         <li *ngFor="let nodeKv of foundNodes.nodeAssignment|keyvalue">
                                             <ng-container *ngFor="let instanceKv of nodeKv.value|keyvalue">
-                                                {{store.value.nodes.get(nodeKv.key).name}}:
+                                                <ng-container *ngIf="getFoundNode(foundNodes, nodeKv.key) as node">
+                                                    {{node.name}}:
+                                                </ng-container>
                                                 {{instanceKv.value.cpu}}x CPU cores, {{instanceKv.value.memory}} GB memory,
                                                 {{instanceKv.value.gpus.length}}x GPU
                                                 <ng-container *ngFor="let gpu of instanceKv.value.gpus">
@@ -237,6 +239,13 @@ export class CreateExperimentComponent implements OnInit, OnDestroy {
         });
     }
 
+    public getFoundNode(nodes: NodesFound, nodeId: string): ClusterNode | undefined {
+        if (this.store.value.nodes!.has(nodeId)) {
+            return this.store.value.nodes!.get(nodeId);
+        }
+        return nodes.newNodes.find(v => v.id === nodeId);
+    }
+
     public async assignDirectory() {
         const {path, bookmark} = await selectSourceFolder();
         if (!path) return;
@@ -264,6 +273,7 @@ export class CreateExperimentComponent implements OnInit, OnDestroy {
         let availableNodes = this.store.value.nodes!.all().slice(0);
 
         availableNodes = availableNodes.filter(v => v.isConnected());
+        availableClusters = availableClusters.filter(v => !v.disabled);
 
         availableNodes.sort((a, b) => {
             if (a.priority < b.priority) return -1;

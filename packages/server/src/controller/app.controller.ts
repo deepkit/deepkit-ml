@@ -898,15 +898,10 @@ export class AppController implements AppControllerInterface {
 
     @Action()
     @Role(RoleType.regular)
-    async getActiveJobs(@f.optional() project?: string): Promise<Collection<Job>> {
-        const projectIds: string[] = [];
-        if (project) {
-            projectIds.push(project);
-        }
-
+    async getActiveJobs(): Promise<Collection<Job>> {
         return await this.entityStorage.collection(Job).filter({
             connections: {$gt: 0},
-            project: {$in: projectIds}
+            user: this.getUserId()
         }).find();
     }
 

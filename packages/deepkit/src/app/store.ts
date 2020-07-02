@@ -72,6 +72,7 @@ export class MainStoreInterface {
     clusters?: Collection<Cluster>;
     nodes?: Collection<ClusterNode>;
     organisations?: Collection<FrontendUser>;
+    activeJobs?: Collection<Job>;
 
     selected?: EntitySubject<Project> | EntitySubject<Cluster> | EntitySubject<ClusterNode>;
     selectedProject?: EntitySubject<Project>;
@@ -98,8 +99,8 @@ export class MainStoreInterface {
         return !!this.selectedNode && this.lastSelectedType === 'node';
     }
 
-    public isProjectSelected(): boolean {
-        return !!this.selectedProject && this.lastSelectedType === 'project';
+    public isProjectSelected(id?: string): boolean {
+        return !!this.selectedProject && this.lastSelectedType === 'project' && (!id || id === this.lastSelectedId);
     }
 }
 
@@ -121,6 +122,7 @@ export const loadUserData = createAction(
         clusters: Collection<Cluster>,
         nodes: Collection<ClusterNode>,
         organisations: Collection<FrontendUser>,
+        activeJobs: Collection<Job>,
     }>()
 );
 
@@ -132,6 +134,11 @@ export const actionEntityDeleted = createAction(
 export const actionExperimentMode = createAction(
     '[Experiment] view mode',
     props<{ mode: 'list' | 'detail', job?: EntitySubject<Job> }>()
+);
+
+export const actionLoadAndShowJobId = createAction(
+    '[Experiment] load and show experiment',
+    props<{ jobId: string }>()
 );
 
 export const actionExperimentTab = createAction(
@@ -162,6 +169,13 @@ const reducer = createReducer(
             state.experimentView.lastSelectedJob = props.job;
             state.experimentView.lastSelectedJobId = props.job.id;
         }
+
+        return state;
+    }),
+    on(actionLoadAndShowJobId, (state, props) => {
+        state.experimentView.mode = 'detail';
+        state.experimentView.lastSelectedJob = undefined;
+        state.experimentView.lastSelectedJobId = props.jobId;
 
         return state;
     }),
@@ -254,6 +268,7 @@ const reducer = createReducer(
         s.clusters = props.clusters;
         s.nodes = props.nodes;
         s.organisations = props.organisations;
+        s.activeJobs = props.activeJobs;
 
         if (s.lastSelectedId) {
             if (s.lastSelectedType === 'project' && s.projects.get(s.lastSelectedId)) {

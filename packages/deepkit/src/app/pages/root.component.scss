@@ -21,6 +21,21 @@
     }
 }
 
+.list-item {
+    display: flex;
+    align-items: center;
+
+    .name {
+        flex: 1;
+    }
+
+    .active {
+        flex: 0;
+        color: var(--text-gray);
+        text-align: right;
+    }
+}
+
 .top-info {
     position: absolute;
     right: 3px;
@@ -162,24 +177,47 @@ dui-list-item.node {
     overflow: auto;
 }
 
+dui-window-content ::ng-deep .sidebar-container {
+    display: flex;
+    flex-direction: column;
+    justify-items: flex-start;
+}
+
 dui-list {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 26px;
-    height: auto;
+    width: 100%;
+    flex: 1;
+    //position: absolute;
+    //top: 0;
+    //left: 0;
+    //right: 0;
+    //bottom: 26px;
+    //height: auto;
+}
+
+.sidebar-active-jobs {
+    position: relative;
+    max-height: 50%;
+    min-height: 50px;
+    flex: 0 0 80px;
+    overflow: auto;
+    border-top: 1px solid var(--line-sidebar);
+
+    h4 {
+        padding: 3px 8px;
+    }
+
+    &.empty {
+        min-height: 0;
+        flex-basis: 0 !important;
+    }
 }
 
 .sidebar-actions {
+    flex: 0 0 30px;
     overflow: hidden;
-    position: absolute;
-    bottom: 0;
-    left: 8px;
-    right: 8px;
+    margin: 0 8px;
     display: flex;
     align-items: center;
-    padding-bottom: 5px;
 }
 
 .not-connected {

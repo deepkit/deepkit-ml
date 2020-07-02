@@ -1209,6 +1209,16 @@ export class Job implements IdInterface {
         return this.status >= JobStatus.running;
     }
 
+    public getAssignedClusterNodes(): Set<string> {
+        const result = new Set<string>();
+        for (const task of Object.values(this.tasks)) {
+            for (const instance of task.instances) {
+                if (instance.node) result.add(instance.node);
+            }
+        }
+        return result;
+    }
+
     public isEnded() {
         return this.status >= JobStatus.done;
     }

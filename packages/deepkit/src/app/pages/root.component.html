@@ -1,4 +1,3 @@
-
 <dui-window *ngIf="needLogin || !(ready|async)">
     <dui-window-header>
         Deepkit
@@ -163,11 +162,12 @@
                     Cluster
 
                     <ng-container *ngIf="jobQueue|async as jobQueue">
-                        <div *ngIf="jobQueue.length" (click)="openJobQueue()" style="position: absolute; right: 5px; top: 5px;">{{jobQueue.length}}</div>
+                        <div *ngIf="jobQueue.length" (click)="openJobQueue()"
+                             style="position: absolute; right: 5px; top: 5px;">{{jobQueue.length}}</div>
                     </ng-container>
                 </dui-list-title>
 
-                <ng-container *ngFor="let cluster of store.value.clusters|asyncRender">
+                <ng-container *ngFor="let cluster of store.value.clusters|asyncRender; trackBy: trackById">
                     <dui-list-item class="cluster" [value]="store.value.clusters.getEntitySubject(cluster)">
                         <dui-icon *ngIf="!hideNodes[cluster.id]"
                                   (mousedown)="$event.stopPropagation(); hideNodes[cluster.id] = true; hideNodes = hideNodes"
@@ -180,21 +180,28 @@
                     </dui-list-item>
 
                     <ng-container *ngIf="!hideNodes[cluster.id]">
-                        <dui-list-item class="node"
-                                       *ngFor="let node of filterNodes(store.value.nodes|asyncRender, cluster)"
-                                       [value]="store.value.nodes.getEntitySubject(node)"
+                        <dui-list-item
+                            *ngFor="let node of filterNodes(store.value.nodes|asyncRender, cluster); trackBy: trackById"
+                            [value]="store.value.nodes.getEntitySubject(node)"
                         >
-                            <div class="node-mini-utils" [class.connected]="node.connected">
-                                <div>
-                                    <dk-progress-bar [height]="2"
-                                                     [value]="node.connected ? node.getCpuUsageInPercent() : 0"></dk-progress-bar>
-                                    <dk-progress-bar [height]="2"
-                                                     [value]="node.connected ? node.getMemoryUsageInPercent() : 0"></dk-progress-bar>
-                                    <dk-progress-bar [height]="2"
-                                                     [value]="node.connected ? node.getGpuUsageInPercent() : 0"></dk-progress-bar>
+                            <div class="list-item">
+                                <div class="node-mini-utils" [class.connected]="node.connected">
+                                    <div>
+                                        <dk-progress-bar [height]="2"
+                                                         [value]="node.connected ? node.getCpuUsageInPercent() : 0"></dk-progress-bar>
+                                        <dk-progress-bar [height]="2"
+                                                         [value]="node.connected ? node.getMemoryUsageInPercent() : 0"></dk-progress-bar>
+                                        <dk-progress-bar [height]="2"
+                                                         [value]="node.connected ? node.getGpuUsageInPercent() : 0"></dk-progress-bar>
+                                    </div>
+                                </div>
+                                <div class="name">
+                                    {{node.name}}
+                                </div>
+                                <div class="active lining">
+                                    <dk-active-jobs [clusterNodeId]="node.id"></dk-active-jobs>
                                 </div>
                             </div>
-                            {{node.name}}
                         </dui-list-item>
                     </ng-container>
                 </ng-container>
@@ -202,10 +209,17 @@
                 <dui-list-title>Projects</dui-list-title>
 
                 <dui-list-item
-                    *ngFor="let project of filterProjects(store.value.projects|asyncRender)"
+                    *ngFor="let project of filterProjects(store.value.projects|asyncRender); trackBy: trackById"
                     [value]="store.value.projects.getEntitySubject(project)"
                 >
-                    {{project.name}}
+                    <div class="list-item">
+                        <div class="name">
+                            {{project.name}}
+                        </div>
+                        <div class="active lining">
+                            <dk-active-jobs [projectId]="project.id"></dk-active-jobs>
+                        </div>
+                    </div>
                 </dui-list-item>
             </dui-list>
 
@@ -213,6 +227,17 @@
                 <dui-input class="semi-transparent" clearer lightFocus style="flex: 1" icon="filter"
                            [(ngModel)]="filterQuery" round (esc)="filterQuery = ''"
                            placeholder="Filter"></dui-input>
+            </div>
+
+            <div class="sidebar-active-jobs" *ngIf="store.value.activeJobs|async as jobs"
+                 [class.empty]="!jobs.length" [style.flex-basis.px]="activeJobsHeight"
+            >
+                <dui-splitter position="top"
+                              (modelChange)="activeJobsHeight = $event; cd.detectChanges()"></dui-splitter>
+
+                <dui-list-title>{{jobs.length}} active experiment{{jobs.length === 1 ? '' : 's'}}</dui-list-title>
+
+                <dk-job-preview [job]="job" *ngFor="let job of jobs; trackBy: trackById"></dk-job-preview>
             </div>
         </dui-window-sidebar>
 

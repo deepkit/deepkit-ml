@@ -371,7 +371,7 @@ export interface AppControllerInterface {
 
     getJobs(project: string, list: undefined | string | 'ci'): Promise<Collection<Job>>;
 
-    getActiveJobs(project?: string): Promise<Collection<Job>>;
+    getActiveJobs(): Promise<Collection<Job>>;
 
     getJobsForCluster(cluster: string): Promise<Collection<Job>>;
 

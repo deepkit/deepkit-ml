@@ -141,6 +141,8 @@ import {JobShowInsightComponent, JobShowInsightEntryComponent, JobShowInsightsCo
 import {InstallCliComponent} from "./dialogs/install-cli.component";
 import {ClusterSettingsDialogComponent} from "./dialogs/cluster-settings-dialog.component";
 import {JobQueueDialogComponent} from './dialogs/job-queue-dialog.component';
+import {ActiveJobsComponent} from "./components/active-jobs.component";
+import { JobPreviewComponent } from './components/job/job-preview.component';
 
 @NgModule({
     declarations: [
@@ -268,6 +270,8 @@ import {JobQueueDialogComponent} from './dialogs/job-queue-dialog.component';
         PublicJobComponent,
         PublicProjectComponent,
         JobQueueDialogComponent,
+        ActiveJobsComponent,
+        JobPreviewComponent,
     ],
     entryComponents: [
         CreateOrganisationDialogComponent,
