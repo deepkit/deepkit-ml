@@ -20,7 +20,7 @@ import {actionExperimentMode, actionLoadAndShowJobId, MainStore, selectEntity} f
                 </div>
                 <dk-redraw style="margin-left: 5px;">
                     <div class="lining">
-                        {{job.ended ? ((job.ended - job.started) / 1000 | humanize) : (job.started | humanize_until_now)}}
+                        {{job.ended ? ((Number(job.ended) - Number(job.started)) / 1000 | humanize) : (job.started | humanize_until_now)}}
                     </div>
                 </dk-redraw>
                 <dk-redraw style="margin-left: auto" class="lining">
@@ -51,6 +51,7 @@ import {actionExperimentMode, actionLoadAndShowJobId, MainStore, selectEntity} f
     `]
 })
 export class JobPreviewComponent {
+    Number = Number;
     @Input() job!: Job;
 
     constructor(
