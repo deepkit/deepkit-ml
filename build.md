@@ -7,10 +7,17 @@
 - Run `electron-*-local` build for each platform
 - use PUBLISH=0 env for testing
 
-### macOS
-
 ```
 PUBLISH=0 make electron-darwin-local -j 4
+PUBLISH=0 make electron-linux-local -j 4
+PUBLISH=0 make electron-windows-local -j 4
+```
 
+```
+# macos
+export APPLEIDPASS=<app-specific password>
 PUBLISH=1 make electron-darwin-local -j 4
+
+PUBLISH=1 make electron-linux-local -j 4
+PUBLISH=1 make electron-windows-local -j 4 # windows has no publish yet
 ```
