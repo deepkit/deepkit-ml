@@ -97,7 +97,6 @@ export class SshConnection {
                 privateKey: this.privateKey,
                 passphrase: this.privateKeyPassphrase,
                 compress: false,
-                readyTimeout: 10 * 1000,
                 algorithms: {
                     compress: []
                 }
