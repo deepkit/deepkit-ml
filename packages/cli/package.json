@@ -3,14 +3,13 @@
   "description": "Command line application for Deepkit app",
   "version": "0.0.5",
   "author": "Deepkit (limited) <info@deepkit.ai>",
-  "bin": {
-    "deepkit": "./bin/run"
-  },
+  "bin": "main.js",
   "private": true,
   "sideEffects": false,
   "bugs": "https://gitlab.com/deepkit/deepkit-cli/deepkit-cli/issues",
   "dependencies": {
-    "@oclif/plugin-help": "^2.1.6"
+    "@oclif/plugin-help": "^2.1.6",
+    "cli-ux": "^3.3.30"
   },
   "devDependencies": {
     "@deepkit/core": "^0.0.5",
@@ -20,7 +19,6 @@
     "@marcj/glut-client": "^0.0.33",
     "@marcj/glut-core": "^0.0.33",
     "@marcj/marshal": "^2.1.3",
-    "@oclif/tslint": "^3.1.1",
     "@types/dockerode": "^2.5.4",
     "@types/dot-prop": "^4.2.0",
     "@types/execa": "^2.0.0",
@@ -33,7 +31,6 @@
     "@types/ws": "^6.0.1",
     "@types/cli-progress": "^3.4.2",
     "cli-progress": "^3.4.0",
-    "cli-ux": "^3.3.30",
     "strip-ansi": "^5.2.0",
     "systeminformation": "^4.21.1",
     "chalk": "^3.0.0",
@@ -67,7 +64,6 @@
     "ts-jest": "22.0.4",
     "ts-node": "^8.1.0",
     "tslib": "^1.9.3",
-    "tslint": "^5",
     "typescript": "^3.3.4000",
     "uuid": "^3.2.1",
     "webpack": "^4.26.1",
@@ -108,7 +104,6 @@
     "build": "node_modules/.bin/webpack --config webpack.config.js",
     "__build-binary": "nexe --build --input dist/main.js --resource dist/diskusage.node -o dist/main",
     "__postpack": "rm -f .oclif.manifest.json",
-    "__posttest": "tsc -p . --noEmit && tslint -p . -t stylish",
     "__prepack": "rm -rf lib && tsc && NODE_PRESERVE_SYMLINKS=1 oclif-dev manifest && NODE_PRESERVE_SYMLINKS=1 oclif-dev readme",
     "test": "echo NO TESTS",
     "__version": "oclif-dev readme && git add README.md"

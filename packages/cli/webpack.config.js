@@ -87,9 +87,10 @@ module.exports = {
             //some dependency requires that, we force to not bundle it.
             'typescript': 'undefined',
 
-            // //fix 'Cannot find module 'strip-ansi''
-            // 'cli-ux': 'commonjs cli-ux',
-            //
+            // fix 'Cannot find module 'strip-ansi''
+            // this is fucking important!
+            'cli-ux': 'commonjs cli-ux',
+
             // 'utf-8-validate': 'commonjs utf-8-validate',
             // 'bufferutil': 'commonjs bufferutil',
             // 'systeminformation': 'commonjs systeminformation',
