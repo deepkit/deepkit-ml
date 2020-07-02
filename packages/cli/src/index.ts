@@ -15,6 +15,7 @@ import {InstallDockerCommand} from "./commands/install-docker";
 import {InstallNvidiaCommand} from "./commands/install-nvidia";
 import {AuthCommand} from "./commands/auth";
 import {isElectronEnvironment} from "@deepkit/core";
+import {AccessKeyCommand} from "./commands/access-key";
 
 (global as any).WebSocket = require('ws');
 
@@ -28,6 +29,7 @@ const commandsMap: { [name: string]: any } = {
     'start': StartCommand,
     // 'test': TestCommand,
     'os': OSCommand,
+    'access-key': AccessKeyCommand,
     'install-docker': InstallDockerCommand,
     'install-nvidia': InstallNvidiaCommand,
 };

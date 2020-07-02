@@ -10,7 +10,7 @@ import cli from "cli-ux";
 import {AppControllerInterface, createAnonSocketClient, HomeAccountConfig} from "@deepkit/core";
 
 export class AccessKeyCommand extends Command {
-    static description = 'Generates a access_key that can be used in notebooks or api calls';
+    static description = 'Generates an access-key that can be used in notebooks or api calls';
 
     public static args = [
         {
@@ -47,8 +47,10 @@ export class AccessKeyCommand extends Command {
 
         const app = client.controller<AppControllerInterface>('app');
 
+        console.log(`Connecting to ${account.host}`);
+
         const username = await cli.prompt('username', {required: true});
-        const password = await cli.prompt('password', {required: true, type: 'mask'});
+        const password = await cli.prompt('password', {required: true, type: 'hide'});
 
         const token = await app.login(username, password);
         client.disconnect();
