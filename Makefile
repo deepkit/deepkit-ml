@@ -86,7 +86,7 @@ build/linux/cli/bin: build/linux/cli/bin/node
 
 _always/build/linux/cli/node_modules: build/linux/cli/bin
 	cp packages/cli/package.json build/linux/cli/
-	cd build/linux/cli && npm version $(VERSION) --allow-same-version && cd -
+	cd build/linux/cli && npm version $(VERSION_FILE_PATH) --allow-same-version && cd -
 	cp packages/cli/package-lock.json build/linux/cli/
 	cd build/linux/cli && npm install --only=prod
 
@@ -118,7 +118,7 @@ build/darwin/cli/bin:
 
 cli-darwin: build/darwin/cli/bin packages/cli/dist/main.js
 	cp packages/cli/package.json build/darwin/cli/package.json
-	cd build/darwin/cli/ && npm version $(VERSION) --allow-same-version && cd -
+	cd build/darwin/cli/ && npm version $(VERSION_FILE_PATH) --allow-same-version && cd -
 	cp packages/cli/dist/main.js build/darwin/cli/main.js
 	cp packages/cli/dist/main.js.map build/darwin/cli/main.js.map
 	cd build/darwin/cli && npm install --only=prod --unsafe
@@ -137,21 +137,13 @@ packages/server/dist/main.js:
 
 
 # SERVER DARWIN
-build/darwin/server/bin/node: /tmp/node-$(NODE_VERSION)-darwin-x64/bin/node
-	mkdir -p build/darwin/server/bin
-	cp /tmp/node-$(NODE_VERSION)-darwin-x64/bin/node build/darwin/server/bin/node;
-
 build/darwin/server/libs:
 	mkdir -p build/darwin/server/libs
 	cp packages/server/libs/mongod-darwin-x64 build/darwin/server/libs
 
-build/darwin/server/bin: build/darwin/server/bin/node
-	mkdir -p build/darwin/server/bin
-	cp packages/server/bin/deepkit-server build/darwin/server/bin/deepkit-server
-
-server-darwin: build/darwin/server/bin packages/server/dist/main.js build/darwin/server/libs
+server-darwin: packages/server/dist/main.js build/darwin/server/libs
 	cp packages/server/package.json build/darwin/server/package.json
-	cd build/darwin/server/ && npm version $(VERSION) --allow-same-version && cd -
+	cd build/darwin/server/ && npm version $(VERSION_FILE_PATH) --allow-same-version && cd -
 	cp packages/server/dist/main.js build/darwin/server/main.js
 #	cd build/darwin/server && zip -8 -qr $(RELEASES)/$(VERSION)/deepkit-server-macOS-$(VERSION).zip .
 
@@ -175,7 +167,7 @@ build/windows/server/bin:
 
 server-windows: build/windows/server/bin packages/server/dist/main.js build/windows/server/libs
 	cp packages/server/package.json build/windows/server/package.json
-	cd build/windows/server/ && npm version $(VERSION) --allow-same-version && cd -
+	cd build/windows/server/ && npm version $(VERSION_FILE_PATH) --allow-same-version && cd -
 	cp packages/server/dist/main.js build/windows/server/main.js
 #	cd build/windows/server && zip -8 -qr $(RELEASES)/$(VERSION)/deepkit-server-windows-$(VERSION).zip .
 
@@ -205,7 +197,7 @@ build/linux/server/libs: build/linux/server/libs/mongod-linux-x64
 _always/build/linux/server/node_modules:
 	mkdir -p build/linux/server/
 	cp packages/server/package.json build/linux/server/package.json
-	cd build/linux/server/ && npm version $(VERSION) --allow-same-version && cd -
+	cd build/linux/server/ && npm version $(VERSION_FILE_PATH) --allow-same-version && cd -
 	docker build -t deepkit/npm-install -f docker-build/npm-install.Dockerfile docker-build
 	docker run -v `pwd`/build/linux/server:/app deepkit/npm-install
 
@@ -215,7 +207,7 @@ build/linux/server/bin: build/linux/server/bin/node
 
 server-linux: build/linux/server/bin packages/server/dist/main.js build/linux/server/libs packages/deepkit/dist/deepkit/index.html
 	cp packages/server/package.json build/linux/server/package.json
-	cd build/linux/server/ && npm version $(VERSION) --allow-same-version && cd -
+	cd build/linux/server/ && npm version $(VERSION_FILE_PATH) --allow-same-version && cd -
 	cp packages/server/dist/main.js build/linux/server/main.js
 
 server-linux-clean:
@@ -233,7 +225,7 @@ server-linux-rebuild: server-linux-clean
 
 deepkit-frontend:
 	rm -rf build/frontend
-	cd packages/deepkit && npm version $(VERSION) --allow-same-version && cd -
+	cd packages/deepkit && npm version $(VERSION_FILE_PATH) --allow-same-version && cd -
 	cd packages/deepkit && npm run build && cd - && cp -r packages/deepkit/dist/deepkit build/frontend
 
 # deepkit team server
