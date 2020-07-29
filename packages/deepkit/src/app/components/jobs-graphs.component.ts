@@ -23,6 +23,7 @@ import {skip} from "rxjs/operators";
             {{getChannelName()}} {{traceName}}
 
             <plotly class="full" [renderNowSubject]="renderNowSubject" [layout]="channelLayout"
+                    [smoothing]="smoothing"
                     [trace]="traces"></plotly>
         </div>
     `,
@@ -33,6 +34,7 @@ export class JobsGraphComponent implements OnDestroy, OnChanges {
     @Input() jobs: Job[] = [];
     @Input() shownJobs = new Set<string>();
     @Input() progress!: Progress;
+    @Input() smoothing = new BehaviorSubject<number>(1);
 
     public traces = new ReplaySubject<ObservableTrace>();
     public renderNowSubject = new Subject<void>();
@@ -192,7 +194,11 @@ export class JobsGraphComponent implements OnDestroy, OnChanges {
                 <dui-indicator [step]="p.progress"></dui-indicator>
             </div>
 
-            <div style="margin-left: auto; padding-right: 20px; text-align: right;">
+            <div style="margin-left: auto; padding-right: 20px; text-align: right; display: flex; align-items: center; ">
+                <div style="margin-right: 5px; font-size: 11px;">Smoothing:</div>
+                <dui-slider style="width: 60px; margin: 0 5px;" mini [ngModel]="smoothing.value / 150"
+                            (ngModelChange)="smoothing.next($event * 150)"></dui-slider>
+
                 <dui-button textured [openDropdown]="drop" iconRight icon="arrow_down">
                     Select metrics
                 </dui-button>
@@ -210,7 +216,7 @@ export class JobsGraphComponent implements OnDestroy, OnChanges {
             <div class="graph-grid">
                 <ng-container *ngFor="let id of channelNamesToShow; trackBy: channelTracker">
                     <div *ngIf="possibleChannels.includes(id)">
-                        <jobs-graph [progress]="progress" [jobs]="jobs" [id]="id" [traceName]="traceName[id]"></jobs-graph>
+                        <jobs-graph [progress]="progress" [smoothing]="smoothing" [jobs]="jobs" [id]="id" [traceName]="traceName[id]"></jobs-graph>
                     </div>
                 </ng-container>
             </div>
@@ -221,6 +227,7 @@ export class JobsGraphComponent implements OnDestroy, OnChanges {
 export class JobsGraphsComponent implements OnChanges, OnDestroy {
     @Input() project!: Project;
     @Input() jobs: Job[] = [];
+    smoothing = new BehaviorSubject<number>(1);
 
     progress = new Progress;
 

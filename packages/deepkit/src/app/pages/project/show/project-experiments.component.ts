@@ -126,7 +126,7 @@ import {CreateExperimentComponent} from "../../../dialogs/create-experiment.comp
 })
 export class ProjectExperimentsComponent implements OnDestroy {
     @Input() project$!: EntitySubject<Project>;
-    @Input() public readOnly: boolean = false;
+    @Input() readOnly: boolean = false;
 
     readonly viewState = new ViewState;
 
