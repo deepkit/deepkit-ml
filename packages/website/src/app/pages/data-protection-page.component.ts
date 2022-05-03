@@ -111,7 +111,7 @@ import {Component} from "@angular/core";
                     Europäischen Union geltenden Datenschutzgesetze und anderer Bestimmungen mit datenschutzrechtlichem
                     Charakter ist die:</p>
                 <p>DeepKit UG (haftungsbeschränkt)<br>Meridianstraße 16<br>20535 Hamburg<br>Deutschland<br>Tel.: +49 151
-                    54780985<br>E-Mail: info@deepkit.ai<br>Website: www.deepkit.ai<br></p>
+                    54780985<br>E-Mail: info@deepkit.io<br>Website: deepkit.io<br></p>
                 <h2>3. Cookies</h2>
                 <p>Die Internetseiten der DeepKit UG verwenden Cookies. Cookies sind Textdateien, welche über einen
                     Internetbrowser auf einem Computersystem abgelegt und gespeichert werden.</p>

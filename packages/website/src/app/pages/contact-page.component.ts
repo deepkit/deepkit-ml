@@ -13,7 +13,7 @@ import {Component} from "@angular/core";
             </p>
 
             <p>
-                <a href="mailt:info@deepkit.ai">info@deepkit.ai</a><br/>
+                <a href="mailt:info@deepkit.io">info@deepkit.io</a><br/>
                 Registergericht: Amtsgericht Hamburg<br/>
                 Registernummer: HRB 151766<br/>
             </p>

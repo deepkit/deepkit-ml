@@ -46,7 +46,7 @@ import {HttpClient} from "@angular/common/http";
                 </p>
 
                 <div class="buttons">
-                    <a class="button" href="mailto:info@deepkit.ai">Contact us</a>
+                    <a class="button" href="mailto:info@deepkit.io">Contact us</a>
                 </div>
             </div>
 
