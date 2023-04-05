@@ -7,8 +7,7 @@
 Deepkit is an open-source platform and cross-platform desktop application to execute, track, and debug modern machine learning experiments.
 With integrated server management tool to execute experiments on any Linux server with a simple click or cli command. 
 
-[Download](https://deepkit.ai/download) - 
-[Live Demo](https://app.deepkit.ai/public/marcj/deepkit-python-sdk?experimentView%5Bfilter%5D%5Blist%5D=0b3e5215-289b-48b3-8108-284337766eb2) -
+[Download](https://ml.deepkit.io/download) - 
 [Example Python](https://github.com/deepkit/deepkit-python-sdk/tree/master/examples)
 
 ## Features
@@ -27,7 +26,6 @@ With integrated server management tool to execute experiments on any Linux serve
 - Project management: Issue tracker, Kanban board, and notes
 - Real-time desktop (and web) app with analytical tools to monitor and organize experiments
 - Optional centralized server for teams
-- Free community server at https://app.deepkit.ai to share your experiments with the world
 
 ## Development
 
